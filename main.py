@@ -1,6 +1,9 @@
 from __future__ import division
-import numpy # learn more: https://python.org/pypi/numpy
+import numpy as np # learn more: https://python.org/pypi/np
 from math import log
+import scipy
+
+debug = True
 
 def markov_chain(n):
 	"""Generate a random markov chain with n states
@@ -12,7 +15,7 @@ def markov_chain(n):
     (n, n) int matrix: The markov chain
   """
 
-	matrix = numpy.random.rand(n, n)
+	matrix = np.random.rand(n, n)
 	return matrix / matrix.sum(axis=1)[:, None]
 
 
@@ -26,7 +29,7 @@ def state_fun(n):
     digit list: The list of assignments. l[i] is the digit of state i.
   """
 
-	return numpy.random.randint(0, 2, n)
+	return np.random.randint(0, 2, n)
 
 
 def stationary_distribution(M):
@@ -39,11 +42,50 @@ def stationary_distribution(M):
      (float array): A stationary distribution of M.
    """
    
-   Mt = numpy.transpose (M)
-   p = numpy.linalg.eig (Mt)
-   
+   S, U = scipy.linalg.eig( M.T )
+   p = np.array(U[:, np.where(np.abs(S - 1.) < 1e-8)[0][0]].flat)
+   p = p / np.sum(p)   
+
+   if debug:
+     print("p times M", np.dot( p, M ))
+     print("p", p)   
+    
    return p
    
+
+def entropy(M):
+   """Computes the entropy of a known Markov chain by computing a stationary distribution.
+ 
+   Args:
+     M (float matrix): The Markov chain.
+
+   Returns:
+     (float): The entropy of M.
+   """
+
+   p = stationary_distribution(M)
+   h = 0
+   n = len(M)
+
+   for i in range(n):
+     for j in range(n):
+       
+       h += p[i] * M[i, j] * log( M[i, j] )
+
+   return (-h)
+
+
+def test_entropy():
+   
+   Ms = [markov_chain(i) for i in range(2, 10)]
+   ents = [entropy(M) for M in Ms]
+
+   for i in range(len(Ms)):
+     print("The Markov chain:")
+     raw_input(Ms[i])
+     print("Its entropy:")
+     raw_input(ents[i])
+
 
 def markov_source(M, f, n):
   """Outputs a word of size n from a Markov source (M, f)
@@ -61,7 +103,7 @@ def markov_source(M, f, n):
 
   for _ in range(n):
     
-    transition_proba = numpy.random.rand(1)
+    transition_proba = np.random.rand(1)
     
     next_state = 0
     proba_stack = M[current_state, 0]
@@ -125,13 +167,12 @@ def compress(word):
 
 
 import matplotlib.pyplot as plt
-import numpy as np
 from matplotlib import colors
 from scipy.stats.kde import gaussian_kde
 from numpy import linspace
 
 
-def redundancy_histograms():
+def redundancy_histograms(random_markov=False):
   """Makes a simulation of the redundancy distribution for different word length values,
   and prints the corresponding histograms.
   """
@@ -139,45 +180,65 @@ def redundancy_histograms():
   length_values = [4*i, 10*i, 20*i, 100*i]
   n_exp = 200
 
-  p_a = 0.9
-  M = numpy.matrix([[p_a, 1-p_a], [1-p_a, p_a]])
-  f = [0, 1]
-  h = - p_a * log (p_a) - (1-p_a) * log (1-p_a)
+  if not random_markov:
+    p_a = 0.9
+    M = np.matrix([[p_a, 1-p_a], [1-p_a, p_a]])
+    h = - p_a * log (p_a) - (1-p_a) * log (1-p_a)
+    f = [0, 1]
+
+  else:
+    N = np.random.randint(2, 11)
+    M = markov_chain(N)
+    h = entropy(M)
+    f = state_fun(N)
+    raw_input("Using a random Markov chain of size" + str(N))
+    raw_input(M)
+    print("Its state function f is:")
+    raw_input(f)
+    print("Its entropy is:")
+    raw_input(h)
 
   rates = []
-  figs, axs = plt.subplots(1, len(length_values), sharey=True, sharex=True, tight_layout=True)
+  figs, axs = plt.subplots(2, len(length_values), tight_layout=True)
 
   for i, n in enumerate(length_values):
+    n_exp = n # USE A MORE POWERFUL PC
     print("Simulation with words of size", n)
-
+    print("Doing %d experiments" % n_exp)
+ 
     word_gen = word_generator(M, f, n)
 
-    if 1:
-      l = [word_gen() for _ in range(n_exp)]
+    l = [word_gen() for _ in range(n_exp)]
+    c = [compress(w) for w in l]
+    r = [len(x) / n - h for x in c]
+    
+    if 0: 
       print("These are some word examples:")
-      _ = raw_input(l)
-
-      c = [compress(w) for w in l]
+      _ = raw_input(l[:10])
+    
       print("And their codes:")
-      _ = raw_input(c)
-
-      r = [len(x) / n - h for x in c]
+      _ = raw_input(c[:10])
+      
       print("And their rates:")
-      _ = raw_input(r)
+      _ = raw_input(r[:10])
 
     kde = gaussian_kde( r )
     dist_space = linspace( min(r), max(r), 100 )
 
-    axs[i].hist(r, bins=50, facecolor='g')
-    axs[i].plot( dist_space, kde(dist_space) )
+    axs[0][i].hist(r, bins=50, facecolor='g')
+    axs[1][i].plot( dist_space, kde(dist_space) )
 
-    axs[i].set_xlabel('Rates')
-    axs[i].set_ylabel('Probability')
-    axs[i].grid(True)
+    for k in [0, 1]:
+      axs[k][i].set_xlabel('Rates')
+      axs[k][i].set_ylabel('Probability')
+      axs[k][i].grid(True)
 
   print("Done")
   plt.show()
 
+
+
 if __name__ == "__main__":
   print("Printing histograms:")
   redundancy_histograms()
+  redundancy_histograms(random_markov=True)
