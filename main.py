@@ -6,8 +6,8 @@ import scipy
 debug = True
 
 def markov_chain(n):
-	"""Generate a random markov chain with n states
-  
+  """Generate a random markov chain with n states.
+
   Args:
     n (int): The number of states
 
@@ -15,12 +15,12 @@ def markov_chain(n):
     (n, n) int matrix: The markov chain
   """
 
-	matrix = np.random.rand(n, n)
-	return matrix / matrix.sum(axis=1)[:, None]
+  matrix = np.random.rand(n, n)
+  return matrix / matrix.sum(axis=1)[:, None]
 
 
 def state_fun(n):
-	"""Assigns a character (0 or 1) to each of n states.
+  """Assigns a character (0 or 1) to each of n states.
 
   Args:
     n (int): The number of states
@@ -29,7 +29,7 @@ def state_fun(n):
     digit list: The list of assignments. l[i] is the digit of state i.
   """
 
-	return np.random.randint(0, 2, n)
+  return np.random.randint(0, 2, n)
 
 
 def stationary_distribution(M):
@@ -41,42 +41,95 @@ def stationary_distribution(M):
    Returns:
      (float array): A stationary distribution of M.
    """
-   
+
    S, U = scipy.linalg.eig( M.T )
    p = np.array(U[:, np.where(np.abs(S - 1.) < 1e-8)[0][0]].flat)
-   p = p / np.sum(p)   
+   p = p / np.sum(p)
 
    if debug:
      print("p times M", np.dot( p, M ))
-     print("p", p)   
-    
-   return p
-   
+     print("p", p)
 
-def entropy(M):
+   return p
+
+
+def entropy(M, p=None):
    """Computes the entropy of a known Markov chain by computing a stationary distribution.
- 
+
    Args:
      M (float matrix): The Markov chain.
+     [p] (float array): A previously computed stationary distribution.
 
    Returns:
      (float): The entropy of M.
    """
 
-   p = stationary_distribution(M)
+   if p is None:
+     p = stationary_distribution(M)
+
    h = 0
    n = len(M)
 
    for i in range(n):
      for j in range(n):
-       
+
        h += p[i] * M[i, j] * log( M[i, j] )
 
    return (-h)
 
 
+def h_2(M, p=None, h=None):
+    """Computes the second derivative of lambda, taken in s=-1 (see Average profile of the Lempel-Ziv parsing scheme for a Markovian source).
+
+    Args:
+      M (float matrix): The Markov chain.
+      p (float array): A left eigenvector.
+      [h] (float): The precomputed entropy of M.
+
+    Returns:
+      (float): \dot\dot lambda (-1)
+    """
+
+    if p is None:
+        p = stationary_distribution(M)
+
+    if h is None:
+        h = entropy(M, p=p)
+
+    n = len(m)
+
+    t1 = 0
+    t2 = 0
+    t3 = 0
+
+    for i in range(n):
+        for j in range(n):
+
+            t1 += p[i] * M[i, j] * (log ( M[i, j] )) ** 2
+
+    for i in range(n):
+        for j in range(n):
+
+            t2 += log ( p[i] * M[i, j] ) * p[i] * M[i, j]
+
+    t2 *= 2
+
+    for i in range(n):
+        for j in range(n):
+
+            t3 += p[i] * log( p[i] )
+
+    t3 *= 2 * h
+
+    return t1 + t2 + t3
+
+
+def variance(M)
+
+
+
 def test_entropy():
-   
+
    Ms = [markov_chain(i) for i in range(2, 10)]
    ents = [entropy(M) for M in Ms]
 
@@ -86,6 +139,21 @@ def test_entropy():
      print("Its entropy:")
      raw_input(ents[i])
 
+
+def psi(n):
+    """Returns the Psi vector: a 1-D array of size n filled with ones.
+
+    Args:
+        n (int): Size of the Markov chain.
+
+    Returns:
+        (int array): The Psi vector
+    """
+
+    return np.ones(n)
+
+
+import cmath
 
 def markov_source(M, f, n):
   """Outputs a word of size n from a Markov source (M, f)
@@ -98,18 +166,19 @@ def markov_source(M, f, n):
   Returns:
     digit list: The generated message.
   """
+
   current_state = 0
   word = []
 
   for _ in range(n):
-    
+
     transition_proba = np.random.rand(1)
-    
+
     next_state = 0
     proba_stack = M[current_state, 0]
 
     while transition_proba > proba_stack:
-      
+
       next_state += 1
       proba_stack += M[current_state, next_state]
 
@@ -150,15 +219,15 @@ def compress(word):
 
   for digit in word:
     digit = str(digit)
-    
+
     if current_prefix + digit in s:
       current_prefix += digit
-    
+
     else:
       s.add(current_prefix + digit)
       phrases.append(current_prefix + digit)
       current_prefix = ""
-    
+
   if current_prefix != "":
     #print("The last phrase is incomplete:", current_prefix)
     phrases.append(current_prefix)
@@ -205,20 +274,20 @@ def redundancy_histograms(random_markov=False):
     n_exp = n # USE A MORE POWERFUL PC
     print("Simulation with words of size", n)
     print("Doing %d experiments" % n_exp)
- 
+
     word_gen = word_generator(M, f, n)
 
     l = [word_gen() for _ in range(n_exp)]
     c = [compress(w) for w in l]
     r = [len(x) / n - h for x in c]
-    
-    if 0: 
+
+    if 0:
       print("These are some word examples:")
       _ = raw_input(l[:10])
-    
+
       print("And their codes:")
       _ = raw_input(c[:10])
-      
+
       print("And their rates:")
       _ = raw_input(r[:10])
 
