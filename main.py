@@ -96,7 +96,7 @@ def h_2(M, p=None, h=None):
     if h is None:
         h = entropy(M, p=p)
 
-    n = len(m)
+    n = len(M)
 
     t1 = 0
     t2 = 0
@@ -124,8 +124,65 @@ def h_2(M, p=None, h=None):
     return t1 + t2 + t3
 
 
-def variance(M)
+def Hi(M, i):
+    """Computes the entropy of branching from state i."""
 
+    r = 0
+
+    for j in [0, 1]:
+
+        r += M[i, j] * log( M[i, j] )
+
+    return r
+
+def H0(M):
+    return Hi(M, 0)
+
+def H1(M):
+    return Hi(M, 1)
+
+
+def sigma_i(M, i):
+    """Computes H^3 * sigma_i^2, from Neininger's paper."""
+
+    pi_i = M[1-i, i] / (M[0, 1] + M[1, 0])
+
+    r = pi_i * M[i, 0] * M[i, 1]
+
+    r *= (log( M[i, 0] ) - log( M[i, 1] ) + (H1(M) - H0(M)) / (M[0, 1] + M[1, 0])) ** 2
+
+    return r
+
+def sigma(M):
+    """Computes H^3 * sigma^2, from Neininger's paper."""
+
+    return sigma_i(M, 0) + sigma_i(M, 1)
+
+
+def test_neininger():
+
+    Ms = [markov_chain(2) for _ in xrange(100)]
+    neins = [sigma(M) for M in Ms]
+    ours = [(h_2(M) - entropy(M) ** 2) * entropy(M) ** 3 for M in Ms]
+
+    cell_text = []
+
+    for i in xrange(len(Ms)):
+        cell_text.append(['%1.5f' % x for x in [neins[i], ours[i]]])
+
+    columns = ['Neiningers H^3 * sigma^2', 'h2 - h^2']
+    rows = [str((M[0,0], M[1, 0])) for M in Ms]
+
+    plt.table (cellText=cell_text,
+               rowLabels=rows,
+               colLabels=columns)
+
+    plt.plot(neins, color='r', label='Neininger')
+    plt.plot(ours, color='g', label='Szpankowski')
+
+    plt.legend()
+    plt.title('Szpan vs Nein comparison')
+    plt.show()
 
 
 def test_entropy():
@@ -247,7 +304,7 @@ def redundancy_histograms(random_markov=False):
   """
   i = 100
   length_values = [4*i, 10*i, 20*i, 100*i]
-  n_exp = 200
+  n_exp = 1000
 
   if not random_markov:
     p_a = 0.9
@@ -256,10 +313,12 @@ def redundancy_histograms(random_markov=False):
     f = [0, 1]
 
   else:
-    N = np.random.randint(2, 11)
+    #N = np.random.randint(2, 11)
+    N = 2
     M = markov_chain(N)
     h = entropy(M)
-    f = state_fun(N)
+    #f = state_fun(N)
+    f = [0, 1]
     raw_input("Using a random Markov chain of size" + str(N))
     raw_input(M)
     print("Its state function f is:")
@@ -277,9 +336,13 @@ def redundancy_histograms(random_markov=False):
 
     word_gen = word_generator(M, f, n)
 
+    var_coeff_Nein = sigma(M)
+    var_coeff_Szpan = h_2(M) - (entropy(M)**2)
+
     l = [word_gen() for _ in range(n_exp)]
     c = [compress(w) for w in l]
-    r = [len(x) / n - h for x in c]
+    r_Nein = [(len(x) / n - h) / (n * var_coeff_Nein)  for x in c]
+    r_Szpan = [(len(x) / n - h) / (n * var_coeff_Szpan) for x in c]
 
     if 0:
       print("These are some word examples:")
@@ -291,11 +354,19 @@ def redundancy_histograms(random_markov=False):
       print("And their rates:")
       _ = raw_input(r[:10])
 
-    kde = gaussian_kde( r )
-    dist_space = linspace( min(r), max(r), 100 )
+    kde_Szpan = gaussian_kde( r_Szpan )
+    kde_Nein = gaussian_kde( r_Nein )
 
-    axs[0][i].hist(r, bins=50, facecolor='g')
-    axs[1][i].plot( dist_space, kde(dist_space) )
+    dist_space_Nein = linspace( min(r_Szpan), max(r_Szpan), 100 )
+    dist_space_Szpan = linspace( min(r_Nein), max(r_Nein), 100 )
+
+    axs[0][i].hist(r_Nein, bins=50, facecolor='r', label='Nein')
+    axs[0][i].hist(r_Szpan, bins=50, facecolor='g', label='Szpan')
+
+    axs[1][i].plot( dist_space_Nein, kde_Szpan(dist_space_Nein), color='r', label='Szpan' )
+    axs[1][i].plot( dist_space_Szpan, kde_Nein(dist_space_Szpan), color='g', label='Nein' )
+
+    axs[0][i].legend()
 
     for k in [0, 1]:
       axs[k][i].set_xlabel('Rates')
@@ -309,5 +380,4 @@ def redundancy_histograms(random_markov=False):
 
 if __name__ == "__main__":
   print("Printing histograms:")
-  redundancy_histograms()
   redundancy_histograms(random_markov=True)
