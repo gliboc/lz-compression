@@ -46,7 +46,7 @@ def stationary_distribution(M):
    p = np.array(U[:, np.where(np.abs(S - 1.) < 1e-8)[0][0]].flat)
    p = p / np.sum(p)
 
-   if debug:
+   if 0:
      print("p times M", np.dot( p, M ))
      print("p", p)
 
@@ -70,8 +70,8 @@ def entropy(M, p=None):
    h = 0
    n = len(M)
 
-   for i in range(n):
-     for j in range(n):
+   for i in xrange(n):
+     for j in xrange(n):
 
        h += p[i] * M[i, j] * log( M[i, j] )
 
@@ -102,26 +102,46 @@ def h_2(M, p=None, h=None):
     t2 = 0
     t3 = 0
 
-    for i in range(n):
-        for j in range(n):
+    for i in xrange(n):
+        for j in xrange(n):
 
             t1 += p[i] * M[i, j] * (log ( M[i, j] )) ** 2
 
-    for i in range(n):
-        for j in range(n):
+    for i in xrange(n):
+        for j in xrange(n):
 
-            t2 += log ( p[i] * M[i, j] ) * p[i] * M[i, j]
+            t2 += log( p[i] ) * log( M[i, j] ) * p[i] * M[i, j]
 
     t2 *= 2
 
-    for i in range(n):
-        for j in range(n):
+    for i in xrange(n):
+        for j in xrange(n):
 
             t3 += p[i] * log( p[i] )
 
     t3 *= 2 * h
 
+    print("h2's terms are %f, %f, %f" % (t1, t2, t3))
     return t1 + t2 + t3
+
+
+def test_h2():
+    print("Testing the h2 function.")
+
+    print("On first order Markov chains:")
+
+    for _ in xrange(10):
+
+        M = markov_chain(2)
+        print(M)
+        print("Has entropy %f" % entropy(M))
+        print("Has stationary distribution:")
+        p = (stationary_distribution(M))
+        print(p)
+        print("The stationary distribution entropy is:")
+        print(sum([-x * log(x) for x in p]))
+        print("Its h2 is:")
+        raw_input(h_2(M))
 
 
 def Hi(M, i):
@@ -187,10 +207,10 @@ def test_neininger():
 
 def test_entropy():
 
-   Ms = [markov_chain(i) for i in range(2, 10)]
+   Ms = [markov_chain(i) for i in xrange(2, 10)]
    ents = [entropy(M) for M in Ms]
 
-   for i in range(len(Ms)):
+   for i in xrange(len(Ms)):
      print("The Markov chain:")
      raw_input(Ms[i])
      print("Its entropy:")
@@ -227,7 +247,7 @@ def markov_source(M, f, n):
   current_state = 0
   word = []
 
-  for _ in range(n):
+  for _ in xrange(n):
 
     transition_proba = np.random.rand(1)
 
@@ -296,6 +316,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 from scipy.stats.kde import gaussian_kde
 from numpy import linspace
+from math import sqrt
 
 
 def redundancy_histograms(random_markov=False):
@@ -304,7 +325,6 @@ def redundancy_histograms(random_markov=False):
   """
   i = 100
   length_values = [4*i, 10*i, 20*i]
-  n_exp = 1000
 
   if not random_markov:
     p_a = 0.9
@@ -325,24 +345,29 @@ def redundancy_histograms(random_markov=False):
     raw_input(f)
     print("Its entropy is:")
     raw_input(h)
+    print("Its h2 is:")
+    raw_input(h_2(M))
+    print("h2-h^2 is:")
+    raw_input(h_2(M)-h**2)
 
   rates = []
   figs, axs = plt.subplots(2, len(length_values), tight_layout=True)
 
   for i, n in enumerate(length_values):
-    n_exp = n # USE A MORE POWERFUL PC
+    n_exp = n * 10  # USE A MORE POWERFUL PC
     print("Simulation with words of size", n)
     print("Doing %d experiments" % n_exp)
 
     word_gen = word_generator(M, f, n)
 
-    var_coeff_Nein = sigma(M)
-    var_coeff_Szpan = h_2(M) - (entropy(M)**2)
+    var_coeff_Nein = sqrt (sigma(M) * n)
+    var_coeff_Szpan = sqrt ( -(h_2(M) - (h**2)) * h**3 * n )
 
-    l = [word_gen() for _ in range(n_exp)]
+
+    l = [word_gen() for _ in xrange(n_exp)]
     c = [compress(w) for w in l]
-    r_Nein = [(len(x) / n - h) / (n * var_coeff_Nein)  for x in c]
-    r_Szpan = [(len(x) / n - h) / (n * var_coeff_Szpan) for x in c]
+    r_Nein = [(len(x) / n - h) / var_coeff_Nein  for x in c]
+    r_Szpan = [(len(x) / n - h) / var_coeff_Szpan for x in c]
 
     if 0:
       print("These are some word examples:")
@@ -360,8 +385,9 @@ def redundancy_histograms(random_markov=False):
     dist_space_Nein = linspace( min(r_Szpan), max(r_Szpan), 100 )
     dist_space_Szpan = linspace( min(r_Nein), max(r_Nein), 100 )
 
-    axs[0][i].hist(r_Nein, bins=50, color='r', label='Nein', title='n_exp='+str(n_exp))
-    axs[1][i].hist(r_Szpan, bins=50, color='g', label='Szpan')
+    bins = 20
+    axs[0][i].hist(r_Nein, bins=30, color='r', label='Nein')
+    axs[1][i].hist(r_Szpan, bins=30, color='g', label='Szpan')
 
     #axs[1][i].plot( dist_space_Nein, kde_Szpan(dist_space_Nein), color='r', label='Szpan' )
     #axs[1][i].plot( dist_space_Szpan, kde_Nein(dist_space_Szpan), color='g', label='Nein' )
