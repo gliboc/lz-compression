@@ -1,4 +1,3 @@
-from __future__ import division
 import numpy as np # learn more: https://python.org/pypi/np
 from math import log
 import scipy
@@ -161,13 +160,13 @@ def sigma(M):
 
 def test_neininger():
 
-    Ms = [markov_chain(2) for _ in xrange(100)]
+    Ms = [markov_chain(2) for _ in range(100)]
     neins = [sigma(M) for M in Ms]
     ours = [(h_2(M) - entropy(M) ** 2) * entropy(M) ** 3 for M in Ms]
 
     cell_text = []
 
-    for i in xrange(len(Ms)):
+    for i in range(len(Ms)):
         cell_text.append(['%1.5f' % x for x in [neins[i], ours[i]]])
 
     columns = ['Neiningers H^3 * sigma^2', 'h2 - h^2']
@@ -192,9 +191,9 @@ def test_entropy():
 
    for i in range(len(Ms)):
      print("The Markov chain:")
-     raw_input(Ms[i])
+     input(Ms[i])
      print("Its entropy:")
-     raw_input(ents[i])
+     input(ents[i])
 
 
 def psi(n):
@@ -210,7 +209,6 @@ def psi(n):
     return np.ones(n)
 
 
-import cmath
 
 def markov_source(M, f, n):
   """Outputs a word of size n from a Markov source (M, f)
@@ -293,7 +291,7 @@ def compress(word):
 
 
 import matplotlib.pyplot as plt
-from matplotlib import colors
+import seaborn
 from scipy.stats.kde import gaussian_kde
 from numpy import linspace
 
@@ -319,14 +317,13 @@ def redundancy_histograms(random_markov=False):
     h = entropy(M)
     #f = state_fun(N)
     f = [0, 1]
-    raw_input("Using a random Markov chain of size" + str(N))
-    raw_input(M)
+    input("Using a random Markov chain of size" + str(N))
+    input(M)
     print("Its state function f is:")
-    raw_input(f)
+    input(f)
     print("Its entropy is:")
-    raw_input(h)
+    input(h)
 
-  rates = []
   figs, axs = plt.subplots(2, len(length_values), tight_layout=True)
 
   for i, n in enumerate(length_values):
@@ -346,13 +343,14 @@ def redundancy_histograms(random_markov=False):
 
     if 0:
       print("These are some word examples:")
-      _ = raw_input(l[:10])
+      _ = input(l[:10])
 
       print("And their codes:")
-      _ = raw_input(c[:10])
+      _ = input(c[:10])
 
       print("And their rates:")
-      _ = raw_input(r[:10])
+      _ = input(r_Szpan[:10])
+      _ = input(r_Nein[:10])
 
     kde_Szpan = gaussian_kde( r_Szpan )
     kde_Nein = gaussian_kde( r_Nein )
