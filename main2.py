@@ -2,6 +2,7 @@ import numpy as np # learn more: https://python.org/pypi/np
 from math import log
 import scipy
 from scipy.stats import norm
+import sys
 
 debug = True
 
@@ -336,21 +337,38 @@ np.random.seed(sum(map(ord, "distributions")))
 
 
 
-def redundancy_histograms(random_markov=False):
-    """Makes a simulation of the redundancy distribution for different word length values,
-    and prints the corresponding histograms.
+def simulation(random_markov=False, filesave="experiment_data.npy", length_values=None, n_exp=None):
+    """Makes a simulation of the redundancy distribution for different word length values.
     """
-    style_mode = False
-    fast_mode = input("Do you want fast mode activated? Y/n/s (default = true, s = style_mode)")
-    if fast_mode == 'n':
-      fast_mode = False
-    elif fast_mode == 's':
-      style_mode = True
-    else:
-      fast_mode = True
-
     i = 1000
-    length_values = [10*i, 50*i, 100*i]
+    if length_values is None:
+        length_values = [10*i, 50*i, 100*i]
+    
+        style_mode = False
+
+        fast_mode = input("Do you want fast mode activated? Y/n/s (default = true, s = style_mode)")
+        
+        if fast_mode == 'n':
+          fast_mode = False
+        
+        elif fast_mode == 's':
+            style_mode = True
+            length_values = [500, 1000, 2000]
+            n_exp = 100
+        
+        else:
+            fast_mode = True
+            print("\nChoose words lengths:\n")
+            length_values = [int(input(str(i) + ": ")) for i in range(3)]
+            n_exp = int(input("Number of experiments"))
+
+    else:
+        if n_exp is None:
+            n_exp = int(input("Specifiy number of experiments"))
+
+        fast_mode = True
+        style_mode = False
+
 
     if not random_markov:
         p_a = 0.9
@@ -362,6 +380,7 @@ def redundancy_histograms(random_markov=False):
         N = 2
         M = markov_chain(N)
         h = entropy(M)
+
         f = [0, 1]
 
     if not fast_mode:
@@ -376,30 +395,25 @@ def redundancy_histograms(random_markov=False):
         print("\nh2-h^2 is:")
         input(h_2(M)-h**2)
 
-    exps = [dict() for _ in range(3)]
+    exps = [dict() for _ in range(len(length_values))]
 
 
-    for i, n_word in enumerate(length_values):
+    for i, n in enumerate(length_values):
         exp = exps[i]
 
-        if fast_mode:
-            n = n_word
-            n_exp = 200
+        exp['h'] = h
+        exp['M'] = M
 
-        elif style_mode:
-            n = int(n_word / 100)
-            n_exp = 100
-
-        else:
+        if not (fast_mode or style_mode):
             try:
-                n = int(input("\nChoose size of words to test (default %d)" % n_word))
+                n = int(input("\nChoose size of words to test (default %d)" % n))
             except:
-                n = n_word
+                n = n
 
             try:
-                n_exp = int(input("\nHow many experiments do I run? (default %d)" % 200))
+                n = int(input("\nHow many experiments do I run? (default %d)" % 200))
             except:
-                n_exp = 200
+                n = 200
 
         print("\nNow testing words of size %d, doing %d experiments" % (n, n_exp))
         exp['n_exp'] = n_exp
@@ -414,9 +428,30 @@ def redundancy_histograms(random_markov=False):
         m = [len(x) for x in c]
         exp['data'] = m
 
+    input("\nNow savings experiments to " + filesave)
+    np.save(filesave, exps)
+
+    return exps, fast_mode
 
 
+def data_analysis(exps=None, random_markov=True, datafile=None, filesave="experiment_data.npy", length_values=None, n_exp=None, fast_mode=False):
 
+    if exps is None:
+        if datafile is None:
+            exps, fast_mode = simulation(random_markov=random_markov, filesave=filesave, 
+                length_values=length_values, n_exp=n_exp)
+
+        else:
+            fast_mode = False
+            exps = np.load(datafile)
+
+    for exp in exps:
+        n = exp['n_word']
+        n_exp = exp['n_exp']
+        h = exp['h']
+        M = exp['M']
+
+        print("\n ===== This experiment has %d samples of words of size %d =====" % (n_exp, n))
 
         # Theoretical mean
         mean = h * n / log(n,2)
@@ -435,15 +470,15 @@ def redundancy_histograms(random_markov=False):
             input("\nComputed std_szpan and std_nein are: {}, {}".format(std_nein, std_szpan))
 
         # Normalized values from Nein and Szpan papers
-        d_Nein = [(m_n - mean) / std_nein  for m_n in m]
-        d_Szpan = [(m_n - mean) / std_szpan for m_n in m]
+        d_Nein = [(m_n - mean) / std_nein  for m_n in exp['data']]
+        d_Szpan = [(m_n - mean) / std_szpan for m_n in exp['data']]
         exp['d_nein'] = d_Nein
         exp['d_szpan'] = d_Szpan
 
 
         # Empirical variance and mean
         # Samples corresponding to normal distribution p
-        mu, std = norm.fit(m)
+        mu, std = norm.fit(exp['data'])
         exp['mu'] = mu
         exp['std'] = std
 
@@ -452,8 +487,10 @@ def redundancy_histograms(random_markov=False):
 
         # Empirical variance, theoretical mean
         # also theoretical mean and theoretical variance
-        xmins = [(min(m)-me)/v for me in [mu, mean] for v in [std, std_nein, std_szpan]]
-        xmaxs = [(max(m)-me)/v for me in [mu, mean] for v in [std, std_nein, std_szpan]]
+        mi = min(exp['data'])
+        ma = max(exp['data'])
+        xmins = [(mi-me)/v for me in [mu, mean] for v in [std, std_nein, std_szpan]]
+        xmaxs = [(ma-me)/v for me in [mu, mean] for v in [std, std_nein, std_szpan]]
 
         # 0 = empirical mean and variance
         # 1 = mu and std_nein
@@ -469,76 +506,200 @@ def redundancy_histograms(random_markov=False):
             exp['p' + str(i)] = p
 
 
+    if datafile is not None:
+        input("\nNow savings data analysis to " + datafile)
+        np.save(datafile, exps)
+
+    return exps
+
+
+def print_histograms(random_markov=True, datafile=None, fast_mode=True):
+    """Prints the histograms corresponding to datasets of words generated by a 
+    Markov source."""
     # Plotting raw M_n values
-    figs, axs = plt.subplots(1, len(length_values), tight_layout=True)
-    figs.suptitle('M_n values histogram')
+    exps = data_analysis(random_markov=random_markov, datafile=datafile, fast_mode=fast_mode)
+
+    figs_raw, axs = plt.subplots(1, len(exps))
 
     for i in [0, 1, 2]:
-        sns.distplot(exps[i]['data'], ax=axs[i], rug=True, kde=False)
-        axs[i].set_title('n_word = ' + str(exps[i]['n_word']) + ', n_exp = ' + str(exps[i]['n_exp']))
+        sns.distplot(exps[i]['data'], ax=axs[i], rug=True, kde=False, bins='auto')
+        axs[i].set_title('$n_{word} = ' + str(exps[i]['n_word']) + ', n_{exp} = ' + str(exps[i]['n_exp'])+'$')
         axs[i].set_xlabel('M_n') ; axs[i].set_ylabel('Counts')
 
     # k = 0 is empirical mean and variance
     # k = 1 is theoretical mean and empirical variance
-    figs_mean_std, axs_mean_std = plt.subplots(1, len(length_values), tight_layout=True)
-    figs_mean_std.suptitle('M_n distribution normalized with theoretical mean and empirical variance')
-    figs_normalized, axs_normalized = plt.subplots(1, len(length_values), tight_layout=True)
-    figs_normalized.suptitle('Normalized M_n using empirical mean and variance')
+    figs_mean_std, axs_mean_std = plt.subplots(1, len(exps))
+    figs_normalized, axs_normalized = plt.subplots(1, len(exps))
 
-    axes1 = [axs_mean_std, axs_normalized]
+    axs = [axs_normalized, axs_mean_std]
     means = ['mu', 'mean']
 
     for k in [0,1]:
-        ax = axes1[k]
+        ax = axs[k]
         mean = means[k]
 
         for i in [0, 1, 2]:
             sns.distplot((exps[i]['data']-exps[i][mean])/exps[i]['std'], ax=ax[i], rug=True)
-            ax[i].set_title('n_word = ' + str(exps[i]['n_word']) + ', n_exp = ' + str(exps[i]['n_exp']))
-            ax[i].set_xlabel('$(M_n -' + mean +' / \sigma$')
+            ax[i].set_title('$n_{word} = ' + str(exps[i]['n_word']) + ', n_{exp} = ' + str(exps[i]['n_exp']) + '$')
+            ax[i].set_xlabel('$(M_n -' + mean +') / \sigma$')
             ax[i].set_ylabel('Frequency')
 
             ax[i].plot(exps[i]['x'+str(k*3)], exps[i]['p'+str(k*3)], color='red')
 
     # k=0 is plotting distributions centered with empirical mean (mu and nein/szpan)
     # k=1 is plotting distributions norm with theoretical mean and variances (mu and nein/szpan)
-    figs1, axs1 = plt.subplots(2, len(length_values), tight_layout=True)
-    figs1.suptitle('M_n distribution normalized with empirical mean and theoretical variances')
-    figs2, axs2 = plt.subplots(2, len(length_values), tight_layout=True)
-    figs2.suptitle('M_n distribution norm with theoretical mean and variances')
+    figs1, axs1 = plt.subplots(1, len(exps))
+    figs2, axs2 = plt.subplots(1, len(exps))
+    figs4, axs4 = plt.subplots(1, len(exps))
+    figs5, axs5 = plt.subplots(1, len(exps))
 
-    axes = [axs1, axs2]
-    means = ['mu', 'mean']
+    figs = [figs1, figs2, figs4, figs5]
+    axes = [axs1, axs2, axs4, axs5]
+    means = ['mu', 'mu', 'mean', 'mean']
+    stds = ['std_nein', 'std_szpan'] * 2
 
-    for k in [0,1]:
+    for k in [0 ,1 , 2, 3]:
 
         ax = axes[k]
         mean = means[k]
+        std = stds[k]
 
         # three subplots
         for i in [0, 1, 2]:
 
-            for (l, std) in enumerate(['std_nein', 'std_szpan']):
+            sns.distplot((exps[i]['data']-exps[i][mean])/exps[i][std] , ax=ax[i], rug=True)
+            ax[i].set_title('$n_{word} = ' + str(exps[i]['n_word']) + ', n_{exp} = ' + str(exps[i]['n_exp']) + '$')
+            ax[i].set_xlabel('$(M_n-'+ mean +') / '+std+'$')
+            ax[i].set_ylabel('Frequency')
 
-                sns.distplot((exps[i]['data']-exps[i][mean])/exps[i][std] , ax=ax[l][i], rug=True)
-                ax[l][i].set_title('n_word = ' + str(exps[i]['n_word']) + ', n_exp = ' + str(exps[i]['n_exp']))
-                ax[l][i].set_xlabel('$(M_n-'+ mean +') / '+std+'$')
-                ax[l][i].set_ylabel('Frequency')
+            s=0
+            if k>= 2:
+                s=1
+            ax[i].plot(exps[i]['x'+str(k+1+s)], exps[i]['p'+str(k+1+s)], color='red')
 
-                if k == 1:
-                    k+=1
-                ax[l][i].plot(exps[i]['x'+str(k+l+1)], exps[i]['p'+str(k+l+1)], color='red')
+    
+    
+    figs_raw.suptitle('Histogram of the values of M_n')
+    figs_mean_std.suptitle('M_n distribution normalized with theoretical mean and empirical variance')
+    figs_normalized.suptitle('M_n distribution normalized using empirical mean and variance')
+    
+    i = 0
+    for n1 in ['empirical', 'theoretical']:
+        for n2 in ['Neininger', 'Szpankowski']:
+            figs[i].suptitle('M_n distribution normalized with {} mean and {} variance.'.format(n1,n2))
+            i += 1
 
+    top=0.92
+    bottom = 0.07
+    left=0.08
+    right=0.98
+    hspace=0.28
+    wspace=0.25
 
-    top=0.7
-    figs1.subplots_adjust(top=top)
-    figs_normalized.subplots_adjust(top=top)
-    figs2.subplots_adjust(top=top)
-    figs_mean_std.subplots_adjust(top=top)
+    for f in figs:
+        f.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
+
+    figs_normalized.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
+    figs_mean_std.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
+    figs_raw.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
+
     print("Done")
     plt.show()
 
 
 
+def analysing_theoretical_mean(filesave=None, datafile=None):
+    """Computes graphs of theoretical means versus empirical ones.
+    The goal is to identify a \log n tendency"""
+
+    n_exp = 500
+    N = 2
+    M = markov_chain(N)
+    h = entropy(M)
+    f = [0, 1]
+
+    ns = list(range(100, 20000, 200))
+    
+    if datafile is None:
+        exps, _ = data_analysis(filesave=filesave, length_values = ns, n_exp=500)
+
+    else:
+        exps = np.load(datafile)
+
+    try:
+        mu = exps[0]['mu']
+    except:
+        print("Analysing the experiments")
+        fast_mode = False if input("Do you want to see the values? y/N (defaut is false)") == 'Y' else True
+        exps = data_analysis(exps=exps, datafile=datafile, fast_mode=fast_mode)
+
+    mus = [exp['mu'] for exp in exps]
+    means = [exp['mean'] for exp in exps]
+    diff = [mus[i]-means[i] for i in range(len(mus))]
+    inv_diff = [1/d for d in diff]
+    n_log2 = [n / log(n, 2)**2 for n in ns]
+    n_log = [n / log(n, 2) for n in ns]
+    n_log32 = [n / log(n, 2)**(1.34) for n in ns]
+    logs = [log(n,2) for n in ns]
+    div = [mus[i]/means[i] for i in range(len(mus))]
+    inv = [1/n for n in ns]
+    inv_logs = [1/x for x in logs]
+    asympt = [diff[i] * sqrt(ns[i]) / log(ns[i], 2) for i in range(len(ns))]
+
+    figs, axs = plt.subplots(1, 3, tight_layout=True)
+    
+    axs[0].plot(ns, mus, color="orange", label="$E_{emp}$")
+    axs[0].plot(ns, means, color="green", label="$E_{theo}$", linestyle="-")
+    axs[0].set_ylabel("Expectancy")
+    axs[0].set_title("Empirical and theoretical means for growing n")
+
+    axs[1].plot(ns, diff, color="black", label="$\Delta E$", linestyle="-") 
+    axs[1].plot(ns, n_log2, color="green", label=r'$\frac{n}{\log_2^2 n}$') 
+    axs[1].plot(ns, n_log32, color="orange", label=r'$\frac{n}{\log_2^{1.34} n}$') 
+    axs[1].plot(ns, n_log, color="red", label=r'$\frac{n}{\log_2 n}$') 
+    axs[1].set_title("Difference $\Delta E = E_{emp}-E_{theo}$")
+
+    # axs[2].plot(ns, div, color='blue', label="$(\Delta E)^{-1}$", linestyle="-")
+    # axs[2].plot(ns, logs, color="green", label="$\log_2 n$") 
+    # axs[2].plot(ns, inv_logs, color="red", label=r'$\frac{1}{\log_2 n}$') 
+    # axs[2].set_title("Division $\mu/mean$")
+
+    axs[2].plot(ns, div, color='blue', label=r'$\frac{\sqrt{n}(E_{emp}-E_{theo})}{\log_2 n}$', linestyle="-")
+    axs[2].set_title(r'Verifying $\frac{\sqrt{n}(\mu-mean)}{\log_2 n} = o(1)$')
+
+    # axs[2].plot(ns, inv_diff, color='blue', label="$(\Delta E)^{-1}", linestyle="-")
+    # axs[2].set_title("Inverse of $\Delta E$ with logarithmic n")
+    # axs[2].set_xscale('log')
+
+    for ax in axs:
+            ax.set_xlabel("n")
+            ax.legend()
+
+    plt.show()
+
+
+
 if __name__ == "__main__":
-  redundancy_histograms(random_markov=True)
+    if len(sys.argv) > 1:
+
+        if sys.argv[1] == '-s':
+            simulation(random_markov=True, filesave = sys.argv[2])
+
+        elif sys.argv[1] == '-m':
+            
+            if len(sys.argv) > 3:
+
+                if sys.argv[2] == '--file':
+                    analysing_theoretical_mean(datafile=sys.argv[3])
+
+                elif sys.argv[2] == '--save':
+                    analysing_theoretical_mean(filesave=sys.argv[3])
+            
+            else:
+                analysing_theoretical_mean()
+
+        else:
+            print_histograms(random_markov=True, datafile = sys.argv[1])
+    
+    else:
+        print_histograms(random_markov=True)
