@@ -618,9 +618,10 @@ def print_histograms(random_markov=True, datafile=None, fast_mode=True):
 
 
 
-def analysing_theoretical_mean(filesave=None, datafile=None):
-    """Computes graphs of theoretical means versus empirical ones.
-    The goal is to identify a \log n tendency"""
+def data_loading(filesave=None, datafile=None):
+    """Loads experiments by either simulating them or loading them from memory.
+    Analyses experiments that previously weren't
+    """
 
     n_exp = 500
     N = 2
@@ -643,6 +644,36 @@ def analysing_theoretical_mean(filesave=None, datafile=None):
         fast_mode = False if input("Do you want to see the values? y/N (defaut is false)") == 'Y' else True
         exps = data_analysis(exps=exps, datafile=datafile, fast_mode=fast_mode)
 
+    return exps, ns
+
+def analysing_theoretical_std(filesave=None, datafile=None):
+    """Computes graphs of theoretical standard deviation versus empirical ones.
+    """
+    exps, ns = data_loading(filesave=filesave, datafile=datafile)
+
+    stds = [exp['std'] for exp in exps]
+    variances = [exp['std'] ** 2 for exp in exps]
+    neins = [exp['std_nein'] for exp in exps]
+    diff = [stds[i]-neins[i] for i in range(len(stds))]
+
+    figs, axs = plt.subplots(1, 2, tight_layout=True)
+
+    axs[0].plot(ns, stds, label="$\sigma$")
+    axs[0].plot(ns, neins, label=r'$\sigma_{Neininger}$')
+    axs[0].set_title(r'Empirical standard deviation ($\sigma$) and theoretical ($\sigma_{Neininger}$)')
+
+    axs[1].plot(ns, diff, label=r'$\Delta \sigma = \sigma - \sigma_{Neininger}$')
+    axs[1].set_title('Difference between standard deviations')
+
+    for ax in axs:
+        ax.set_xlabel("Word length n")
+        ax.legend()
+
+def analysing_theoretical_mean(filesave=None, datafile=None):
+    """Computes graphs of theoretical means versus empirical ones.
+    The goal is to identify a \log n tendency"""
+    exps, ns = data_loading(filesave=filesave, datafile=datafile)
+
     mus = [exp['mu'] for exp in exps]
     means = [exp['mean'] for exp in exps]
     diff = [mus[i]-means[i] for i in range(len(mus))]
@@ -654,62 +685,78 @@ def analysing_theoretical_mean(filesave=None, datafile=None):
     div = [mus[i]/means[i] for i in range(len(mus))]
     inv = [1/n for n in ns]
     inv_logs = [1/x for x in logs]
+    es = [0.01*i for i in range(2,8)]
+    different_logs = [[n / log(n, 2) ** (1.30+e) for n in ns] for e in es]
     asympt = [diff[i] * sqrt(ns[i]) / log(ns[i], 2) for i in range(len(ns))]
 
     figs, axs = plt.subplots(1, 3, tight_layout=True)
 
-    axs[0].plot(ns, mus, color="orange", label="$E_{emp}$")
-    axs[0].plot(ns, means, color="green", label="$E_{theo}$", linestyle="-")
-    axs[0].set_ylabel("Expectancy")
-    axs[0].set_title("Empirical and theoretical means for growing n")
+    axs[0].plot(ns, mus, color="orange", label="$\mu$")
+    axs[0].plot(ns, means, color="green", label=r'$E_{th} = \frac{nh}{\log_2(n)}$', linestyle="-")
+    axs[0].set_title("Empirical ($\mu$) and theoretical mean ($E_{th}$) plots")
+
+    axs[1].plot(ns, n_log2, color="green", label=r'$\frac{n}{\log_2^2 n}$')
+
+    for (i,e) in enumerate(es):
+        axs[1].plot(ns, different_logs[i], label=r'$\frac{n}{(\log_2(n))^{' + str(1.30+e) + '}}$')
 
     axs[1].plot(ns, diff, color="black", label="$\Delta E$", linestyle="-")
-    axs[1].plot(ns, n_log2, color="green", label=r'$\frac{n}{\log_2^2 n}$')
-    axs[1].plot(ns, n_log32, color="orange", label=r'$\frac{n}{\log_2^{1.34} n}$')
+
     axs[1].plot(ns, n_log, color="red", label=r'$\frac{n}{\log_2 n}$')
-    axs[1].set_title("Difference $\Delta E = E_{emp}-E_{theo}$")
+    axs[1].set_title("Difference $\Delta E = \mu-E_{th}, and approximations$")
 
     # axs[2].plot(ns, div, color='blue', label="$(\Delta E)^{-1}$", linestyle="-")
     # axs[2].plot(ns, logs, color="green", label="$\log_2 n$")
     # axs[2].plot(ns, inv_logs, color="red", label=r'$\frac{1}{\log_2 n}$')
     # axs[2].set_title("Division $\mu/mean$")
 
-    axs[2].plot(ns, div, color='blue', label=r'$\frac{\sqrt{n}(E_{emp}-E_{theo})}{\log_2 n}$', linestyle="-")
-    axs[2].set_title(r'Verifying $\frac{\sqrt{n}(\mu-mean)}{\log_2 n} = o(1)$')
+    axs[2].plot(ns, div, color='blue', label=r'$\frac{\sqrt{n}(\mu-E_{th})}{\log_2 n}$', linestyle="-")
+    axs[2].set_title(r'Verifying $\frac{\sqrt{n}(\mu-E_{th})}{\log_2 n} = o(1)$')
 
     # axs[2].plot(ns, inv_diff, color='blue', label="$(\Delta E)^{-1}", linestyle="-")
     # axs[2].set_title("Inverse of $\Delta E$ with logarithmic n")
     # axs[2].set_xscale('log')
 
+    axs[0].set_ylabel("Different computations for number of phrases expectancy E(M_n)")
     for ax in axs:
-            ax.set_xlabel("n")
+            ax.set_xlabel("Word length n")
             ax.legend()
 
     plt.show()
 
 
+def files_choice(arg, name):
+    """Return None, None if arguments weren't provided at program launch"""
+    try:
+        if arg == '--file':
+            return name, None
+        elif arg == '--save':
+            return None, name
+        else:
+            return None, None
+    except:
+        return None, None
+
 
 if __name__ == "__main__":
+
+    datafile, filesave = files_choice(sys.argv[2], sys.argv[3])
+
     if len(sys.argv) > 1:
 
         if sys.argv[1] == '-s':
             simulation(random_markov=True, filesave = sys.argv[2])
 
-        elif sys.argv[1] == '-m':
+        if 'm' in sys.argv[1]:
+            analysing_theoretical_mean(datafile=datafile, filesave=filesave)
 
-            if len(sys.argv) > 3:
-
-                if sys.argv[2] == '--file':
-                    analysing_theoretical_mean(datafile=sys.argv[3])
-
-                elif sys.argv[2] == '--save':
-                    analysing_theoretical_mean(filesave=sys.argv[3])
-
-            else:
-                analysing_theoretical_mean()
+        if 'v' in sys.argv[1]:
+            analysing_theoretical_std(datafile=datafile, filesave=filesave)
 
         else:
             print_histograms(random_markov=True, datafile = sys.argv[1])
+
+        plt.show()
 
     else:
         print_histograms(random_markov=True)
