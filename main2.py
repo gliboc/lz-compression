@@ -646,7 +646,7 @@ def data_loading(filesave=None, datafile=None):
 
     return exps, ns
 
-def analysing_theoretical_std(filesave=None, datafile=None):
+def analysing_theoretical_std(filesave=None, datafile=None, save=None, save_name=None):
     """Computes graphs of theoretical standard deviation versus empirical ones.
     """
     exps, ns = data_loading(filesave=filesave, datafile=datafile)
@@ -669,7 +669,11 @@ def analysing_theoretical_std(filesave=None, datafile=None):
         ax.set_xlabel("Word length n")
         ax.legend()
 
-def analysing_theoretical_mean(filesave=None, datafile=None):
+    if save:
+        print("Saving figure as " + save_name)
+        plt.savefig(save_name, dpi='figure')
+
+def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_name=None):
     """Computes graphs of theoretical means versus empirical ones.
     The goal is to identify a \log n tendency"""
     exps, ns = data_loading(filesave=filesave, datafile=datafile)
@@ -703,7 +707,7 @@ def analysing_theoretical_mean(filesave=None, datafile=None):
     axs[1].plot(ns, diff, color="black", label="$\Delta E$", linestyle="-")
 
     axs[1].plot(ns, n_log, color="red", label=r'$\frac{n}{\log_2 n}$')
-    axs[1].set_title("Difference $\Delta E = \mu-E_{th}, and approximations$")
+    axs[1].set_title("Difference $\Delta E = \mu-E_{th}$, and approximations")
 
     # axs[2].plot(ns, div, color='blue', label="$(\Delta E)^{-1}$", linestyle="-")
     # axs[2].plot(ns, logs, color="green", label="$\log_2 n$")
@@ -722,7 +726,9 @@ def analysing_theoretical_mean(filesave=None, datafile=None):
             ax.set_xlabel("Word length n")
             ax.legend()
 
-    plt.show()
+    if save:
+        print("Saving figure as " + save_name)
+        plt.savefig(save_name, dpi='figure')
 
 
 def files_choice(arg, name):
@@ -743,15 +749,26 @@ if __name__ == "__main__":
     datafile, filesave = files_choice(sys.argv[2], sys.argv[3])
 
     if len(sys.argv) > 1:
+        save = bool(input("Do you want to save the generated figures ? y/N"))
 
         if sys.argv[1] == '-s':
             simulation(random_markov=True, filesave = sys.argv[2])
 
         if 'm' in sys.argv[1]:
-            analysing_theoretical_mean(datafile=datafile, filesave=filesave)
+            save_name = None
+            if save:
+                save_name = input("What prefix for mean analysis figures ?")
+
+            analysing_theoretical_mean(datafile=datafile, filesave=filesave, save=save,
+                    save_name=save_name)
 
         if 'v' in sys.argv[1]:
-            analysing_theoretical_std(datafile=datafile, filesave=filesave)
+            save_name = None
+            if save:
+                save_name = input("What prefix for std analysis figures ?")
+
+            analysing_theoretical_std(datafile=datafile, filesave=filesave, save=save,
+                    save_name=save_name)
 
         else:
             print_histograms(random_markov=True, datafile = sys.argv[1])
