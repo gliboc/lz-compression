@@ -1,82 +1,41 @@
+
 import numpy as np # learn more: https://python.org/pypi/np
 from math import log
-import scipy
 from scipy.stats import norm
+#from scipy.stats import normaltest
 import sys
+from std import stationary_distribution, var, entropy
+
 
 debug = True
 
-def markov_chain(n):
-  """Generate a random markov chain with n states.
 
-  Args:
+def markov_chain(n):
+    """Generate a random markov chain with n states.
+
+    Args:
     n (int): The number of states
 
-  Returns:
+    Returns:
     (n, n) int matrix: The markov chain
-  """
+    """
 
-  matrix = np.random.rand(n, n)
-  return matrix / matrix.sum(axis=1)[:, None]
+    matrix = np.random.rand(n, n)
+    return matrix / matrix.sum(axis=1)[:, None]
 
 
 def state_fun(n):
-  """Assigns a character (0 or 1) to each of n states.
+    """Assigns a character (0 or 1) to each of n states.
 
-  Args:
+    Args:
     n (int): The number of states
 
-  Returns:
+    Returns:
     digit list: The list of assignments. l[i] is the digit of state i.
-  """
+    """
 
-  return np.random.randint(0, 2, n)
+    return np.random.randint(0, 2, n)
 
-
-def stationary_distribution(M):
-   """Computes a stationary distribution for a given Markov chain M.
-
-   Args:
-     M (int matrix): The Markov chain.
-
-   Returns:
-     (float array): A stationary distribution of M.
-   """
-
-   S, U = scipy.linalg.eig( M.T )
-   p = np.array(U[:, np.where(np.abs(S - 1.) < 1e-8)[0][0]].flat)
-   p = p / np.sum(p)
-
-   if 0:
-     print("p times M", np.dot( p, M ))
-     print("p", p)
-
-   return p
-
-
-def entropy(M, p=None):
-   """Computes the entropy of a known Markov chain by computing a stationary distribution.
-
-   Args:
-     M (float matrix): The Markov chain.
-     [p] (float array): A previously computed stationary distribution.
-
-   Returns:
-     (float): The entropy of M.
-   """
-
-   if p is None:
-     p = stationary_distribution(M)
-
-   h = 0
-   n = len(M)
-
-   for i in range(n):
-     for j in range(n):
-
-       h += p[i] * M[i, j] * log( M[i, j], 2)
-
-   return (-h)
 
 
 def h_2(M, p=None, h=None):
@@ -156,8 +115,10 @@ def Hi(M, i):
 
     return r
 
+
 def H0(M):
     return Hi(M, 0)
+
 
 def H1(M):
     return Hi(M, 1)
@@ -174,6 +135,7 @@ def sigma_i(M, i):
 
     return r
 
+
 def sigma(M):
     """Computes H^3 * sigma^2, from Neininger's paper."""
 
@@ -181,7 +143,6 @@ def sigma(M):
 
 
 def test_neininger():
-
     Ms = [markov_chain(2) for _ in range(100)]
     neins = [sigma(M) for M in Ms]
     ours = [(h_2(M) - entropy(M) ** 2) * entropy(M) ** 3 for M in Ms]
@@ -207,11 +168,10 @@ def test_neininger():
 
 
 def test_entropy():
+    Ms = [markov_chain(i) for i in range(2, 10)]
+    ents = [entropy(M) for M in Ms]
 
-   Ms = [markov_chain(i) for i in range(2, 10)]
-   ents = [entropy(M) for M in Ms]
-
-   for i in range(len(Ms)):
+    for i in range(len(Ms)):
      print("The Markov chain:")
      input(Ms[i])
      print("Its entropy:")
@@ -230,6 +190,7 @@ def psi(n):
 
     return np.ones(n)
 
+
 def fast_word_generator(M,f,n,N):
     'Outputs N words of size n from M'
     probas = np.random.rand(N,n)
@@ -245,71 +206,72 @@ def fast_word_generator(M,f,n,N):
 
     return words
 
-def markov_source(M, f, n):
-  """Outputs a word of size n from a Markov source (M, f)
-  !! Now only works with chains of size 2 !!
 
-  Args:
+def markov_source(M, f, n):
+    """Outputs a word of size n from a Markov source (M, f)
+    !! Now only works with chains of size 2 !!
+
+    Args:
     M (int matrix): Markov chain.
     f (int row): State assignment function.
     n (int): Length of message.
 
-  Returns:
+    Returns:
     digit list: The generated message.
-  """
+    """
 
 
-  current_state = 0
-  word = []
-  probas = np.random.rand(n)
-  for i in range(n):
+    current_state = 0
+    word = []
+    probas = np.random.rand(n)
+    for i in range(n):
 
-    #next_state = 0
-    proba_stack = M[current_state, 0]
+        #next_state = 0
+        proba_stack = M[current_state, 0]
 
-    current_state = int(probas[i] > proba_stack)
-    #while probas[i] > proba_stack:
+        current_state = int(probas[i] > proba_stack)
+        #while probas[i] > proba_stack:
 
-    #  next_state += 1
-    #  proba_stack += M[current_state, next_state]
+        #  next_state += 1
+        #  proba_stack += M[current_state, next_state]
 
-    #current_state = next_state
-    word.append(f[current_state])
+        #current_state = next_state
+        word.append(f[current_state])
 
-  return word
+    return word
 
-
-# Some examples
-
-M = markov_chain(2)
-f = [0,1]
-w1 = markov_source(M, f, 5)
-w2 = markov_source(M, f, 10)
-w3 = markov_source(M, f, 20)
-w4 = markov_source(M, f, 30)
 
 def word_generator(M, f, n):
   return lambda : markov_source(M, f, n)
 
-word_10 = word_generator(M, f, 10)
+
+# Some examples
+if 0:
+    M = markov_chain(2)
+    f = [0,1]
+    w1 = markov_source(M, f, 5)
+    w2 = markov_source(M, f, 10)
+    w3 = markov_source(M, f, 20)
+    w4 = markov_source(M, f, 30)
+    word_10 = word_generator(M, f, 10)
 
 
 def compress(word):
-  """Compression of a word using LZ78.
+    """Compression of a word using LZ78.
 
-  Args:
+    Args:
     word (digit list): The word to compress.
 
-  Returns:
+    Returns:
     string list: The list of phrases used in LZ78.
-  """
+    """
 
-  s = set()
-  phrases = [""]
-  current_prefix = ""
+    s = set()
+    phrases = [""]
+    current_prefix = ""
 
-  for digit in word:
-    digit = str(digit)
+    for digit in word:
+        digit = str(digit)
 
     if current_prefix + digit in s:
       current_prefix += digit
@@ -319,11 +281,11 @@ def compress(word):
       phrases.append(current_prefix + digit)
       current_prefix = ""
 
-  if current_prefix != "":
+    if current_prefix != "":
     #print("The last phrase is incomplete:", current_prefix)
-    phrases.append(current_prefix)
+        phrases.append(current_prefix)
 
-  return phrases
+    return phrases
 
 
 import matplotlib.pyplot as plt
@@ -335,8 +297,6 @@ sns.set(color_codes=True)
 np.random.seed(sum(map(ord, "distributions")))
 
 
-
-
 def simulation(random_markov=False, filesave="experiment_data.npy", length_values=None, n_exp=None):
     """Makes a simulation of the redundancy distribution for different word length values.
     """
@@ -346,7 +306,7 @@ def simulation(random_markov=False, filesave="experiment_data.npy", length_value
 
         style_mode = False
 
-        fast_mode = input("Do you want fast mode activated? Y/n/s (default = true, s = style_mode)")
+        fast_mode = input("Do you want fast mode activated? Y/n/s (default = true, s = style_mode) ")
 
         if fast_mode == 'n':
           fast_mode = False
@@ -406,16 +366,16 @@ def simulation(random_markov=False, filesave="experiment_data.npy", length_value
 
         if not (fast_mode or style_mode):
             try:
-                n = int(input("\nChoose size of words to test (default %d)" % n))
+                n = int(input("\nChoose size of words to test (default %d) " % n))
             except:
                 n = n
 
             try:
-                n = int(input("\nHow many experiments do I run? (default %d)" % 200))
+                n = int(input("\nHow many experiments do I run? (default %d) " % 200))
             except:
                 n = 200
 
-        print("\nNow testing words of size %d, doing %d experiments" % (n, n_exp))
+        print("\nNow testing words of size %d, doing %d experiments " % (n, n_exp))
         exp['n_exp'] = n_exp
         exp['n_word'] = n
 
@@ -435,7 +395,6 @@ def simulation(random_markov=False, filesave="experiment_data.npy", length_value
 
 
 def data_analysis(exps=None, random_markov=True, datafile=None, filesave="experiment_data.npy", length_values=None, n_exp=None, fast_mode=False):
-
     if exps is None:
         if datafile is None:
             exps, fast_mode = simulation(random_markov=random_markov, filesave=filesave,
@@ -462,7 +421,8 @@ def data_analysis(exps=None, random_markov=True, datafile=None, filesave="experi
 
         # Theoretical variances
         std_nein = sqrt (sigma(M) * n) / log(n, 2)
-        std_szpan = sqrt ( -(h_2(M) - (h**2)) * h**3 * n )
+        #std_szpan = sqrt ( -(h_2(M) - (h**2)) * h**3 * n )
+        std_szpan = sqrt ( var(M) * log(n) )
         exp['std_nein'] = std_nein
         exp['std_szpan'] = std_szpan
 
@@ -513,121 +473,10 @@ def data_analysis(exps=None, random_markov=True, datafile=None, filesave="experi
     return exps
 
 
-def print_histograms(random_markov=True, datafile=None, fast_mode=True):
-    """Prints the histograms corresponding to datasets of words generated by a
-    Markov source."""
-    # Plotting raw M_n values
-    exps = data_analysis(random_markov=random_markov, datafile=datafile, fast_mode=fast_mode)
-
-    figs_raw, axs = plt.subplots(1, len(exps))
-
-    for i in [0, 1, 2]:
-        sns.distplot(exps[i]['data'], ax=axs[i], rug=True, kde=False, bins='auto')
-        axs[i].set_title('$n_{word} = ' + str(exps[i]['n_word']) + ', n_{exp} = ' + str(exps[i]['n_exp'])+'$')
-        axs[i].set_xlabel('M_n') ; axs[i].set_ylabel('Counts')
-
-    # k = 0 is empirical mean and variance
-    # k = 1 is theoretical mean and empirical variance
-    figs_mean_std, axs_mean_std = plt.subplots(1, len(exps))
-    figs_normalized, axs_normalized = plt.subplots(1, len(exps))
-
-    axs = [axs_normalized, axs_mean_std]
-    means = ['mu', 'mean']
-
-    for k in [0,1]:
-        ax = axs[k]
-        mean = means[k]
-
-        for i in [0, 1, 2]:
-            sns.distplot((exps[i]['data']-exps[i][mean])/exps[i]['std'], ax=ax[i], rug=True,
-                        label=r'Simulation $\frac{M_n -' + ("\mu" if mean == 'mu' else 'E_{theor}') +'}{\sigma}$')
-            ax[i].set_title('$n_{word} = ' + str(exps[i]['n_word']) + ', n_{exp} = ' + str(exps[i]['n_exp']) + '$')
-            ax[i].set_ylabel('Frequency')
-
-            ax[i].plot(exps[i]['x'+str(k*3)], exps[i]['p'+str(k*3)], color='red', label='$\mathcal{N}(0,1)$')
-
-    # k=0 is plotting distributions centered with empirical mean (mu and nein/szpan)
-    # k=1 is plotting distributions norm with theoretical mean and variances (mu and nein/szpan)
-    figs1, axs1 = plt.subplots(1, len(exps))
-    figs2, axs2 = plt.subplots(1, len(exps))
-    figs4, axs4 = plt.subplots(1, len(exps))
-    figs5, axs5 = plt.subplots(1, len(exps))
-
-    figs = [figs1, figs2, figs4, figs5]
-    axes = [axs1, axs2, axs4, axs5]
-    means = ['mu', 'mu', 'mean', 'mean']
-    stds = ['std_nein', 'std_szpan'] * 2
-
-    for k in [0 ,1 , 2, 3]:
-
-        ax = axes[k]
-        mean = means[k]
-        std = stds[k]
-
-        # three subplots
-        for i in [0, 1, 2]:
-
-            sns.distplot((exps[i]['data']-exps[i][mean])/exps[i][std] , ax=ax[i], rug=True)
-            ax[i].set_title('$n_{word} = ' + str(exps[i]['n_word']) + ', n_{exp} = ' + str(exps[i]['n_exp']) + '$')
-            ax[i].set_xlabel('$(M_n-'+ ('\mu' if mean=='mu' else 'E_{theor}') +') / '+std+'$')
-            ax[i].set_ylabel('Frequency')
-
-            s=0
-            if k>= 2:
-                s=1
-            ax[i].plot(exps[i]['x'+str(k+1+s)], exps[i]['p'+str(k+1+s)], color='red', label='$\mathcal{N}(0,1)$')
-
-
-
-    figs_raw.suptitle('Histogram of the values of M_n')
-    figs_mean_std.suptitle('$M_n$ distribution, normalized with theoretical mean and empirical variance')
-    figs_normalized.suptitle('$M_n$ distribution, normalized using empirical mean and variance')
-
-    i = 0
-    for n1 in ['empirical', 'theoretical']:
-        for n2 in ['Neininger', 'Szpankowski']:
-            figs[i].suptitle('$M_n$ distribution, normalized with {} mean and {} variance.'.format(n1,n2))
-            i += 1
-
-    top=0.90
-    bottom = 0.04
-    left=0.08
-    right=0.98
-    hspace=0.28
-    wspace=0.25
-
-    for ax in axs_normalized:
-        ax.legend()
-
-    for ax in axs_mean_std:
-        ax.legend()
-
-    for ax in axes:
-        for a in ax:
-            a.legend()
-
-    for f in figs:
-        f.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
-
-    figs_normalized.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
-    figs_mean_std.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
-    figs_raw.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
-
-    print("Done")
-    plt.show()
-
-
-
 def data_loading(filesave=None, datafile=None):
     """Loads experiments by either simulating them or loading them from memory.
     Analyses experiments that previously weren't
     """
-
-    n_exp = 500
-    N = 2
-    M = markov_chain(N)
-    h = entropy(M)
-    f = [0, 1]
 
     ns = list(range(100, 20000, 200))
 
@@ -635,35 +484,48 @@ def data_loading(filesave=None, datafile=None):
         exps, _ = data_analysis(filesave=filesave, length_values = ns, n_exp=500)
 
     else:
+        print("Loading file ", datafile)
         exps = np.load(datafile)
 
     try:
-        mu = exps[0]['mu']
+        exps[0]['mu']
     except:
         print("Analysing the experiments")
-        fast_mode = False if input("Do you want to see the values? y/N (defaut is false)") == 'Y' else True
+        fast_mode = False if input("Do you want to see the values? y/N (defaut is false) ") == 'Y' else True
         exps = data_analysis(exps=exps, datafile=datafile, fast_mode=fast_mode)
 
     return exps, ns
+
 
 def analysing_theoretical_std(filesave=None, datafile=None, save=None, save_name=None):
     """Computes graphs of theoretical standard deviation versus empirical ones.
     """
     exps, ns = data_loading(filesave=filesave, datafile=datafile)
+    n_exp = exps[0]['n_exp']
 
+    N = 3
     stds = [exp['std'] for exp in exps]
-    variances = [exp['std'] ** 2 for exp in exps]
+    #variances = [exp['std'] ** 2 for exp in exps]
     neins = [exp['std_nein'] for exp in exps]
     diff = [stds[i]-neins[i] for i in range(len(stds))]
+    fsts = [diff[40] - log(ns[40], 2) ** (0.5 + i*0.1 + 0.3) for i in range(N)]
+    logs = [[log(n, 2) ** (0.5 + i*0.1 + 0.3) + fsts[i]  for n in ns] for i in range(N)]
+
 
     figs, axs = plt.subplots(1, 2, tight_layout=True)
 
     axs[0].plot(ns, stds, label="$\sigma$")
     axs[0].plot(ns, neins, label=r'$\sigma_{Neininger}$')
-    axs[0].set_title(r'Empirical standard deviation ($\sigma$) and theoretical ($\sigma_{Neininger}$)')
+    axs[0].set_title(r'Empirical standard deviation ($\sigma$)' +
+                        ' and theoretical ($\sigma_{Neininger}$), $n_{exp}$ = ' + str(n_exp) )
 
     axs[1].plot(ns, diff, label=r'$\Delta \sigma = \sigma - \sigma_{Neininger}$')
-    axs[1].set_title('Difference between standard deviations')
+
+    for i in range(N):
+        e = 0.5 + i*0.1 + 0.3
+        axs[1].plot(ns, logs[i], label=r'${(\log_2(n))}^{%1.2f}-%1.2f$' % (e, -fsts[i]))
+
+    axs[1].set_title('Difference between standard deviations, $n_{exp}$ = ' + str(n_exp) )
 
     for ax in axs:
         ax.set_xlabel("Word length n")
@@ -673,31 +535,33 @@ def analysing_theoretical_std(filesave=None, datafile=None, save=None, save_name
         print("Saving figure as " + save_name)
         plt.savefig(save_name, dpi='figure')
 
+
 def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_name=None):
     """Computes graphs of theoretical means versus empirical ones.
     The goal is to identify a \log n tendency"""
     exps, ns = data_loading(filesave=filesave, datafile=datafile)
+    n_exp = exps[0]['n_exp']
 
     mus = [exp['mu'] for exp in exps]
     means = [exp['mean'] for exp in exps]
     diff = [mus[i]-means[i] for i in range(len(mus))]
-    inv_diff = [1/d for d in diff]
+    #inv_diff = [1/d for d in diff]
     n_log2 = [n / log(n, 2)**2 for n in ns]
     n_log = [n / log(n, 2) for n in ns]
-    n_log32 = [n / log(n, 2)**(1.34) for n in ns]
-    logs = [log(n,2) for n in ns]
+    #n_log32 = [n / log(n, 2)**(1.34) for n in ns]
+    #logs = [log(n,2) for n in ns]
     div = [mus[i]/means[i] for i in range(len(mus))]
-    inv = [1/n for n in ns]
-    inv_logs = [1/x for x in logs]
+    #inv = [1/n for n in ns]
+    #inv_logs = [1/x for x in logs]
     es = [0.01*i for i in range(2,8)]
     different_logs = [[n / log(n, 2) ** (1.30+e) for n in ns] for e in es]
-    asympt = [diff[i] * sqrt(ns[i]) / log(ns[i], 2) for i in range(len(ns))]
+    #asympt = [diff[i] * sqrt(ns[i]) / log(ns[i], 2) for i in range(len(ns))]
 
     figs, axs = plt.subplots(1, 3, tight_layout=True)
 
     axs[0].plot(ns, mus, color="orange", label="$\mu$")
     axs[0].plot(ns, means, color="green", label=r'$E_{th} = \frac{nh}{\log_2(n)}$', linestyle="-")
-    axs[0].set_title("Empirical ($\mu$) and theoretical mean ($E_{th}$) plots")
+    axs[0].set_title("Empirical ($\mu$) and theoretical mean ($E_{th}$) plots, $n_{exp}$ = " + str(n_exp) + "$")
 
     axs[1].plot(ns, n_log2, color="green", label=r'$\frac{n}{\log_2^2 n}$')
 
@@ -731,6 +595,185 @@ def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_nam
         plt.savefig(save_name, dpi='figure')
 
 
+def cdf(data):
+    """Outputs the cumulative distribution of a set of data"""
+
+    ntotal = len(data)
+    cdfs = []
+
+    for x in sorted(data):
+        cdfs.append(len([d for d in data if d <= x]) / ntotal)
+
+    return cdfs
+
+
+def cdf2(xs, data):
+
+    ntotal = len(data)
+    cdfs = []
+
+    for x in xs:
+        c = len([d for d in data if d <= x])
+        cdfs.append(c / ntotal)
+
+    return cdfs
+
+
+def print_cdf(exp, ax, mean, std):
+    """Prints the cdf associated to the experiments exps on the axes axs"""
+
+    mu = exp[mean]
+    std = exp[std]
+
+    mi = min(exp['data'])
+    ma = max(exp['data'])
+
+    xs = np.linspace((mi-mu)/std, (ma-mu)/std, 500)
+    norm_cdf = [norm.cdf(x) for x in xs]
+
+    norm_data = (exp['data'] - mu) / std
+    data_cdf = cdf2(xs, norm_data)
+
+    ax.plot(xs, data_cdf, color='green', label = 'Data CDF')
+    ax.plot(xs, norm_cdf, color='red', label = 'Normal CDF')
+
+    ax.legend()
+
+    ax.set_title(r'$n_{word} =' + latex_float(exp['n_word']) + '\quad n_{exp} = ' + latex_float(exp['n_exp']) + '$')
+    ax.set_xlabel(r'$\frac{(M_n-'+ ('\mu' if mean=='mu' else 'E_{theor}') +')}{\sigma}$')
+
+
+def latex_float(f):
+    float_str = "{0:.2g}".format(f)
+    if "e" in float_str:
+        base, exponent = float_str.split("e")
+        return r"{0} \cdot 10^{{{1}}}".format(base, int(exponent))
+    else:
+        return float_str
+
+
+def print_histograms(random_markov=True, datafile=None, fast_mode=True):
+    """Prints the histograms corresponding to datasets of words generated by a
+    Markov source."""
+    # Plotting raw M_n values
+    exps = data_analysis(random_markov=random_markov, datafile=datafile, fast_mode=fast_mode)
+    figs_raw, axs = plt.subplots(1, len(exps))
+
+    axs[0].set_ylabel('Counts')
+
+    for (i, exp) in enumerate(exps):
+        sns.distplot(exp['data'], ax=axs[i], rug=True, kde=False, bins='auto')
+        axs[i].set_title(r'$n_{word} =' + latex_float(exp['n_word']) + '\quad n_{exp} = ' + latex_float(exp['n_exp']) + '$')
+        axs[i].set_xlabel('$M_n$')
+
+
+    # k = 0 is empirical mean and variance
+    # k = 1 is theoretical mean and empirical variance
+    figs_mean_std, axs_mean_std = plt.subplots(1, len(exps))
+    figs_normalized, axs_normalized = plt.subplots(1, len(exps))
+
+    axs = [axs_normalized, axs_mean_std]
+    means = ['mu', 'mean']
+
+
+    for k in [0,1]:
+        ax = axs[k]
+        mean = means[k]
+        ax[0].set_ylabel('Frequency')
+
+        for (i, exp) in exps:
+            norm_distrib = (exp['data'] - exp[mean]) / exp['std']
+            #statistic, pvalue = normaltest(norm_distrib)
+            sns.distplot(norm_distrib, ax=ax[i], rug=True,
+                        label=r'Simulation $\frac{M_n -' + ("\mu" if mean == 'mu' else 'E_{theor}') +'}{\sigma}$')
+            #ax[i].text(-4, 0.3, r'$test=%1.3f$' % statistic)
+            #ax[i].text(-4, 0.28, r'$pvalue=%1.3f$' % pvalue)
+            ax[i].set_title(r'$n_{word} =' + latex_float(exp['n_word']) + '\quad n_{exp} = ' + latex_float(exp['n_exp']) + '$')
+            ax[i].set_xlabel(r'$\frac{(M_n-'+ ('\mu' if mean=='mu' else 'E_{theor}') +')}{\sigma}$')
+
+            # Print awaited normal distribution
+            ax[i].plot(exp['x'+str(k*3)], exp['p'+str(k*3)], color='red', label='$\mathcal{N}(0,1)$')
+
+
+    # k=0 is plotting distributions centered with empirical mean (mu and nein/szpan)
+    # k=1 is plotting distributions norm with theoretical mean and variances (mu and nein/szpan)
+    figs1, axs1 = plt.subplots(1, len(exps))
+    figs2, axs2 = plt.subplots(1, len(exps))
+    figs4, axs4 = plt.subplots(1, len(exps))
+    figs5, axs5 = plt.subplots(1, len(exps))
+
+    figs = [figs1, figs2, figs4, figs5]
+    axes = [axs1, axs2, axs4, axs5]
+    means = ['mu', 'mu', 'mean', 'mean']
+    stds = ['std_nein', 'std_szpan'] * 2
+    stds_pprint = ['std_{Nein}', 'std_{Szpan}'] * 2
+
+    for k in [0 ,1 , 2, 3]:
+
+        ax = axes[k]
+        mean = means[k]
+        std = stds[k]
+        std_pprint = stds_pprint[k]
+
+
+        # three subplots
+        for (i, exp) in exps:
+            norm_distrib = (exp['data'] - exp[mean]) / exp[std]
+            #statistic, pvalue = normaltest(norm_distrib)
+            sns.distplot(norm_distrib, ax=ax[i], rug=True)
+            #ax[i].text(-4, 0.3, r'$test=%1.3f$' % statistic)
+            #ax[i].text(-4, 0.28, r'$pvalue=%1.3f$' % pvalue)
+
+            ax[i].set_title(r'$n_{word} =' + latex_float(exp['n_word']) + '\quad n_{exp} = ' + latex_float(exp['n_exp']) + '$')
+            ax[i].set_xlabel('$(M_n-'+ ('\mu' if mean=='mu' else 'E_{theor}') +') / '+std_pprint+'$')
+            ax[i].set_ylabel('Frequency')
+
+            s=0
+            if k>= 2:
+                s=1
+            ax[i].plot(exp['x'+str(k+1+s)], exp['p'+str(k+1+s)], color='red', label='$\mathcal{N}(0,1)$')
+
+
+
+    figs_raw.suptitle('Histograms of the values of $M_n$ for different word lengths')
+    figs_mean_std.suptitle('$M_n$ distribution, normalized with theoretical mean ($E_{th}$) and empirical variance ($\sigma^2$)')
+    figs_normalized.suptitle('$M_n$ distribution, normalized using empirical mean ($\mu$) and variance ($\sigma^2$)')
+
+    i = 0
+    for n1 in ['empirical', 'theoretical']:
+        for n2 in ['Neininger', 'Szpankowski']:
+            figs[i].suptitle('$M_n$ distribution, normalized with {} mean and {} variance.'.format(n1,n2))
+            i += 1
+
+    top=0.91
+    bottom = 0.06
+    left=0.04
+    right=0.99
+    hspace=0.32
+    wspace=0.13
+
+    for ax in axs_normalized:
+        ax.legend()
+
+    for ax in axs_mean_std:
+        ax.legend()
+
+    for ax in axes:
+        for a in ax:
+            a.legend()
+
+    for f in figs:
+        f.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
+
+    figs_normalized.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
+    figs_mean_std.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
+    figs_raw.subplots_adjust(top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace)
+
+    print("Done")
+    plt.show()
+
+
+
 def files_choice(arg, name):
     """Return None, None if arguments weren't provided at program launch"""
     try:
@@ -745,16 +788,21 @@ def files_choice(arg, name):
 
 
 if __name__ == "__main__":
-
-    datafile, filesave = files_choice(sys.argv[2], sys.argv[3])
+    try:
+        datafile, filesave = files_choice(sys.argv[2], sys.argv[3])
+    except:
+        datafile, filesave = None, None
 
     if len(sys.argv) > 1:
-        save = bool(input("Do you want to save the generated figures ? y/N"))
+        #x = input("Do you want to save the generated figures ? y/N ")
+        x = False #temporary
+        #save = False if (x.lower() == 'n') else bool(x)
+        save = False
 
         if sys.argv[1] == '-s':
             simulation(random_markov=True, filesave = sys.argv[2])
 
-        if 'm' in sys.argv[1]:
+        elif sys.argv[1] == '-m':
             save_name = None
             if save:
                 save_name = input("What prefix for mean analysis figures ?")
@@ -762,13 +810,20 @@ if __name__ == "__main__":
             analysing_theoretical_mean(datafile=datafile, filesave=filesave, save=save,
                     save_name=save_name)
 
-        if 'v' in sys.argv[1]:
+        elif sys.argv[1] == '-v':
             save_name = None
             if save:
                 save_name = input("What prefix for std analysis figures ?")
 
             analysing_theoretical_std(datafile=datafile, filesave=filesave, save=save,
                     save_name=save_name)
+
+        elif sys.argv[1] == '-cdf':
+            exps, ns = data_loading(datafile=datafile)
+            figs, axs = plt.subplots(1, len(exps))
+            for (i, exp) in enumerate(exps):
+                print_cdf(exp, axs[i], "mu", "std")
+            figs.suptitle("Cumulative distribution function plots for normalized $M_n$")
 
         else:
             print_histograms(random_markov=True, datafile = sys.argv[1])
