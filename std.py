@@ -22,6 +22,17 @@ def stationary_distribution(M):
 
     return p
 
+def H(M):
+    p = stationary_distribution(M)
+    h=0
+    n=len(M)
+
+    for i in range(n):
+     for j in range(n):
+
+       h += p[i] * M[i, j] * log( M[i, j], 2)
+
+    return (-h)
 
 def entropy(M, p=None):
     """Computes the entropy of a known Markov chain by computing a
@@ -45,7 +56,7 @@ def entropy(M, p=None):
     for i in range(n):
      for j in range(n):
 
-       h += p[i] * M[i, j] * log( M[i, j], 2)
+       h += p[i] * M[i, j] * log( M[i, j])
 
     return (-h)
 
@@ -92,6 +103,6 @@ def var(M):
     s = 0.
 
     s -= b / o
-    s -= (2 * pi_q_psi(M, p)) / o - h ** 2
+    s -= ((2 * pi_q_psi(M, p)) / o - h ** 2) / h ** 3
 
     return s

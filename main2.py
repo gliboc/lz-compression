@@ -4,7 +4,7 @@ from math import log
 from scipy.stats import norm
 #from scipy.stats import normaltest
 import sys
-from std import stationary_distribution, var, entropy
+from std import stationary_distribution, var, entropy, H
 
 
 debug = True
@@ -136,7 +136,7 @@ def sigma_i(M, i):
     return r
 
 
-def sigma(M):
+def sigma2_H3(M):
     """Computes H^3 * sigma^2, from Neininger's paper."""
 
     return sigma_i(M, 0) + sigma_i(M, 1)
@@ -144,7 +144,7 @@ def sigma(M):
 
 def test_neininger():
     Ms = [markov_chain(2) for _ in range(100)]
-    neins = [sigma(M) for M in Ms]
+    neins = [sigma2_H3(M) for M in Ms]
     ours = [(h_2(M) - entropy(M) ** 2) * entropy(M) ** 3 for M in Ms]
 
     cell_text = []
@@ -204,10 +204,11 @@ def fast_word_generator(M,f,n,N):
             w = words[i][-1]
             words[i].append( f[ (w + int(probas[i,j] > d[w])) % 2 ] )
 
+    input("Generated words")
     return words
 
 
-def markov_source(M, f, n):
+def markov_source(M, n):
     """Outputs a word of size n from a Markov source (M, f)
     !! Now only works with chains of size 2 !!
 
@@ -220,10 +221,10 @@ def markov_source(M, f, n):
     digit list: The generated message.
     """
 
-
     current_state = 0
     word = []
     probas = np.random.rand(n)
+
     for i in range(n):
 
         #next_state = 0
@@ -236,7 +237,24 @@ def markov_source(M, f, n):
         #  proba_stack += M[current_state, next_state]
 
         #current_state = next_state
-        word.append(f[current_state])
+        word.append(current_state)
+
+    #print("Generated word")
+    #input(word)
+    return word
+
+
+def markov_source2(M, n):
+    """Generate a word in a string format"""
+
+    c_state = "0"
+    word = ""
+    probas = np.random.rand(n)
+    d = {"0":M[0,0], "1":M[1,0]}
+
+    for i in range(n):
+        c_state = str(int(probas[i] > d[c_state]))
+        word += c_state
 
     return word
 
@@ -267,25 +285,48 @@ def compress(word):
     """
 
     s = set()
-    phrases = [""]
     current_prefix = ""
+    nb_phrases = 0
 
     for digit in word:
         digit = str(digit)
 
-    if current_prefix + digit in s:
-      current_prefix += digit
+        if current_prefix + digit in s:
+            current_prefix += digit
 
-    else:
-      s.add(current_prefix + digit)
-      phrases.append(current_prefix + digit)
-      current_prefix = ""
+        else:
+            s.add(current_prefix + digit)
+            nb_phrases += 1
+            current_prefix = ""
 
     if current_prefix != "":
-    #print("The last phrase is incomplete:", current_prefix)
-        phrases.append(current_prefix)
+        #print("The last phrase is incomplete:", current_prefix)
+        nb_phrases += 1
 
-    return phrases
+    #print("Compressed word")
+    #input(phrases)
+    return nb_phrases
+
+
+def compress2(w):
+    """Compress words as strings"""
+    s = set()
+    current_prefix = ""
+    nb_phrases = 0
+    for digit in w:
+
+        if current_prefix + digit in s:
+            current_prefix += digit
+
+        else:
+            s.add(current_prefix + digit)
+            nb_phrases += 1
+            current_prefix = ""
+
+    if current_prefix != "":
+        nb_phrases += 1
+
+    return nb_phrases
 
 
 import matplotlib.pyplot as plt
@@ -341,8 +382,6 @@ def simulation(random_markov=False, filesave="experiment_data.npy", length_value
         M = markov_chain(N)
         h = entropy(M)
 
-        f = [0, 1]
-
     if not fast_mode:
         print("\nUsing a random Markov chain of size " + str(N))
         input(M)
@@ -371,9 +410,9 @@ def simulation(random_markov=False, filesave="experiment_data.npy", length_value
                 n = n
 
             try:
-                n = int(input("\nHow many experiments do I run? (default %d) " % 200))
+                n_exp = int(input("\nHow many experiments do I run? (default %d) " % 200))
             except:
-                n = 200
+                n_exp = 200
 
         print("\nNow testing words of size %d, doing %d experiments " % (n, n_exp))
         exp['n_exp'] = n_exp
@@ -381,13 +420,15 @@ def simulation(random_markov=False, filesave="experiment_data.npy", length_value
 
         # Runs LZ78 over n_exp samples of words of length n from
         # the Markov chain M
-        word_gen = word_generator(M, f, n)
-        l =[word_gen() for _ in range(n_exp)]
+        #word_gen = word_generator(M, f, n)
+        #l =[word_gen() for _ in range(n_exp)]
         #l = fast_word_generator(M,f,n,n_exp)
-        c = [compress(w) for w in l]
-        m = [len(x) for x in c]
+        #c = [compress2(w) for w in l]
+        #m = [len(x) for x in c]
+        m = [compress2(markov_source2(M,f,n)) for _ in range(n_exp)]
         exp['data'] = m
 
+    exps[0]['ns'] = length_values
     input("\nNow savings experiments to " + filesave)
     np.save(filesave, exps)
 
@@ -397,6 +438,8 @@ def simulation(random_markov=False, filesave="experiment_data.npy", length_value
 def data_analysis(exps=None, random_markov=True, datafile=None, filesave="experiment_data.npy", length_values=None, n_exp=None, fast_mode=False):
     if exps is None:
         if datafile is None:
+            if n_exp is None:
+                n_exp = 500
             exps, fast_mode = simulation(random_markov=random_markov, filesave=filesave,
                 length_values=length_values, n_exp=n_exp)
 
@@ -413,14 +456,17 @@ def data_analysis(exps=None, random_markov=True, datafile=None, filesave="experi
         print("\n ===== This experiment has %d samples of words of size %d =====" % (n_exp, n))
 
         # Theoretical mean
-        mean = h * n / log(n,2)
+        mean = h * n / log(n)
+        #mean2 = H(M) * n / log(n, 2)
+        H(M) # à enlever
+
         if not fast_mode:
             input("\nTheoretical mean is {}".format(mean))
         exp['mean'] = mean
 
 
         # Theoretical variances
-        std_nein = sqrt (sigma(M) * n) / log(n, 2)
+        std_nein = sqrt (sigma2_H3(M) * n) / log(n, 2)
         #std_szpan = sqrt ( -(h_2(M) - (h**2)) * h**3 * n )
         std_szpan = sqrt ( var(M) * log(n) )
         exp['std_nein'] = std_nein
@@ -438,6 +484,10 @@ def data_analysis(exps=None, random_markov=True, datafile=None, filesave="experi
 
         # Empirical variance and mean
         # Samples corresponding to normal distribution p
+
+        print("Showing the data")
+        input(exp['data'])
+
         mu, std = norm.fit(exp['data'])
         exp['mu'] = mu
         exp['std'] = std
@@ -478,21 +528,24 @@ def data_loading(filesave=None, datafile=None):
     Analyses experiments that previously weren't
     """
 
-    ns = list(range(100, 20000, 200))
-
     if datafile is None:
-        exps, _ = data_analysis(filesave=filesave, length_values = ns, n_exp=500)
+        print("\nChoose ns interval range(a, b, s)")
+        a = int(input("a = ")); b = int(input("b = ")); s = int(input("s = "))
+        ns = list(range(a, b, s))
+        n_exp = int(input("\nHow many experiments ? "))
+        exps = data_analysis(filesave=filesave, length_values = ns, n_exp=n_exp)
 
     else:
         print("Loading file ", datafile)
         exps = np.load(datafile)
 
+    print("Analysing the experiments")
+    fast_mode = False if input("Do you want to see the values? y/N (defaut is false) ").lower() == 'y' else True
+    exps = data_analysis(exps=exps, datafile=datafile, fast_mode=fast_mode)
     try:
-        exps[0]['mu']
+        ns = exps[0]['ns']
     except:
-        print("Analysing the experiments")
-        fast_mode = False if input("Do you want to see the values? y/N (defaut is false) ") == 'Y' else True
-        exps = data_analysis(exps=exps, datafile=datafile, fast_mode=fast_mode)
+        ns = list(range(200, 20000, 200)) # maybe something else
 
     return exps, ns
 
@@ -503,28 +556,35 @@ def analysing_theoretical_std(filesave=None, datafile=None, save=None, save_name
     exps, ns = data_loading(filesave=filesave, datafile=datafile)
     n_exp = exps[0]['n_exp']
 
-    N = 3
+    #N = 3
     stds = [exp['std'] for exp in exps]
     #variances = [exp['std'] ** 2 for exp in exps]
     neins = [exp['std_nein'] for exp in exps]
-    diff = [stds[i]-neins[i] for i in range(len(stds))]
-    fsts = [diff[40] - log(ns[40], 2) ** (0.5 + i*0.1 + 0.3) for i in range(N)]
-    logs = [[log(n, 2) ** (0.5 + i*0.1 + 0.3) + fsts[i]  for n in ns] for i in range(N)]
+    szpans = [exp['std_szpan'] for exp in exps]
+    diff1 = [stds[i]-neins[i] for i in range(len(stds))]
+    diff2 = [stds[i]-szpans[i] for i in range(len(stds))]
 
+    #fsts = [diff[40] - log(ns[40], 2) ** (0.5 + i*0.1 + 0.3) for i in range(N)]
+    fst = diff1[10] - log(ns[10], 2)
+    #logs = [[log(n, 2) ** (0.5 + i*0.1 + 0.3) + fsts[i]  for n in ns] for i in range(N)]
+    logs = [log(n, 2) + fst for n in ns]
 
     figs, axs = plt.subplots(1, 2, tight_layout=True)
 
     axs[0].plot(ns, stds, label="$\sigma$")
     axs[0].plot(ns, neins, label=r'$\sigma_{Neininger}$')
+    axs[0].plot(ns, szpans, label=r'$\sigma_{Szpankowski}$')
     axs[0].set_title(r'Empirical standard deviation ($\sigma$)' +
-                        ' and theoretical ($\sigma_{Neininger}$), $n_{exp}$ = ' + str(n_exp) )
+                        ' and theoretical ones ($\sigma_{Neininger}$, $\sigma_{S}$), $n_{exp}$ = ' + str(n_exp) )
 
-    axs[1].plot(ns, diff, label=r'$\Delta \sigma = \sigma - \sigma_{Neininger}$')
+    axs[1].plot(ns, diff1, label=r'$\Delta \sigma = \sigma - \sigma_{Neininger}$')
+    axs[1].plot(ns, diff2, label=r'$\Delta \sigma = \sigma - \sigma_{Szpan}$')
 
-    for i in range(N):
-        e = 0.5 + i*0.1 + 0.3
-        axs[1].plot(ns, logs[i], label=r'${(\log_2(n))}^{%1.2f}-%1.2f$' % (e, -fsts[i]))
+    #for i in range(N):
+    #    e = 0.5 + i*0.1 + 0.3
+    #    axs[1].plot(ns, logs[i], label=r'${(\log_2(n))}^{%1.2f}-%1.2f$' % (e, -fsts[i]))
 
+    axs[1].plot(ns, logs, label=r'${(\log_2(n))}-%1.2f$' % -fst)
     axs[1].set_title('Difference between standard deviations, $n_{exp}$ = ' + str(n_exp) )
 
     for ax in axs:
@@ -681,7 +741,7 @@ def print_histograms(random_markov=True, datafile=None, fast_mode=True):
         mean = means[k]
         ax[0].set_ylabel('Frequency')
 
-        for (i, exp) in exps:
+        for (i, exp) in enumerate(exps):
             norm_distrib = (exp['data'] - exp[mean]) / exp['std']
             #statistic, pvalue = normaltest(norm_distrib)
             sns.distplot(norm_distrib, ax=ax[i], rug=True,
@@ -717,7 +777,7 @@ def print_histograms(random_markov=True, datafile=None, fast_mode=True):
 
 
         # three subplots
-        for (i, exp) in exps:
+        for (i, exp) in enumerate(exps):
             norm_distrib = (exp['data'] - exp[mean]) / exp[std]
             #statistic, pvalue = normaltest(norm_distrib)
             sns.distplot(norm_distrib, ax=ax[i], rug=True)
