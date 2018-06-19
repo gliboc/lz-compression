@@ -123,6 +123,7 @@ def simulation(random_markov=False, filesave="experiment_data.npy", length_value
         N = 2
         M = markov_chain(N)
         h = entropy(M)
+        f = [0,1]
 
     if not fast_mode:
         print("\nUsing a random Markov chain of size " + str(N))
@@ -167,7 +168,7 @@ def simulation(random_markov=False, filesave="experiment_data.npy", length_value
         #l = fast_word_generator(M,f,n,n_exp)
         #c = [compress2(w) for w in l]
         #m = [len(x) for x in c]
-        m = [compress2(markov_source2(M,f,n)) for _ in range(n_exp)]
+        m = [compress2(markov_source2(M,n)) for _ in range(n_exp)]
         exp['data'] = m
 
     exps[0]['ns'] = length_values

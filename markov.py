@@ -1,3 +1,7 @@
+import numpy as np
+import scipy
+from math import log
+
 def markov_chain(n):
     """Generate a random markov chain with n states.
 
