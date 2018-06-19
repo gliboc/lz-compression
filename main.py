@@ -211,6 +211,8 @@ def data_analysis(exps=None, random_markov=True, datafile=None, filesave="experi
         # Theoretical variances
         std_nein = sqrt (sigma2_H3(M) * n) / log(n, 2)
         #std_szpan = sqrt ( -(h_2(M) - (h**2)) * h**3 * n )
+        print("Value for variance var(M)", var(M))
+        print("Value of log(n)", log(n))
         std_szpan = sqrt ( var(M) * log(n) )
         exp['std_nein'] = std_nein
         exp['std_szpan'] = std_szpan
@@ -368,8 +370,8 @@ def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_nam
 
     axs[1].plot(ns, n_log2, color="green", label=r'$\frac{n}{\log_2^2 n}$')
 
-    for (i,e) in enumerate(es):
-        axs[1].plot(ns, different_logs[i], label=r'$\frac{n}{(\log_2(n))^{' + str(1.30+e) + '}}$')
+    # for (i,e) in enumerate(es):
+    #     axs[1].plot(ns, different_logs[i], label=r'$\frac{n}{(\log_2(n))^{' + str(1.30+e) + '}}$')
 
     axs[1].plot(ns, diff, color="black", label="$\Delta E$", linestyle="-")
 

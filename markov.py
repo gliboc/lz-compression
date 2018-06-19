@@ -48,37 +48,11 @@ def stationary_distribution(M):
 
     return p
 
-def entropy(M, p=None):
-    """Computes the entropy of a known Markov chain by computing a
-    stationary distribution.
-
-    Args:
-     M (float matrix): The Markov chain.
-     [p] (float array): A previously computed stationary distribution.
-
-    Returns:
-      (float): The entropy of M.
-
-    """
-
-    if p is None:
-     p = stationary_distribution(M)
-
-    h = 0
-    n = len(M)
-
-    for i in range(n):
-     for j in range(n):
-
-       h += p[i] * M[i, j] * log( M[i, j])
-
-    return (-h)
-
-
+  
 
 def markov_source(M, n):
     """Outputs a word of size n from a Markov source (M, f)
-    !! Now only works with chains of size 2 !!
+    !! Now only works with chain  s of size 2 !!
 
     Args:
     M (int matrix): Markov chain.

@@ -3,6 +3,34 @@ import scipy
 import numpy as np
 from markov import *
 
+
+def entropy(M, p=None):
+    """Computes the entropy of a known Markov chain by computing a
+    stationary distribution.
+
+    Args:
+     M (float matrix): The Markov chain.
+     [p] (float array): A previously computed stationary distribution.
+
+    Returns:
+      (float): The entropy of M.
+
+    """
+
+    if p is None:
+     p = stationary_distribution(M)
+
+    h = 0
+    n = len(M)
+
+    for i in range(n):
+     for j in range(n):
+
+       h += p[i] * M[i, j] * log( M[i, j])
+
+    return (-h)
+    
+
 def h_2(M, p=None, h=None):
     """Computes the second derivative of lambda, taken in s=-1 (see Average profile of the Lempel-Ziv parsing scheme for a Markovian source).
 
@@ -82,26 +110,30 @@ def H(M):
     return (-h)
 
 
-
-
 def omega(M):
-    return (1 - M[1,1]) * M[0,1]
+    """Certified"""
+    return (1 - M[1,1]) + M[0,1]
+
 
 def beta(M):
+    """Certified"""
     s = 0
+
     p00 = M[0, 0]
     p11 = M[1, 1]
     p01 = M[0, 1]
     p10 = M[1, 0]
 
     s += p00 * p11 * (log (p00)) ** 2 * (log (p11)) ** 2
-
     s -= p01 * p10 * (log (p01)) ** 2 * (log (p10)) ** 2
 
     return s
 
+
 def pi_q_psi(M, p):
+    """Certified"""
     s = 0
+
     p00 = M[0, 0]
     p11 = M[1, 1]
     p01 = M[0, 1]
@@ -113,8 +145,6 @@ def pi_q_psi(M, p):
     s += p[1] * p00 * log(p00)
 
     return s
-
-
 
 
 def var(M):
