@@ -1,6 +1,7 @@
+"""Functions for simulating a Markov chain"""
+
 import numpy as np
 import scipy
-from math import log
 
 
 def markov_chain(n):
@@ -44,9 +45,9 @@ def stationary_distribution(M):
     p = np.array(U[:, np.where(np.abs(S - 1.) < 1e-8)[0][0]].flat)
     p = p / np.sum(p)
 
-    if 0:
-        print("p times M", np.dot(p, M))
-        print("p", p)
+    # if 0:
+    #     print("p times M", np.dot(p, M))
+    #     print("p", p)
 
     return p
 
@@ -102,6 +103,6 @@ def markov_source2(M, n):
     return word
 
 
-def word_generator(M, f, n):
-    return lambda: markov_source(M, f, n)
+def word_generator(M, n):
+    return lambda: markov_source(M, n)
 

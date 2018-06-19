@@ -1,4 +1,20 @@
-from markov import *
+"""Expressions for Neininger paper"""
+from math import log
+from markov import stationary_distribution
+
+def H(M):
+    """Entropy using base 2 logarithm"""
+    
+    p = stationary_distribution(M)
+    h = 0
+    n = len(M)
+
+    for i in range(n):
+        for j in range(n):
+
+            h += p[i] * M[i, j] * log(M[i, j], 2)
+
+    return -h
 
 
 def Hi(M, i):
@@ -39,4 +55,3 @@ def sigma2_H3(M):
     """Computes H^3 * sigma^2, from Neininger's paper."""
 
     return sigma_i(M, 0) + sigma_i(M, 1)
-

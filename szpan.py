@@ -1,7 +1,8 @@
+"""Expressions from the paper Szpan. & Jacquet"""
+
 from math import log
-import scipy
 import numpy as np
-from markov import *
+from markov import stationary_distribution, markov_chain
 
 
 def entropy(M, p=None):
@@ -32,7 +33,8 @@ def entropy(M, p=None):
 
 
 def h_2(M, p=None, h=None):
-    """Computes the second derivative of lambda, taken in s=-1 (see Average profile of the Lempel-Ziv parsing scheme for a Markovian source).
+    r"""Computes the second derivative of lambda, taken in s=-1
+    (see Average profile of the Lempel-Ziv parsing scheme for a Markovian source).
 
     Args:
       M (float matrix): The Markov chain.
@@ -98,6 +100,8 @@ def test_h2():
 
 
 def H(M):
+    """Entropy using base 2 logarithm"""
+    
     p = stationary_distribution(M)
     h = 0
     n = len(M)

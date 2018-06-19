@@ -1,3 +1,4 @@
+"""Plotting graphs and histograms using data from LZ78 applied to Markov sources"""
 
 import numpy as np  # learn more: https://python.org/pypi/np
 from math import log
@@ -5,10 +6,10 @@ from scipy.stats import norm
 
 # from scipy.stats import normaltest
 import sys
-from szpan import *
-from markov import *
-from neininger import *
-from lempelziv import *
+from szpan import var, h_2, entropy
+from markov import markov_chain, markov_source2
+from neininger import H, sigma2_H3
+from lempelziv import compress, compress2
 
 import matplotlib.pyplot as plt
 from math import sqrt
@@ -336,12 +337,12 @@ def analysing_theoretical_std(filesave=None, datafile=None, save=None, save_name
 
     figs, axs = plt.subplots(1, 2, tight_layout=True)
 
-    axs[0].plot(ns, stds, label="$\sigma$")
+    axs[0].plot(ns, stds, label=r"$\sigma$")
     axs[0].plot(ns, neins, label=r"$\sigma_{Neininger}$")
     axs[0].plot(ns, szpans, label=r"$\sigma_{Szpankowski}$")
     axs[0].set_title(
         r"Empirical standard deviation ($\sigma$)"
-        + " and theoretical ones ($\sigma_{Neininger}$, $\sigma_{S}$), $n_{exp}$ = "
+        + r" and theoretical ones ($\sigma_{Neininger}$, $\sigma_{S}$), $n_{exp}$ = "
         + str(n_exp)
     )
 
@@ -367,7 +368,7 @@ def analysing_theoretical_std(filesave=None, datafile=None, save=None, save_name
 
 
 def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_name=None):
-    """Computes graphs of theoretical means versus empirical ones.
+    r"""Computes graphs of theoretical means versus empirical ones.
     The goal is to identify a \log n tendency"""
     exps, ns = data_loading(filesave=filesave, datafile=datafile)
     n_exp = exps[0]["n_exp"]
@@ -389,7 +390,7 @@ def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_nam
 
     figs, axs = plt.subplots(1, 3, tight_layout=True)
 
-    axs[0].plot(ns, mus, color="orange", label="$\mu$")
+    axs[0].plot(ns, mus, color="orange", label=r"$\mu$")
     axs[0].plot(
         ns,
         means,
@@ -398,7 +399,7 @@ def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_nam
         linestyle="-",
     )
     axs[0].set_title(
-        "Empirical ($\mu$) and theoretical mean ($E_{th}$) plots, $n_{exp}$ = "
+        r"Empirical ($\mu$) and theoretical mean ($E_{th}$) plots, $n_{exp}$ = "
         + str(n_exp)
         + "$"
     )
@@ -408,10 +409,10 @@ def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_nam
     # for (i,e) in enumerate(es):
     #     axs[1].plot(ns, different_logs[i], label=r'$\frac{n}{(\log_2(n))^{' + str(1.30+e) + '}}$')
 
-    axs[1].plot(ns, diff, color="black", label="$\Delta E$", linestyle="-")
+    axs[1].plot(ns, diff, color="black", label=r"$\Delta E$", linestyle="-")
 
     axs[1].plot(ns, n_log, color="red", label=r"$\frac{n}{\log_2 n}$")
-    axs[1].set_title("Difference $\Delta E = \mu-E_{th}$, and approximations")
+    axs[1].set_title(r"Difference $\Delta E = \mu-E_{th}$, and approximations")
 
     # axs[2].plot(ns, div, color='blue', label="$(\Delta E)^{-1}$", linestyle="-")
     # axs[2].plot(ns, logs, color="green", label="$\log_2 n$")
@@ -488,12 +489,12 @@ def print_cdf(exp, ax, mean, std):
     ax.set_title(
         r"$n_{word} ="
         + latex_float(exp["n_word"])
-        + "\quad n_{exp} = "
+        + r"\quad n_{exp} = "
         + latex_float(exp["n_exp"])
         + "$"
     )
     ax.set_xlabel(
-        r"$\frac{(M_n-" + ("\mu" if mean == "mu" else "E_{theor}") + ")}{\sigma}$"
+        r"$\frac{(M_n-" + (r"\mu" if mean == "mu" else r"E_{theor}") + r")}{\sigma}$"
     )
 
 
@@ -522,7 +523,7 @@ def print_histograms(random_markov=True, datafile=None, fast_mode=True):
         axs[i].set_title(
             r"$n_{word} ="
             + latex_float(exp["n_word"])
-            + "\quad n_{exp} = "
+            + r"\quad n_{exp} = "
             + latex_float(exp["n_exp"])
             + "$"
         )
@@ -549,8 +550,8 @@ def print_histograms(random_markov=True, datafile=None, fast_mode=True):
                 ax=ax[i],
                 rug=True,
                 label=r"Simulation $\frac{M_n -"
-                + ("\mu" if mean == "mu" else "E_{theor}")
-                + "}{\sigma}$",
+                + (r"\mu" if mean == "mu" else r"E_{theor}")
+                + r"}{\sigma}$",
             )
             # ax[i].text(-4, 0.3, r'$test=%1.3f$' % statistic)
             # ax[i].text(-4, 0.28, r'$pvalue=%1.3f$' % pvalue)
@@ -631,7 +632,8 @@ def print_histograms(random_markov=True, datafile=None, fast_mode=True):
 
     figs_raw.suptitle("Histograms of the values of $M_n$ for different word lengths")
     figs_mean_std.suptitle(
-        "$M_n$ distribution, normalized with theoretical mean ($E_{th}$) and empirical variance ($\sigma^2$)"
+        "$M_n$ distribution, normalized with theoretical mean"
+        + "($E_{th}$) and empirical variance ($\sigma^2$)"
     )
     figs_normalized.suptitle(
         "$M_n$ distribution, normalized using empirical mean ($\mu$) and variance ($\sigma^2$)"
@@ -732,8 +734,10 @@ if __name__ == "__main__":
         elif sys.argv[1] == "-cdf":
             exps, ns = data_loading(datafile=datafile)
             figs, axs = plt.subplots(1, len(exps))
+
             for (i, exp) in enumerate(exps):
                 print_cdf(exp, axs[i], "mu", "std")
+                
             figs.suptitle("Cumulative distribution function plots for normalized $M_n$")
 
         else:

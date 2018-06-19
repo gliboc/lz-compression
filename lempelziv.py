@@ -1,3 +1,5 @@
+"""Lempel-Ziv 78 implementation"""
+
 def compress(word):
     """Compression of a word using LZ78.
 
@@ -8,18 +10,18 @@ def compress(word):
     string list: The list of phrases used in LZ78.
     """
 
-    s = set()
+    phrases = set()
     current_prefix = ""
     nb_phrases = 0
 
     for digit in word:
         digit = str(digit)
 
-        if current_prefix + digit in s:
+        if current_prefix + digit in phrases:
             current_prefix += digit
 
         else:
-            s.add(current_prefix + digit)
+            phrases.add(current_prefix + digit)
             nb_phrases += 1
             current_prefix = ""
 
@@ -32,18 +34,18 @@ def compress(word):
     return nb_phrases
 
 
-def compress2(w):
+def compress2(word):
     """Compress words as strings"""
-    s = set()
+    phrases = set()
     current_prefix = ""
     nb_phrases = 0
-    for digit in w:
+    for digit in word:
 
-        if current_prefix + digit in s:
+        if current_prefix + digit in phrases:
             current_prefix += digit
 
         else:
-            s.add(current_prefix + digit)
+            phrases.add(current_prefix + digit)
             nb_phrases += 1
             current_prefix = ""
 
@@ -51,3 +53,4 @@ def compress2(w):
         nb_phrases += 1
 
     return nb_phrases
+    
