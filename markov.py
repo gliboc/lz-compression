@@ -2,6 +2,7 @@ import numpy as np
 import scipy
 from math import log
 
+
 def markov_chain(n):
     """Generate a random markov chain with n states.
 
@@ -28,6 +29,7 @@ def state_fun(n):
 
     return np.random.randint(0, 2, n)
 
+
 def stationary_distribution(M):
     """Computes a stationary distribution for a given Markov chain M.
 
@@ -38,17 +40,16 @@ def stationary_distribution(M):
      (float array): A stationary distribution of M.
     """
 
-    S, U = scipy.linalg.eig( M.T )
+    S, U = scipy.linalg.eig(M.T)
     p = np.array(U[:, np.where(np.abs(S - 1.) < 1e-8)[0][0]].flat)
     p = p / np.sum(p)
 
     if 0:
-     print("p times M", np.dot( p, M ))
-     print("p", p)
+        print("p times M", np.dot(p, M))
+        print("p", p)
 
     return p
 
-  
 
 def markov_source(M, n):
     """Outputs a word of size n from a Markov source (M, f)
@@ -69,20 +70,20 @@ def markov_source(M, n):
 
     for i in range(n):
 
-        #next_state = 0
+        # next_state = 0
         proba_stack = M[current_state, 0]
 
         current_state = int(probas[i] > proba_stack)
-        #while probas[i] > proba_stack:
+        # while probas[i] > proba_stack:
 
         #  next_state += 1
         #  proba_stack += M[current_state, next_state]
 
-        #current_state = next_state
+        # current_state = next_state
         word.append(current_state)
 
-    #print("Generated word")
-    #input(word)
+    # print("Generated word")
+    # input(word)
     return word
 
 
@@ -92,7 +93,7 @@ def markov_source2(M, n):
     c_state = "0"
     word = ""
     probas = np.random.rand(n)
-    d = {"0":M[0,0], "1":M[1,0]}
+    d = {"0": M[0, 0], "1": M[1, 0]}
 
     for i in range(n):
         c_state = str(int(probas[i] > d[c_state]))
@@ -102,4 +103,5 @@ def markov_source2(M, n):
 
 
 def word_generator(M, f, n):
-  return lambda : markov_source(M, f, n)
+    return lambda: markov_source(M, f, n)
+
