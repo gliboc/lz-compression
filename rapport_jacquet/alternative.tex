@@ -1,0 +1,114 @@
+\centers{\question{Alternative representation}}
+
+\noindent
+Another expression for the variance might be
+
+\centers{$ \f{ \ddot{\lambda}(-1) - { \dot{\lambda}(-1) }^2 }{ { \dot{\lambda}(-1) }^3 } $}
+
+\noindent I was able to compute this coefficient for a Markov chain of size 2. It 
+might be applied to the general case~$n$ by solving a linear system of the same size
+and computing an approximation of the largest eigenvalue $\lambda$. 
+
+\leftcenters
+    {In the paper,}
+    {$ \ddot{\lambda}(-1) = \pi \ddot{P}(-1)\psi
+                        + 2 \dot{\pi}(-1) \dot{P}(-1) \psi
+                        - 2 \dot{\lambda}(-1) \dot{\pi}(-1) \psi $}
+
+
+\noindent First term is
+\centers
+    { $\pi_0 \, p_{0 0} \, \log^2 (p_{0 0}) 
+        + \pi_1 \, p_{1 0} \, \log^2 (p_{1 0}) 
+        + \pi_0 \, p_{0 1} \, \log^2 (p_{0 1}) 
+        + \pi_1 \, p_{1 1} \, \log^2 (p_{1 1})  $}
+
+\noindent The second is
+\centers
+    { $ - 2 \pac{
+            \dot{\pi}_0(-1) p_{0 0} \log (p_{0 0})    
+            + \dot{\pi}_1(-1) p_{1 0} \log (p_{1 0}) 
+            + \dot{\pi}_0(-1) p_{0 1} \log (p_{0 1})
+            + \dot{\pi}_1(-1) p_{1 1} \log (p_{1 1})
+        }   
+    $}
+
+\noindent The third is
+\centers{
+    $ - 2 \dot{\lambda}(-1) \pac{
+        \dot{\pi}_0(-1) 
+        + \dot{\pi}_1(-1)
+    }$
+}
+
+\noindent We 
+        have to compute $\dot{\pi}(-1)$. With 
+            $\pi(s) = (\pi_0(s), \, \pi_1(s))$, and since
+
+\centers{$\pi(s) P(s) = \lambda(s) \pi(s)$}
+
+\leftcenters
+    {then we have}
+    {$ \left\{
+        \begin{aligned}
+            {p_{0 0}}^{-s} \pi_0(s) + {p_{0 1}}^{-s} \pi_1(s) &= \lambda(s) \pi_0(s) \\
+            {p_{1 0}}^{-s} \pi_0(s) + {p_{1 1}}^{-s} \pi_1(s) &= \lambda(s) \pi_1(s) \\
+        \end{aligned}
+        \right.
+     $}
+
+\noindent
+solving for $\pi_0(s)$ and $\pi_1(s)$ :
+
+\centers{$ \pi_0(s) = \lambda(s) \f{ \overbrace{{p_{1 1}}^{-s} - {p_{0 1}}^{-s}}^{g_0(s)} }
+                                   { \underbrace{{ (p_{0 0} p_{1 1}) }^{-s} 
+                                        - { (p_{0 1} p_{1 0}) }^{-s}}_{\delta(s)} }$}
+
+\centers{$ \pi_1(s) = \lambda(s) \f{ \overbrace{{p_{0 0}}^{-s} - {p_{1 0}}^{-s}}^{g_1(s)} }
+                                   { { (p_{0 0} p_{1 1}) }^{-s} 
+                                        - { (p_{0 1} p_{1 0}) }^{-s} }$}
+
+\noindent
+Hence
+\centers{$ \dot{\pi}_0(s) = \dot{\lambda}(s)$}
+
+\noindent
+Now taking $s=-1$ and re-arranging in a linear system of unknown $\dot{\pi}_0(-1)$ and $\dot{\pi}_1(-1)$ :
+\centers
+    {$ \left\{
+        \begin{aligned}
+            \dot{\pi}_0(-1) (p_{0 0} - \lambda)
+            + \dot{\pi}_1(-1) p_{0 1}
+                &= \dot{\lambda}(-1) \pi_0
+                    +   \ln p_{0 0} \cdot p_{0 0} \pi_0
+                    +   \ln p_{0 1} \cdot p_{0 1} \pi_1 \\
+            \dot{\pi}_0(-1) p_{1 0}
+            + \dot{\pi}_1(-1) (p_{1 1} - \lambda)
+                &= \dot{\lambda}(-1) \pi_1
+                    +  \ln p_{1 0} \cdot p_{1 0} \pi_0 
+                    +  \ln p_{1 1} \cdot p_{1 1} \pi_1
+        \end{aligned}
+        \right.
+     $}
+
+\noindent This yields an exact formula for $\dot{\pi}(-1)$, using 
+$\dot{\lambda}(-1) = h$ and, for $\lambda$, the exact expression 
+computed by taking the greatest solution of the characteristic polynomial $\rchi_P$ of $P$ :
+
+\centers{$ \rchi_P = (X-p_{0 0})(X-p_{0 1}) - p_{1 0} p_{0 1}
+                 = X^2 - (p_{0 0} + p_{1 1}) X + p_{0 0} p_{1 1}
+                                               - p_{1 0} p_{0 1} $}
+
+\begin{egalites}
+which is  &\lambda
+        &\f{ (p_{0 0} + p_{1 1}) 
+           + \sqrt{ (p_{0 0} + p_{1 1})^2 - 4 (p_{0 0} p_{1 1} - p_{1 0} p_{0 1}) }}
+           {2}\\[3mm]
+        &&\f{ (p_{0 0} + p_{1 1}) 
+           + \sqrt{ (p_{0 0} - p_{1 1})^2 + 4 p_{1 0} p_{0 1} }}
+           {2}   
+\end{egalites}
+
+
+
+
