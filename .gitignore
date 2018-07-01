@@ -1,0 +1,6 @@
+*.npy
+*.pyc
+*.dat
+__pycache__/markov.cpython-36.pyc
+papier_flexible/*
+rapport_jacquet/*
