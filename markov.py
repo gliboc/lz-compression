@@ -1,7 +1,7 @@
 """Functions for simulating a Markov chain"""
 
 import numpy as np
-import scipy
+import scipy.linalg
 
 
 def markov_chain(n):
@@ -49,7 +49,16 @@ def stationary_distribution(M):
     #     print("p times M", np.dot(p, M))
     #     print("p", p)
 
-    return p
+    p01 = M[0, 1]
+    p10 = M[1, 0]
+
+    x = p10 / (p01 + p10)
+    y = p01 / (p01 + p10)
+
+    if abs(x - p[0]) > 0.001 or abs(y - p[1]) > 0.001:
+        raise ValueError
+
+    return [x, y]
 
 
 def markov_source(M, n):

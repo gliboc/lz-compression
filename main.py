@@ -1,4 +1,38 @@
-"""Plotting graphs and histograms using data from LZ78 applied to Markov sources"""
+"""Plotting graphs and histogram_chains using data from LZ78 applied to Markov sources
+
+Simulation 
+
+    $ python main.py <datafile>
+
+        Plots the usual histogram_chains from the set of experiments in <datafile>.
+
+    $ python main.py -s <filesave>
+
+        Runs a simulation after prompting for three coupless (n_word, n_exp)
+        and saves it as <filesave>.
+
+    $ python main.py -m --file <datafile>
+
+        Loads the set of experiments <datafile> and plots the graphs related 
+        to mean analysis.
+
+    $ python main.py -m --save <savefile>
+
+        Runs the analysis and then saves the data - with analysis - into
+        the file <savefile>.
+
+    $ python main.py -v  (--file <datafile> | --save <savefile>)
+
+        Works the same as the -m argument previously seen, except that it
+        does variance analysis and plots.
+
+    $ python main.py -cdf  (--file <datafile> | --save <savefile>)
+
+        Works the same as the -m argument previously seen, except that it
+        does cumulative distribution function analysis and plots.
+
+
+"""
 
 import numpy as np  # learn more: https://python.org/pypi/np
 from math import log
@@ -17,25 +51,26 @@ import seaborn as sns
 
 # import pandas as pd
 from scipy import stats
+from eigenvalues import eigenvalue
 
 sns.set(color_codes=True)
 np.random.seed(sum(map(ord, "distributions")))
 
-debug = True
+DEBUG = True
 
 
 def test_neininger():
-    Ms = [markov_chain(2) for _ in range(100)]
-    neins = [sigma2_H3(M) for M in Ms]
-    ours = [(h_2(M) - entropy(M) ** 2) * entropy(M) ** 3 for M in Ms]
+    m_chains = [markov_chain(2) for _ in range(100)]
+    neins = [sigma2_H3(M) for M in m_chains]
+    ours = [(h_2(M) - entropy(M) ** 2) * entropy(M) ** 3 for M in m_chains]
 
     cell_text = []
 
-    for i in range(len(Ms)):
+    for i in range(len(m_chains)):
         cell_text.append(["%1.5f" % x for x in [neins[i], ours[i]]])
 
     columns = ["Neiningers H^3 * sigma^2", "h2 - h^2"]
-    rows = [str((M[0, 0], M[1, 0])) for M in Ms]
+    rows = [str((M[0, 0], M[1, 0])) for M in m_chains]
 
     plt.table(cellText=cell_text, rowLabels=rows, colLabels=columns)
 
@@ -48,12 +83,12 @@ def test_neininger():
 
 
 def test_entropy():
-    Ms = [markov_chain(i) for i in range(2, 10)]
-    ents = [entropy(M) for M in Ms]
+    m_chains = [markov_chain(i) for i in range(2, 10)]
+    ents = [entropy(M) for M in m_chains]
 
-    for i in range(len(Ms)):
+    for i in range(len(m_chains)):
         print("The Markov chain:")
-        input(Ms[i])
+        input(m_chains[i])
         print("Its entropy:")
         input(ents[i])
 
@@ -76,7 +111,7 @@ def fast_word_generator(M, f, n, N):
 
 
 def simulation(
-    random_markov=False, filesave="experiment_data.npy", length_values=None, n_exp=None
+    random_markov=True, filesave="experiment_data.npy", length_values=None, n_exp=None
 ):
     """Makes a simulation of the redundancy distribution for different word length values.
     """
@@ -110,6 +145,8 @@ def simulation(
 
         fast_mode = True
         style_mode = False
+
+    print("Random markov has values", random_markov)
 
     if not random_markov:
         p_a = 0.9
@@ -224,9 +261,11 @@ def data_analysis(
         # Theoretical variances
         std_nein = sqrt(sigma2_H3(M) * n) / log(n, 2)
         # std_szpan = sqrt ( -(h_2(M) - (h**2)) * h**3 * n )
-        print("Value for variance var(M)", var(M))
-        print("Value of log(n)", log(n))
-        std_szpan = sqrt(var(M) * log(n))
+        print("M is", M)
+        print("n is", n)
+        print("Value for variance var(M)", var(M, n))
+        print("Value of log(m)", log(mean))
+        std_szpan = sqrt(var(M, n))
         exp["std_nein"] = std_nein
         exp["std_szpan"] = std_szpan
 
@@ -238,16 +277,15 @@ def data_analysis(
             )
 
         # Normalized values from Nein and Szpan papers
-        d_Nein = [(m_n - mean) / std_nein for m_n in exp["data"]]
-        d_Szpan = [(m_n - mean) / std_szpan for m_n in exp["data"]]
-        exp["d_nein"] = d_Nein
-        exp["d_szpan"] = d_Szpan
+        d_nein = [(m_n - mean) / std_nein for m_n in exp["data"]]
+        d_szpan = [(m_n - mean) / std_szpan for m_n in exp["data"]]
+        exp["d_nein"] = d_nein
+        exp["d_szpan"] = d_szpan
 
         # Empirical variance and mean
         # Samples corresponding to normal distribution p
 
         print("Showing the data")
-        input(exp["data"])
 
         mu, std = norm.fit(exp["data"])
         exp["mu"] = mu
@@ -289,29 +327,37 @@ def data_loading(filesave=None, datafile=None):
     """
 
     if datafile is None:
+
         print("\nChoose ns interval range(a, b, s)")
+
         a = int(input("a = "))
         b = int(input("b = "))
         s = int(input("s = "))
         ns = list(range(a, b, s))
         n_exp = int(input("\nHow many experiments ? "))
+
         exps = data_analysis(filesave=filesave, length_values=ns, n_exp=n_exp)
 
     else:
+
         print("Loading file ", datafile)
+
         exps = np.load(datafile)
 
     print("Analysing the experiments")
+
     fast_mode = (
         False
         if input("Do you want to see the values? y/N (defaut is false) ").lower() == "y"
         else True
     )
+
     exps = data_analysis(exps=exps, datafile=datafile, fast_mode=fast_mode)
+
     try:
         ns = exps[0]["ns"]
     except:
-        ns = list(range(200, 20000, 200))  # maybe something else
+        ns = list(range(100, 20000, 200))  # maybe something else
 
     return exps, ns
 
@@ -373,8 +419,10 @@ def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_nam
     exps, ns = data_loading(filesave=filesave, datafile=datafile)
     n_exp = exps[0]["n_exp"]
 
+    input(ns)
     mus = [exp["mu"] for exp in exps]
     means = [exp["mean"] for exp in exps]
+    input(means)
     diff = [mus[i] - means[i] for i in range(len(mus))]
     # inv_diff = [1/d for d in diff]
     n_log2 = [n / log(n, 2) ** 2 for n in ns]
@@ -395,14 +443,10 @@ def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_nam
         ns,
         means,
         color="green",
-        label=r"$E_{th} = \frac{nh}{\log_2(n)}$",
+        label=r"$E_{\text{th}} = \frac{nh}{\log_2(n)}$",
         linestyle="-",
     )
-    axs[0].set_title(
-        r"Empirical ($\mu$) and theoretical mean ($E_{th}$) plots, $n_{exp}$ = "
-        + str(n_exp)
-        + "$"
-    )
+    axs[0].set_title(r"Empirical ($\mu$) and theoretical mean ($E_{\text{th}}$) plots")
 
     axs[1].plot(ns, n_log2, color="green", label=r"$\frac{n}{\log_2^2 n}$")
 
@@ -432,7 +476,9 @@ def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_nam
     # axs[2].set_title("Inverse of $\Delta E$ with logarithmic n")
     # axs[2].set_xscale('log')
 
-    axs[0].set_ylabel("Different computations for number of phrases expectancy E(M_n)")
+    axs[0].set_ylabel(
+        "Different computations for number of phrases expectancy $E(M_n)$"
+    )
     for ax in axs:
         ax.set_xlabel("Word length n")
         ax.legend()
@@ -507,8 +553,8 @@ def latex_float(f):
         return float_str
 
 
-def print_histograms(random_markov=True, datafile=None, fast_mode=True):
-    """Prints the histograms corresponding to datasets of words generated by a
+def print_histogram_chains(random_markov=True, datafile=None, fast_mode=True):
+    """Prints the histogram_chains corresponding to datasets of words generated by a
     Markov source."""
     # Plotting raw M_n values
     exps = data_analysis(
@@ -630,7 +676,7 @@ def print_histograms(random_markov=True, datafile=None, fast_mode=True):
                 label="$\mathcal{N}(0,1)$",
             )
 
-    figs_raw.suptitle("Histograms of the values of $M_n$ for different word lengths")
+    figs_raw.suptitle("Histogram_chains of the values of $M_n$ for different word lengths")
     figs_mean_std.suptitle(
         "$M_n$ distribution, normalized with theoretical mean"
         + "($E_{th}$) and empirical variance ($\sigma^2$)"
@@ -700,9 +746,9 @@ def files_choice(arg, name):
 
 if __name__ == "__main__":
     try:
-        datafile, filesave = files_choice(sys.argv[2], sys.argv[3])
+        df, fs = files_choice(sys.argv[2], sys.argv[3])
     except:
-        datafile, filesave = None, None
+        df, fs = None, None
 
     if len(sys.argv) > 1:
         # x = input("Do you want to save the generated figures ? y/N ")
@@ -711,39 +757,46 @@ if __name__ == "__main__":
         save = False
 
         if sys.argv[1] == "-s":
+
             simulation(random_markov=True, filesave=sys.argv[2])
 
         elif sys.argv[1] == "-m":
+
             save_name = None
+
             if save:
                 save_name = input("What prefix for mean analysis figures ?")
 
             analysing_theoretical_mean(
-                datafile=datafile, filesave=filesave, save=save, save_name=save_name
+                datafile=df, filesave=fs, save=save, save_name=save_name
             )
 
         elif sys.argv[1] == "-v":
+
             save_name = None
+
             if save:
+
                 save_name = input("What prefix for std analysis figures ?")
 
             analysing_theoretical_std(
-                datafile=datafile, filesave=filesave, save=save, save_name=save_name
+                datafile=df, filesave=fs, save=save, save_name=save_name
             )
 
         elif sys.argv[1] == "-cdf":
-            exps, ns = data_loading(datafile=datafile)
+
+            experiments, ns = data_loading(datafile=df)
             figs, axs = plt.subplots(1, len(exps))
 
-            for (i, exp) in enumerate(exps):
-                print_cdf(exp, axs[i], "mu", "std")
-                
+            for (exp_index, one_exp) in enumerate(experiments):
+                print_cdf(one_exp, axs[exp_ind], "mu", "std")
+
             figs.suptitle("Cumulative distribution function plots for normalized $M_n$")
 
         else:
-            print_histograms(random_markov=True, datafile=sys.argv[1])
+            print_histogram_chains(random_markov=True, datafile=sys.argv[1])
 
         plt.show()
 
     else:
-        print_histograms(random_markov=True)
+        print_histogram_chains(random_markov=True)
