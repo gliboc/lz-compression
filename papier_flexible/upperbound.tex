@@ -1,0 +1,95 @@
+\question{Proving the upper bound goes to 0}
+
+
+\centers{ $ \Sum{k=0}{\pinf} 
+            \proba{ D_n^{LZ} (W) > k + b_n^{\,\delta} }
+            \leq 
+            A \alpha^{ {(c_3 x_n)}^{\delta - \tf12} } 
+                \SUM{i=0}{\pinf} \alpha^{ \f{ i }{ \sqrt{ c_3 x_n } } }
+        $}
+
+\noindent We can prove directly that the upperbound term goes to 0 
+for $n$ going to $\pinf$,
+without resorting to another majoration.
+Since $\sqrt{c_3 x_n}$ goes to infinity for $n \rightarrow \pinf$,
+we can pick $n$ such that $\sqrt{c_3 x_n} > 1$. Therefore
+$\alpha^{\f{1}{\sqrt{c_3 x_n}}} < 1$ and the geometric sum gives
+
+\centers{ $ \SUM {i=0}{\pinf}
+            \alpha^{ \f{i}{\sqrt{c_3 x_n}} } =
+                  \f { 1 } 
+                     { 1 - \alpha^{ \f 1 { \sqrt{ c_3 x_n } } } } $}
+
+\noindent It remains to prove that 
+    \centers{$ \underset{n\rightarrow\pinf}{\limt} \,\,\,
+                  \f { \alpha^{ {(c_3 x_n)}^{ \delta - \tf12} } } 
+                     { 1 - \alpha^{ \f 1 { \sqrt { c_3 x_n } } }} = 0
+            $}
+
+which is done by using L'Hospital's rule.
+Define :
+\centers
+    {$ \fonction
+            {f}
+            { \Rplusstar }
+            { \R }
+            { x }
+            { \alpha^{ x^{ \delta - \tf12 } } }
+      \qquad \text{ and } \qquad
+      \fonction
+        {g}
+        { \Rplusstar }
+        { \R }
+        { x }
+        {  1 - \alpha^{ \f1{ \sqrt{x} } } } $}
+
+\noindent Let $x \in \intoo{0}{\pinf}$. Derivating gives :
+
+\centers{$ f'(x) = \ln \alpha \pa {\delta - \f12}
+                    \, x^{\delta - \tf32}
+                    \, f(x)
+            \qquad \text{ and } \qquad
+     g'(x) 
+        =  \ln \alpha\,\, \f 1 {2x\sqrt{x}}\, \alpha ^ {\f 1 {\sqrt{x}}} $}
+
+\noindent We proceed to show that 
+
+   \centers {
+        $ \f{f'(x)}{g'(x)}
+             = \f { \pa{\delta - \f12}
+                    \, x^{\delta - \tf32}
+                    \alpha^{ x^{ \delta - \tf12 } } }
+                  { \f{1}{2x\sqrt{x}} 
+                        \alpha^{ \f{1}{\sqrt{x}} } }
+        = 2 \pa{\delta -\f12} x^{\delta} 
+            \times \f { \alpha^{x^{\delta-\tf12}}}
+                      { \alpha^{ \f{1}{\sqrt{x}} } }
+        \underset{ x \rightarrow \pinf }{ \longrightarrow } 0 $} 
+
+Since $\alpha{\f{1}{\sqrt{x}}} 
+        \underset{x\rightarrow\pinf}{\longrightarrow} 1$, the task is now
+to find 
+
+\centers{$ \underset{x\rightarrow\pinf}{\limt}
+                               x^{\delta} \alpha^{x^{\delta-\tf12}}$}
+
+ 
+
+\begin{egalites}
+ Writing & x^{\delta} \alpha^{x^{\delta-\tf12}}
+        & \ex{ \delta \log x + \log \alpha \cdot x^{\delta - \tf12}}
+\end{egalites}
+
+and taking the log, we see that
+
+\centers{$ \delta \log x + \log \alpha \cdot x^{\delta - \tf12} 
+            \underset{x\rightarrow\pinf}{\longrightarrow} \minf$}
+
+
+
+
+
+
+            
+
+

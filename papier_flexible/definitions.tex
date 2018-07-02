@@ -2,93 +2,95 @@
 
 \question{Notations}
 \begin{df}
-For all $n\in\mathbb{N}$, $\Omega_n$ is the set 
+For all $n\in\mathbb{N}$, we call $\Omega_n$ the set 
 of words of length $n$.
 \end{df}
 
 \begin{df}
-Let $W \in \Omega_n$ be a random variable which outputs words of length $n$
-from a memoryless source.
+We define $W \in \Omega_n$ to be a random variable which outputs 
+words of length $n$ from a memoryless source.
 \end{df}
 
 \begin{df}
-Let $J \in \mathbb{N}^{\star}$ be a random
+We will consider $J \in \mathbb{N}^{\star}$ to be a random
 variable which, in the event $\{ W = w \}$,
 uniformly randomly picks the index of
-one of the phrases of $w$. 
-The joint law of $J$ with $W$ is :
+one of the phrases of $w$.
+The joint law of $J$ with $W$ being :
 
 \centers{$ \proba{ W=w, J=j } = 
-                    \left\{ \begin{array}{l}
-                        \tf{1}{M_n(w)} \quad \textmd{ if } j \leq M_n(w) \\
-                        0 \qquad \qquad \textmd{ else }
-                    \end{array}
-                    \right. $ }
+                    \begin{cases}
+                        \tf{1}{M_n(w)} \quad & \text{ if } j \leq M_n(w) \\
+                        0 \qquad \qquad  &\text{ else }
+                    \end{cases} $}
 \end{df}
 
 \begin{df}
 For a given word $w\in\Omega_n$, 
 and for all $i\in\mathbb{N}^{\star}$, 
+we will consider $g_w(i)$ defined by
 \centers{$g_w(i) = f(i) + |L_{f(i)}|$ }
 where $f(i)$ is the starting index
-of the $i^{\text{th}}$ phrase of the flexible parsing,
+of the $i^{\text{th}}$ phrase of the flexible parsing of,
 and $|L_{f(i)}|$ is the length of the longest greedy phrase
 given by the Lempel-Ziv parsing.
 \end{df}
 
 \begin{df}
-The random variable $g_W(J)$ outputs $g_w(j)$
-during the events $\{ W=w \}$ and $\{ J = j \}$.
+We define $g_W(J)$ to be the random variable which
+outputs $g_w(j)$ during the events $\{ W=w \}$ and $\{ J = j \}$.
 \end{df}
 
 \begin{df}
-For all $k \in \mathbb{N}$, the random variable $L_{g_W(J) - k}$ 
-gives the $(k+1)^{\text{th}}$ possible phrase for the flexible 
-parsing at index $g_W(J) - k$. Its only randomness comes from $W$
-and $J$.
+For all $k \in \mathbb{N}$, let $L_{g_W(J) - k}$ be the random
+variables which gives the $(k+1)^{\text{th}}$ possible phrase 
+for the flexible parsing at index $g_W(J) - k$. 
+Its only randomness comes from $W$ and $J$. 
+If $i\leq 0$, we may assume that $L_k$ will be the empty word of 
+size 0.
 \end{df}
 
 
-\begin{df}
-    We define the random variable
+\begin{nota}
+    We will denote by
     \centers{$B_{J, W}^k = | L_{g_W(J) - k} |$}
     \noindent the length of this $(k+1)^{\text{th}}$ candidate.
-\end{df}
+\end{nota}
 
 
 \noindent
-We will study the random variable
+We can now study the random variable
     {$ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
                     \left\{ { B_{J, W}^k - k } \right\} $}
 
 \noindent
-For $\{ J = j \}$, $\{ W = w \}$ and $j \leq M_n(w)$, this random variable is the length of 
-the $j^{\textmd{th}}$ phrase of the flexible parsing of the word $w$. We have,
-accordingly,
+Given any $(j,w) \in \mathbb{N}^{\star} \times \Omega_n$,
+under the events $\{ J = j \}$, $\{ W = w \}$ and $j \leq M_n(w)$, 
+this random variable is the length of 
+the $j^{\textmd{th}}$ phrase of the flexible parsing of the word $w$.
 
 \centers{$ D_n^{FLEX} (w) = \f{1}{M_n(w)} \Sum{j=0}{M_n(w)-1} |u_j^{FLEX}|
                           = \f{1}{M_n(w)} \Sum{j=0}{M_n(w)-1}  
                                 \underset{ 0 \leq k \leq g_w(j) }{ \max } 
                                 \left\{ { B_{j, w}^k - k } \right\} $}
 \noindent
-Precisely, $D_n^{FLEX}(w)$ is the empirical average of the lengths of the phrases
-of the flexible parsing of a word $w$, whereas 
+where $D_n^{FLEX}(w)$ is the empirical average of the lengths of the phrases
+of the flexible parsing of a word $w$, contrary to
         $\underset{ 0 \leq k \leq g_w(J) }{ \max } 
         \left\{ { B_{J, w}^k - k } \right\} $,
 with $J$ a random variable and $w$ fixed,
-is the length of a uniformly randomly selected phrase of the flexible parsing
-of $w$. 
+which is the length of a uniformly randomly selected 
+phrase of the flexible parsing of $w$. 
 
 \begin{df}
-    We define
+    We denote $x_n$ the average value of ${D_n}^{\text{LZ}}$ :
     \centers{$x_n = \f1{h} \log_2 \pa{ \f{nh}{\log_2(n)} }$}
-    \noindent the average value of ${D_n}^{\text{LZ}}$, the
-    typical length of a phrase from the Lempel-Ziv parsing 
-    of a memoryless-generated word.
 \end{df}
 
 \begin{rmk}
-    The random variable $\overline{D_n}^{\text{LZ}}$ is not equal
+    The random variable $\overline{D_n}^{\text{LZ}}$ is the
+    typical length of a phrase from the Lempel-Ziv parsing 
+    of a memoryless-generated word. is not equal
     to the empirical average length of a phrase, which is,
     for $w \in \Omega_n$ :
     \centers{$ {D_n}^{\text{LZ}}(w)
@@ -104,10 +106,10 @@ of $w$.
     length of all the tree's nodes.
 \end{rmk}
 
-\begin{df}
-    We also define for writing purposes
+\begin{nota}
+    We denote ${b_n}^{\delta}$ as
     \centers{${b_n}^{\delta} = x_n + (c_3 x_n)^{\delta}$}
-\end{df}
+\end{nota}
 
 \noindent
 We will study
