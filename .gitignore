@@ -1,6 +1,11 @@
 *.npy
 *.pyc
 *.dat
+*.png
+*.md
+*.pdf
+.vscode
+*.ps
 __pycache__/*
 papier_flexible/*
 rapport_jacquet/*
