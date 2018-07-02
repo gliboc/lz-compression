@@ -1,0 +1,71 @@
+\newtheorem{Definition}{def}
+
+\question{Notations}
+
+\begin{def}
+Let $W$ be the random variable which outputs words of length $n$ 
+(of $\Omega_n$) from a memoryless source.
+\end{def}
+
+\begin{def}
+ Let $J \in \mathbb{N}^{\star}$ be a random
+variable which, for every word $w$, uniformly picks the index of
+one of its phrases. The joint law of $J$ with $W$ is :
+
+\centers{$ \proba{ W=w, J=j } = 
+                    \left\{ \begin{array}{l}
+                        \tf{1}{M_n(w)} \quad \textmd{ if } j \leq M_n(w) \\
+                        0 \qquad \qquad \textmd{ else }
+                    \end{array}
+                    \right. $ }
+\end{def}
+
+\begin{def}
+The function defined as $g$ is a random variable that depends on $W$, therefore
+we write it as $g_W$, or, during the event $\{ W=w \}$, $g_w$. 
+Samely, we will study the random variable $g_W(J)$, and will
+sometimes write $g_w(j)$ when both the events $[W=w]$ and $[J=j]$
+occur.
+
+
+\leftcenters
+    {We define the random variable}
+    {$B_{J, W}^k = | L_{g_W(J) - k} |$}
+
+\noindent
+and we will study the random variable
+    {$ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
+                    \left\{ { B_{J, W}^k - k } \right\} $}
+
+\noindent
+For $J = j$, $W = w$ and $j \leq M_n(w)$, this random variable is the length of 
+the $j^{\textmd{th}}$ phrase of the flexible parsing of the word $w$. We have,
+accordingly,
+
+\centers{$ D_n^{FLEX} (w) = \f{1}{M_n(w)} \Sum{j=0}{M_n(w)-1} |u_j^{FLEX}|
+                          = \f{1}{M_n(w)} \Sum{j=0}{M_n(w)-1}  
+                                \underset{ 0 \leq k \leq g_w(j) }{ \max } 
+                                \left\{ { B_{j, w}^k - k } \right\} $}
+\noindent
+Precisely, $D_n^{FLEX}(w)$ is the empirical average of the lengths of the phrases
+of the flexible parsing of a word $w$, whereas 
+        $\underset{ 0 \leq k \leq g_w(J) }{ \max } 
+        \left\{ { B_{J, w}^k - k } \right\} $,
+with $J$ a random variable and $w$ fixed,
+is the length of a uniformly randomly selected phrase of the flexible parsing
+of $w$. 
+
+\leftcenters   
+    {Finally, we define}
+    {$x_n = \f1{h} \log_2 \pa{ \f{nh}{\log_2(n)} }$}
+
+\leftcenters
+    {as well as}
+    {$b_n^{\delta} = x_n + (c_3 x_n)^{\delta}$}
+
+\leftcenters
+    {and we study}
+    {$ \proba{ 
+        \underset{ 0 \leq k \leq g_w(J) }{ \max } 
+        \left\{ { B_{J, w}^k - k } \right\}
+            > b_n^{\delta} } $}
