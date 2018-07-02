@@ -1,9 +1,32 @@
 \input{annales.sty}
+
+\newtheorem{df}{Definition}
+\newtheorem{rmk}{Remark}
+\newtheorem{nota}{Notation}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\setlength\parindent{0pt}
+
 \versionAuteur
 
-\begin{document}
 
-\include{papier}
+\begin{document}
+\titre{Optimal parsing of LZ78 for memoryless sources}
+
+\input{corrections.tex}
+\newpage
+\input{definitions.tex}
+\input{computations.tex}
+\input{critics.tex}
+
+\input{upperbound.tex}
 
 \end{document}
 

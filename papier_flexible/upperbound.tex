@@ -1,0 +1,99 @@
+\hypertarget{upperbound}{\centers{\question{Upperbound proof}}}
+ 
+ This is a proof that the upperbound 
+in $\numero{26}$ goes to 0. Assuming
+
+
+\centersright{ $ \SUM{k=0}{\pinf} 
+            \proba{ D_n^{LZ} (W) > k + b_n^{\,\delta} }
+            \leq 
+            A \alpha^{ {(c_3 x_n)}^{\delta - \tf12} } 
+                \Sum{i=0}{\pinf} \alpha^{ \tf{ i }{ \sqrt{ c_3 x_n } } }
+        $}{ \numero{26} }
+
+\noindent We can prove directly that the upperbound term goes to 0 
+for $n$ going to $\pinf$,
+without resorting to another majoration.
+Since $\sqrt{c_3 x_n}$ goes to infinity for $n \rightarrow \pinf$,
+we can pick $n$ such that $\sqrt{c_3 x_n} > 1$. Therefore
+$\alpha^{\tf{1}{\sqrt{c_3 x_n}}} < 1$ and the geometric sum gives
+
+\centers{ $ \SUM {i=0}{\pinf}
+            \alpha^{ \tf{i}{\sqrt{c_3 x_n}} } =
+                  \f { 1 } 
+                     { 1 - \alpha^{ \tf 1 { \sqrt{ c_3 x_n } } } } $}
+
+\noindent It remains to prove that 
+    \centers{$ \underset{n\rightarrow\pinf}{\limt} \,\,\,
+                  \f { \alpha^{ {(c_3 x_n)}^{ \delta - \tf12} } } 
+                     { 1 - \alpha^{ \tf 1 { \sqrt { c_3 x_n } } }} = 0
+            $}
+
+which is done by using L'Hospital's rule.
+Define :
+\centers
+    {$ \fonction
+            {f}
+            { \Rplusstar }
+            { \R }
+            { x }
+            { \alpha^{ x^{ \delta - \tf12 } } }
+      \qquad \text{ and } \qquad
+      \fonction
+        {g}
+        { \Rplusstar }
+        { \R }
+        { x }
+        {  1 - \alpha^{ \f1{ \sqrt{x} } } } $}
+
+\noindent Let $x \in \intoo{0}{\pinf}$. Derivating yields :
+
+\centers{$ f'(x) = \ln \alpha \pa {\delta - \f12}
+                    \, x^{\delta - \tf32}
+                    \, f(x)
+            \qquad \text{ and } \qquad
+     g'(x) 
+        =  \ln \alpha\,\, \f 1 {2x\sqrt{x}}\, \alpha ^ {\f 1 {\sqrt{x}}} $}
+
+We proceed to show that $\f{f'(x)}{g'(x)}$ goes to 0 as $x$ goes
+to $\pinf$. We have
+
+   \centers {
+        $ \f{f'(x)}{g'(x)}
+             = \f { \pa{\delta - \f12}
+                    \, x^{\delta - \tf32}
+                    \alpha^{ x^{ \delta - \tf12 } } }
+                  { \f{1}{2x\sqrt{x}} 
+                        \alpha^{ \f{1}{\sqrt{x}} } }
+        = 2 \pa{\delta -\f12} x^{\delta} 
+            \cdot \f { \alpha^{x^{\delta-\tf12}}}
+                      { \alpha^{ \f{1}{\sqrt{x}} } } $} 
+
+Since $\alpha^{\f{1}{\sqrt{x}}} 
+        \underset{x\rightarrow\pinf}{\longrightarrow} 1$, we are left to study 
+        $ x^{\delta} \alpha^{x^{\delta-\tf12}}$.
+
+ 
+
+\begin{egalites}
+ Writing & x^{\delta} \alpha^{x^{\delta-\tf12}}
+        & \ex{ \delta \log x + \log \alpha \cdot x^{\delta - \tf12}}
+\end{egalites}
+
+and taking the log, since $\delta > \tf12$ and $\log \alpha < 0$ we see that
+
+\centers{$ \delta \log x + \log \alpha \cdot x^{\delta - \tf12} 
+            \underset{x\rightarrow\pinf}{\longrightarrow} \minf$}
+
+Therefore $x^{\delta} \alpha^{x^{\delta-\tf12}} \underset{x\rightarrow\pinf}{\rightarrow} 0$,
+and given that $f(0) = g(0) = 0$, L'Hospital's rule applies, proving that 
+$\f{f(x)}{g(x)} \underset{x\rightarrow\pinf}{\longrightarrow} 0$.
+
+
+
+
+
+
+            
+
+
