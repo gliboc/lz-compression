@@ -1,16 +1,22 @@
-\newtheorem{Definition}{def}
+
 
 \question{Notations}
+\begin{df}
+For all $n\in\mathbb{N}$, $\Omega_n$ is the set 
+of words of length $n$.
+\end{df}
 
-\begin{def}
-Let $W$ be the random variable which outputs words of length $n$ 
-(of $\Omega_n$) from a memoryless source.
-\end{def}
+\begin{df}
+Let $W \in \Omega_n$ be a random variable which outputs words of length $n$
+from a memoryless source.
+\end{df}
 
-\begin{def}
- Let $J \in \mathbb{N}^{\star}$ be a random
-variable which, for every word $w$, uniformly picks the index of
-one of its phrases. The joint law of $J$ with $W$ is :
+\begin{df}
+Let $J \in \mathbb{N}^{\star}$ be a random
+variable which, in the event $\{ W = w \}$,
+uniformly randomly picks the index of
+one of the phrases of $w$. 
+The joint law of $J$ with $W$ is :
 
 \centers{$ \proba{ W=w, J=j } = 
                     \left\{ \begin{array}{l}
@@ -18,27 +24,45 @@ one of its phrases. The joint law of $J$ with $W$ is :
                         0 \qquad \qquad \textmd{ else }
                     \end{array}
                     \right. $ }
-\end{def}
+\end{df}
 
-\begin{def}
-The function defined as $g$ is a random variable that depends on $W$, therefore
-we write it as $g_W$, or, during the event $\{ W=w \}$, $g_w$. 
-Samely, we will study the random variable $g_W(J)$, and will
-sometimes write $g_w(j)$ when both the events $[W=w]$ and $[J=j]$
-occur.
+\begin{df}
+For a given word $w\in\Omega_n$, 
+and for all $i\in\mathbb{N}^{\star}$, 
+\centers{$g_w(i) = f(i) + |L_{f(i)}|$ }
+where $f(i)$ is the starting index
+of the $i^{\text{th}}$ phrase of the flexible parsing,
+and $|L_{f(i)}|$ is the length of the longest greedy phrase
+given by the Lempel-Ziv parsing.
+\end{df}
+
+\begin{df}
+The random variable $g_W(J)$ outputs $g_w(j)$
+during the events $\{ W=w \}$ and $\{ J = j \}$.
+\end{df}
+
+\begin{df}
+For all $k \in \mathbb{N}$, the random variable $L_{g_W(J) - k}$ 
+gives the $(k+1)^{\text{th}}$ possible phrase for the flexible 
+parsing at index $g_W(J) - k$. Its only randomness comes from $W$
+and $J$.
+\end{df}
 
 
-\leftcenters
-    {We define the random variable}
-    {$B_{J, W}^k = | L_{g_W(J) - k} |$}
+\begin{df}
+    We define the random variable
+    \centers{$B_{J, W}^k = | L_{g_W(J) - k} |$}
+    \noindent the length of this $(k+1)^{\text{th}}$ candidate.
+\end{df}
+
 
 \noindent
-and we will study the random variable
+We will study the random variable
     {$ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
                     \left\{ { B_{J, W}^k - k } \right\} $}
 
 \noindent
-For $J = j$, $W = w$ and $j \leq M_n(w)$, this random variable is the length of 
+For $\{ J = j \}$, $\{ W = w \}$ and $j \leq M_n(w)$, this random variable is the length of 
 the $j^{\textmd{th}}$ phrase of the flexible parsing of the word $w$. We have,
 accordingly,
 
@@ -55,17 +79,40 @@ with $J$ a random variable and $w$ fixed,
 is the length of a uniformly randomly selected phrase of the flexible parsing
 of $w$. 
 
-\leftcenters   
-    {Finally, we define}
-    {$x_n = \f1{h} \log_2 \pa{ \f{nh}{\log_2(n)} }$}
+\begin{df}
+    We define
+    \centers{$x_n = \f1{h} \log_2 \pa{ \f{nh}{\log_2(n)} }$}
+    \noindent the average value of ${D_n}^{\text{LZ}}$, the
+    typical length of a phrase from the Lempel-Ziv parsing 
+    of a memoryless-generated word.
+\end{df}
 
-\leftcenters
-    {as well as}
-    {$b_n^{\delta} = x_n + (c_3 x_n)^{\delta}$}
+\begin{rmk}
+    The random variable $\overline{D_n}^{\text{LZ}}$ is not equal
+    to the empirical average length of a phrase, which is,
+    for $w \in \Omega_n$ :
+    \centers{$ {D_n}^{\text{LZ}}(w)
+                = \f{1}{M_n(w)}
+                    \SUM{j=0}{M_n(w)-1} \left| 
+                                        u_j^{\text{FLEX}}
+                                        \right| $}
 
-\leftcenters
-    {and we study}
+    \noindent
+    Indeed, let's imagine we build a DST; then ${D_n}^{\text{LZ}}$
+    can be seen as the depth of a random node, whereas 
+    ${D_n}^{\text{LZ}}$ is the average computed on the path
+    length of all the tree's nodes.
+\end{rmk}
+
+\begin{df}
+    We also define for writing purposes
+    \centers{${b_n}^{\delta} = x_n + (c_3 x_n)^{\delta}$}
+\end{df}
+
+\noindent
+We will study
+    \centers
     {$ \proba{ 
         \underset{ 0 \leq k \leq g_w(J) }{ \max } 
         \left\{ { B_{J, w}^k - k } \right\}
-            > b_n^{\delta} } $}
+            > {b_n}^{\delta} } $}

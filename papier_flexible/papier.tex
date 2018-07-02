@@ -1,122 +1,90 @@
-\titre{Optimal parsing of LZ78 for memoryless sources}
-
-
-\separation
-\bk
-
-
-\question{Notations}
-Let $W$ be the random variable which outputs words of length $n$ ($\Omega_n$)
-from a memoryless source. Let $J \in \mathbb{N}^{\star}$ be a random
-variable which, for every word $w$, uniformly picks the index of
-one of its phrases. The joint law of $J$ with $W$ is :
-
-\centers{$ \proba{ W=w, J=j } = 
-                    \left\{ \begin{array}{l}
-                        \tf{1}{M_n(w)} \quad \textmd{ if } j \leq M_n(w) \\
-                        0 \qquad \qquad \textmd{ else }
-                    \end{array}
-                    \right. $ }
-
-
-\noindent
-The function defined as $g$ is a random variable that depends on $W$, therefore
-we write it as $g_W$, or, during the event $\{ W=w \}$, $g_w$. Samely, we will
-study the random variable $g_W(J)$, and will
-sometimes write $g_w(j)$ when both $W$ and $J$ are determined as $w$ and $j$.
-
-
-\leftcenters
-    {We define the random variable}
-    {$B_{J, W}^k = | L_{g_W(J) - k} |$}
-
-\noindent
-and we will study the random variable
-    {$ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
-                    \left\{ { B_{J, W}^k - k } \right\} $}
-
-\noindent
-For $J = j$, $W = w$ and $j \leq M_n(w)$, this random variable is the length of 
-the $j^{\textmd{th}}$ phrase of the flexible parsing of the word $w$. We have,
-accordingly,
-
-\centers{$ D_n^{FLEX} (w) = \f{1}{M_n(w)} \Sum{j=0}{M_n(w)-1} |u_j^{FLEX}|
-                          = \f{1}{M_n(w)} \Sum{j=0}{M_n(w)-1}  
-                                \underset{ 0 \leq k \leq g_w(j) }{ \max } 
-                                \left\{ { B_{j, w}^k - k } \right\} $}
-\noindent
-Precisely, $D_n^{FLEX}(w)$ is the empirical average of the lengths of the phrases
-of the flexible parsing of a word $w$, whereas 
-        $\underset{ 0 \leq k \leq g_w(J) }{ \max } 
-        \left\{ { B_{J, w}^k - k } \right\} $,
-with $J$ a random variable and $w$ fixed,
-is the length of a uniformly randomly selected phrase of the flexible parsing
-of $w$. 
-
-\leftcenters   
-    {Finally, we define}
-    {$x_n = \f1{h} \log_2 \pa{ \f{nh}{\log_2(n)} }$}
-
-\leftcenters
-    {as well as}
-    {$b_n^{\delta} = x_n + (c_3 x_n)^{\delta}$}
-
-\leftcenters
-    {and we study}
-    {$ \proba{ 
-        \underset{ 0 \leq k \leq g_w(J) }{ \max } 
-        \left\{ { B_{J, w}^k - k } \right\}
-            > b_n^{\delta} } $}
 
 
 \question{Computations}
 \noindent By conditionning on $W$ and $J$, we obtain
 
 \begin{calculs}
-        & \proba{ B_{J, W} > b_n^{\delta} }
+        & \proba{ B_{J, W} > {b_n}^{\delta} }
             &=& \SUM{w \in \Omega_n}{} \SUM{j \in \mathbb{N}^{\star}}{} \,
-                \proba{ B_{J, W} > b_n^{\delta} \,|\, W=w, J=j }
+                \proba{ B_{J, W} > {b_n}^{\delta} \,|\, W=w, J=j }
                 \proba{ W=w, J=j } \\
             
             &&=& \SUM{w \in \Omega_n}{} \SUM{j \in \mathbb{N}^{\star}}{} \,
-                \proba{ \Union{k=0}{g_w(j)} \left\{ B_{w, j}^k > k + b_n^{\delta} \right\} 
+                \proba{ \Union{k=0}{g_w(j)} \left\{ B_{w, j}^k > k + {b_n}^{\delta} \right\} 
                             \,|\, W=w, J=j }
                 \proba{ W=w, J=j } \\
 
             &&\leq&
                 \SUM{w \in \Omega_n}{} \SUM{j \in \mathbb{N}^{\star}}{}
                 \SUM{k=0}{g_w(j)} 
-                \proba{ B_{w, j}^k > k + b_n^{\delta} \,|\, W=w, J=j }
+                \proba{ B_{w, j}^k > k + {b_n}^{\delta} \,|\, W=w, J=j }
                 \proba{ W=w, J=j } \\
 
             &&\leq&
                 \SUM{w \in \Omega_n}{} \SUM{j \in \mathbb{N}^{\star}}{}
                 \SUM{k=0}{\pinf} \,
-                \proba{ B_{w, j}^k > k + b_n^{\delta} \,|\, W=w, J=j }
+                \proba{ B_{w, j}^k > k + {b_n}^{\delta} \,|\, W=w, J=j }
                 \proba{ W=w, J=j } \\
 
             &&=&
                 \SUM{k=0}{\pinf}
                 \SUM{w \in \Omega_n}{} \SUM{j \in \mathbb{N}^{\star}}{} \,
-                \proba{ B_{w, j}^k > k + b_n^{\delta} \,|\, W=w, J=j }
+                \proba{ B_{w, j}^k > k + {b_n}^{\delta} \,|\, W=w, J=j }
                 \proba{ W=w, J=j } \\
 
             &&=&
                 \SUM{k=0}{\pinf} \,
-                \proba{ B_{W, J}^k > k + b_n^{\delta} } \\
+                \proba{ B_{W, J}^k > k + {b_n}^{\delta} } \\
 \end{calculs}
 
 
 
 
 \noindent
-For all $k\in\mathbb{N}$, we are now studying the probability :
+For all $k\in\mathbb{N}$, we might prove that
     \centers{
-        $ \proba{ B_{J, W}^k > k + b_n^{\delta} } $
+        $ \proba{ B_{J, W}^k > k + {b_n}^{\delta} } 
+            \leq \proba{ {D_n}^{\text{LZ}} > k + {b_n}^{\delta} } $
     }
 
 \noindent
-The first
+Let $k \in\mathbb{N}$.
+Currently, the proof to show this stands on three arguments :
+
+\begin{itemize}
+    \item[(1)] The first is that $L_{g_W(J)-k}$ can be seen as 
+          a random phrase from the Lempel-Ziv parsing of 
+          a word of length $N$, where $N \leq g_W(J)$.
+
+    \item[(2)] The second, is that $|L_{g_W(J)-k}|$ can 
+          therefore be considered the same as ${D_N}^{\text{LZ}}$
+          \textit{i.e} at least equal in law.
+
+    \item[(3)] The third is that, for all $n'\leq n$, 
+        ${D_n'}^{\text{LZ}} \leq {D_n}^{\text{LZ}}$.
+\end{itemize}
+
+There are different problems with each of these arguments :
+
+\begin{itemize}
+    \item The randomness of $L_{g_W(J)-k}$ is not clearly
+          established. For example, what is $N$ ? In order
+          to establish this result, we have to define it
+          to be able to even consider ${D_N}^{\text{LZ}}$.
+
+    \item Even if we can identify $N$ and, let's say,
+          condition it with $\{ N = n' \}$, it is not obvious
+          that the choice of a phrase in ${g_W(J)-k}$
+          is the same as the uniform choice that operates
+          in ${D_n'}^{\text{LZ}}$.
+
+    \item As for (3), this result is true on average, but 
+          not always. Indeed, since ${D_n}^{\text{LZ}}$
+          (resp. ${D_n'}^{\text{LZ}}$) is concentrated
+          around $x_n$ (resp. $x_n'$), and $x_n'$ < $x_n$
+          since $n' < n$, we can show 
+          that this result holds with high probability.
+\end{itemize}
 
 
 
