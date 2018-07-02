@@ -1,8 +1,0 @@
-Vous pouvez noter dans ce fichier toute remarque sur vos dessins, par exemple:
-	* les changements de BoundingBox et les nouvelles valeurs;
-	* les paramètres à passer à fig2ps;
-	* le programme utilisé (s'il y a lieu) pour modifier le fichier
-	  postscript;
-	* les remarques sur un comportement non standard;
-	* etc.
-
