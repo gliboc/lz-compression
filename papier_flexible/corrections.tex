@@ -1,0 +1,49 @@
+\question{Corrections}
+
+\begin{itemize}
+
+\item The formal definition of ${D_n}^{\text{LZ}}$ in $\numero{3}$ is 
+      misleading because it contradicts the previous verbal definition.
+      This formula is the empirical average length of a phrase, whereas
+      ${D_n}^{\text{LZ}}$ is used in the rest of the paper as the length
+      of a randomly selected phrase. These two aren't equal :
+      if we build a Lempel-Ziv DST from a word, then 
+      ${D_n}^{\text{LZ}}$ can be seen as the depth of a random node, 
+      which is different from the average path length computed 
+      on all the nodes. 
+
+\item In \emph{Remark 2}, I believe the definition of $v$ and 
+      $t$ should rather be 
+      $ v = a_{i'} \dots a_{i} $ and
+      $ t = a_{i+1} \dots a_n$. 
+
+\item The result $\numero{14}$ should be an equality, and actually it is one
+      because of the flexible parsing algorithm. A proof by contradiction
+      can show this. However, we upper bound 'g(j)' by $\pinf$ in 
+      $\numero{23}$ so I currently see no purpose to using $\numero{14}$ (as an 
+      equality) instead of $\numero{13}$. Furthermore, an equality is 
+      needed to establish result $\numero{22}$.
+
+\item The proof and reasoning around \emph{Theorem 1} has several flaws.
+      The notation $X$ for a sequence depending on $n$, which isn't a 
+      random variable, is misleading. On the other hand, it should appear
+      that both $g$ and $j$ are random variables, as the randomness of 
+      $j$ is used in the end of the proof. As for the arguments that 
+      link $|L_{g(j)-k}|$ to ${D_n}^{\text{LZ}}$, I have
+      indicated how I think they should be developped in the next section.
+
+\item \emph{Theorem 2} is false as stated: we proved \emph{Theorem 1}
+      using a random $j$. The randomness remains, so the quantifier
+      'for any $j < M_n$' should be removed. This would be true for 
+      \emph{Theorem 1} too.
+
+\item The proof of \emph{Theorem 2} may stop at $\numero{26}$
+      since we can directly prove this upperbound goes to $0$.
+      This yields a tighter upperbound for \emph{Theorem 2}.
+      I detailed this analysis in the last section of this report.
+
+\item In that same proof, the step between $\numero{25}$ and 
+      $\numero{26}$ relies heavily on a result from $\pac{6}$.
+      It seems not obvious that the result can be applied as such.
+
+\end{itemize}

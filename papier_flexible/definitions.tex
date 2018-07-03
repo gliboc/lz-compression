@@ -2,17 +2,17 @@
 
 \question{Notations}
 \begin{df}
-For all $n\in\mathbb{N}$, we call $\Omega_n$ the set 
+For all $n\in\mathbb{N}$, calling $\Omega_n$ the set 
 of words of length $n$.
 \end{df}
 
 \begin{df}
-We define $W \in \Omega_n$ to be a random variable which outputs 
+Defining $W \in \Omega_n$ to be a random variable which outputs 
 words of length $n$ from a memoryless source.
 \end{df}
 
 \begin{df}
-We will consider $J \in \mathbb{N}^{\star}$ to be a random
+Considering $J \in \mathbb{N}^{\star}$ to be a random
 variable which, in the event $\{ W = w \}$,
 uniformly randomly picks the index of
 one of the phrases of $w$.
@@ -28,7 +28,7 @@ The joint law of $J$ with $W$ being :
 \begin{df}
 For a given word $w\in\Omega_n$, 
 and for all $i\in\mathbb{N}^{\star}$, 
-we will consider $g_w(i)$ defined by
+we consider $g_w(i)$ defined by
 \centers{$g_w(i) = f(i) + |L_{f(i)}|$ }
 where $f(i)$ is the starting index
 of the $i^{\text{th}}$ phrase of the flexible parsing of,
@@ -52,7 +52,7 @@ size 0.
 
 
 \begin{nota}
-    We will denote by
+    Denoting by
     \centers{$B_{J, W}^k = | L_{g_W(J) - k} |$}
     \noindent the length of this $(k+1)^{\text{th}}$ candidate.
 \end{nota}
@@ -60,12 +60,12 @@ size 0.
 
 \noindent
 We can now study the random variable
-    {$ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
+    \centers{$ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
                     \left\{ { B_{J, W}^k - k } \right\} $}
 
 \noindent
 Given any $(j,w) \in \mathbb{N}^{\star} \times \Omega_n$,
-under the events $\{ J = j \}$, $\{ W = w \}$ and $j \leq M_n(w)$, 
+under the events $\{ J = j \}$, $\{ W = w \}$ and $J \leq M_n(W)$, 
 this random variable is the length of 
 the $j^{\textmd{th}}$ phrase of the flexible parsing of the word $w$.
 
@@ -88,12 +88,14 @@ phrase of the flexible parsing of $w$.
 \end{df}
 
 \begin{rmk}
-    The random variable $\overline{D_n}^{\text{LZ}}$ is the
-    typical length of a phrase from the Lempel-Ziv parsing 
-    of a memoryless-generated word. is not equal
-    to the empirical average length of a phrase, which is,
+    The random variable ${D_n}^{\text{LZ}}$ is the
+    length of a phrase randomly taken from the 
+    Lempel-Ziv parsing 
+    of a memoryless-generated word. It is not the same as
+    the empirical average length of a phrase, which we can
+    denote,
     for $w \in \Omega_n$ :
-    \centers{$ {D_n}^{\text{LZ}}(w)
+    \centers{$ \overline{D_n}^{\text{LZ}}(w)
                 = \f{1}{M_n(w)}
                     \SUM{j=0}{M_n(w)-1} \left| 
                                         u_j^{\text{FLEX}}
@@ -102,7 +104,7 @@ phrase of the flexible parsing of $w$.
     \noindent
     Indeed, let's imagine we build a DST; then ${D_n}^{\text{LZ}}$
     can be seen as the depth of a random node, whereas 
-    ${D_n}^{\text{LZ}}$ is the average computed on the path
+    $\overline{D_n}^{\text{LZ}}$ is the average computed on the path
     length of all the tree's nodes.
 \end{rmk}
 
