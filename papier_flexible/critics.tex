@@ -1,11 +1,14 @@
 \noindent
+\hypertarget{critics}{}
 Let $k \in\mathbb{N}$.
 Currently, the proof to show this stands on three arguments :
 
 \begin{itemize}
-    \item[(1)] The first is that $L_{g_W(J)-k}$ can be seen as 
+    \item[(1)] The first is that $L_{g_W(J)-k}$ is  
           a random phrase from the Lempel-Ziv parsing of 
-          a word of length $N$, where $N \leq g_W(J)$.
+          a word of length $N$, where $N \leq g_W(J) \leq n$.
+          In the event $\{ N = n' \}$, we consider 
+          ${D_{n'}}^{\text{LZ}}$.
 
     \item[(2)] The second, is that $|L_{g_W(J)-k}|$ can 
           therefore be considered the same as ${D_N}^{\text{LZ}}$
@@ -15,22 +18,23 @@ Currently, the proof to show this stands on three arguments :
         ${D_n'}^{\text{LZ}} \leq {D_n}^{\text{LZ}}$.
 \end{itemize}
 
-There are different problems with each of these arguments :
+Although they seem generally true,
+there are different problems with each of these arguments :
 
 \begin{itemize}
-    \item The randomness of $L_{g_W(J)-k}$ is not clearly
-          established. For example, what is $N$ ? In order
-          to establish this result, we have to define it
-          to be able to even consider ${D_N}^{\text{LZ}}$.
+    \item $N$ isn't clearly established, so 
+          ${D_N}^{\text{LZ}}$ isn't really known.
 
-    \item Even if we can identify $N$ and, let's say,
-          condition it with $\{ N = n' \}$, it is not obvious
-          that the choice of a phrase in ${g_W(J)-k}$
+    \item If we can identify $N$ and, let's say,
+          condition our probability with $\{ N = n' \}$, 
+          it is not obvious
+          that the choice of a phrase at position ${g_W(J)-k}$
+          knowing $\{ N = n' \}$
           is the same as the uniform choice that operates
           in ${D_n'}^{\text{LZ}}$.
 
     \item As for (3), this result is true on average, but 
-          not always. Indeed, since ${D_n}^{\text{LZ}}$
+          not in all cases. Indeed, since ${D_n}^{\text{LZ}}$
           (resp. ${D_n'}^{\text{LZ}}$) is concentrated
           around $x_n$ (resp. $x_n'$), and $x_n'$ < $x_n$
           since $n' < n$, we can show 

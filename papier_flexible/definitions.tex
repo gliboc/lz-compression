@@ -1,6 +1,9 @@
+\hypertarget{definitions}{\centers{\question{Notations}}}
 
+\noindent
+These are definitions and notations in order
+to write the proof of \emph{Theorem 1}.
 
-\question{Notations}
 \begin{df}
 For all $n\in\mathbb{N}$, calling $\Omega_n$ the set 
 of words of length $n$.
@@ -25,54 +28,65 @@ The joint law of $J$ with $W$ being :
                     \end{cases} $}
 \end{df}
 
+\begin{rmk}
+We might choose another randomness for $J$, but this one seems
+more natural.
+\end{rmk}
+
 \begin{df}
 For a given word $w\in\Omega_n$, 
 and for all $i\in\mathbb{N}^{\star}$, 
 we consider $g_w(i)$ defined by
-\centers{$g_w(i) = f(i) + |L_{f(i)}|$ }
-where $f(i)$ is the starting index
-of the $i^{\text{th}}$ phrase of the flexible parsing of,
-and $|L_{f(i)}|$ is the length of the longest greedy phrase
-given by the Lempel-Ziv parsing.
+\centers{$g_w(i) = f_w(i) + |L_{f(i)}|$ }
+where $f_w(i)$ is the starting index
+of the $i^{\text{th}}$ phrase of the flexible parsing of $w$,
+and $|L_{f_w(i)}|$ is the length of the longest greedy phrase
+given by the Lempel-Ziv parsing of this same word.
 \end{df}
 
 \begin{df}
-We define $g_W(J)$ to be the random variable which
+We define $g_{\scriptscriptstyle W}(J)$ to be the random variable which
 outputs $g_w(j)$ during the events $\{ W=w \}$ and $\{ J = j \}$.
 \end{df}
 
 \begin{df}
-For all $k \in \mathbb{N}$, let $L_{g_W(J) - k}$ be the random
+For all $k \in \mathbb{N}$, let $L_{g_{\scriptscriptstyle W}(J) - k}$ be the random
 variables which gives the $(k+1)^{\text{th}}$ possible phrase 
-for the flexible parsing at index $g_W(J) - k$. 
+for the flexible parsing at index $g_{\scriptscriptstyle W}(J) - k$. 
 Its only randomness comes from $W$ and $J$. 
-If $i\leq 0$, we may assume that $L_k$ will be the empty word of 
+If $i\leq 0$, we might assume that $L_i$ will be the empty word of 
 size 0.
 \end{df}
 
 
 \begin{nota}
     Denoting by
-    \centers{$B_{J, W}^k = | L_{g_W(J) - k} |$}
+    \centers{$B_{J, W}^k = | L_{g_{\scriptscriptstyle W}(J) - k} |$}
     \noindent the length of this $(k+1)^{\text{th}}$ candidate.
 \end{nota}
 
 
 \noindent
 We can now study the random variable
-    \centers{$ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
+    \centers{$ \underset{ 0 \leq k \leq g_{\scriptscriptstyle W}(J) }{ \max } 
                     \left\{ { B_{J, W}^k - k } \right\} $}
 
 \noindent
 Given any $(j,w) \in \mathbb{N}^{\star} \times \Omega_n$,
-under the events $\{ J = j \}$, $\{ W = w \}$ and $J \leq M_n(W)$, 
+under the events $\{ J = j \}$, $\{ W = w \}$ and $\{ J \leq M_n(W) \}$, 
 this random variable is the length of 
 the $j^{\textmd{th}}$ phrase of the flexible parsing of the word $w$.
 
-\centers{$ D_n^{FLEX} (w) = \f{1}{M_n(w)} \Sum{j=0}{M_n(w)-1} |u_j^{FLEX}|
-                          = \f{1}{M_n(w)} \Sum{j=0}{M_n(w)-1}  
+\begin{df}
+Defining the random variable $D_n^{FLEX}$ as 
+
+\begin{egalites}
+    &D_n^{FLEX} (w) 
+        & \f{1}{M_n(w)} \Sum{j=0}{M_n(w)-1} |u_j^{FLEX}(w)| \\
+        && \f{1}{M_n(w)} \Sum{j=0}{M_n(w)-1}  
                                 \underset{ 0 \leq k \leq g_w(j) }{ \max } 
-                                \left\{ { B_{j, w}^k - k } \right\} $}
+                                \left\{ { B_{j, w}^k - k } \right\}
+\end{egalites}
 \noindent
 where $D_n^{FLEX}(w)$ is the empirical average of the lengths of the phrases
 of the flexible parsing of a word $w$, contrary to
@@ -81,6 +95,7 @@ of the flexible parsing of a word $w$, contrary to
 with $J$ a random variable and $w$ fixed,
 which is the length of a uniformly randomly selected 
 phrase of the flexible parsing of $w$. 
+\end{df}
 
 \begin{df}
     We denote $x_n$ the average value of ${D_n}^{\text{LZ}}$ :
@@ -100,12 +115,6 @@ phrase of the flexible parsing of $w$.
                     \SUM{j=0}{M_n(w)-1} \left| 
                                         u_j^{\text{FLEX}}
                                         \right| $}
-
-    \noindent
-    Indeed, let's imagine we build a DST; then ${D_n}^{\text{LZ}}$
-    can be seen as the depth of a random node, whereas 
-    $\overline{D_n}^{\text{LZ}}$ is the average computed on the path
-    length of all the tree's nodes.
 \end{rmk}
 
 \begin{nota}
@@ -117,6 +126,6 @@ phrase of the flexible parsing of $w$.
 We will study
     \centers
     {$ \proba{ 
-        \underset{ 0 \leq k \leq g_w(J) }{ \max } 
-        \left\{ { B_{J, w}^k - k } \right\}
+        \underset{ 0 \leq k \leq g_{\scriptscriptstyle W}(J) }{ \max } 
+        \left\{ { B_{J, W}^k - k } \right\}
             > {b_n}^{\delta} } $}
