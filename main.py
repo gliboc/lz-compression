@@ -1,6 +1,6 @@
 """Plotting graphs and histogram_chains using data from LZ78 applied to Markov sources
 
-Simulation 
+Simulation
 
     $ python main.py <datafile>
 
@@ -11,9 +11,14 @@ Simulation
         Runs a simulation after prompting for three coupless (n_word, n_exp)
         and saves it as <filesave>.
 
+    $ python main.py -range <filesave>
+
+        Runs a simulation after prompting for a range of values ns
+        and saves it as <filesave>.
+
     $ python main.py -m --file <datafile>
 
-        Loads the set of experiments <datafile> and plots the graphs related 
+        Loads the set of experiments <datafile> and plots the graphs related
         to mean analysis.
 
     $ python main.py -m --save <savefile>
@@ -193,7 +198,7 @@ def simulation(
             except:
                 n_exp = 200
 
-        print("\nNow testing words of size %d, doing %d experiments " % (n, n_exp))
+        print("\nNow simulating words of size %d, doing %d experiments " % (n, n_exp))
         exp["n_exp"] = n_exp
         exp["n_word"] = n
 
@@ -676,7 +681,9 @@ def print_histogram_chains(random_markov=True, datafile=None, fast_mode=True):
                 label="$\mathcal{N}(0,1)$",
             )
 
-    figs_raw.suptitle("Histogram_chains of the values of $M_n$ for different word lengths")
+    figs_raw.suptitle(
+        "Histogram_chains of the values of $M_n$ for different word lengths"
+    )
     figs_mean_std.suptitle(
         "$M_n$ distribution, normalized with theoretical mean"
         + "($E_{th}$) and empirical variance ($\sigma^2$)"
@@ -792,6 +799,19 @@ if __name__ == "__main__":
                 print_cdf(one_exp, axs[exp_ind], "mu", "std")
 
             figs.suptitle("Cumulative distribution function plots for normalized $M_n$")
+
+        elif sys.argv[1] == "-range":
+
+            print("Prompting for range of simulation `range(a, b, s)`")
+            a = int(input("a = "))
+            b = int(input("b = "))
+            s = int(input("s = "))
+            ns = list(range(a, b, s))
+            n_exp = int(input("\nHow many experiments ? "))
+
+            simulation(
+                random_markov=True, filesave=sys.argv[2], length_values=ns, n_exp=n_exp
+            )
 
         else:
             print_histogram_chains(random_markov=True, datafile=sys.argv[1])
