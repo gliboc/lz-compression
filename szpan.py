@@ -1,4 +1,7 @@
-"""Expressions from the paper Szpan. & Jacquet"""
+"""Expressions from the paper Szpan. & Jacquet
+
+Execute this script to see somes values 
+printed in the terminal and in the file table.dat"""
 
 from math import log
 import numpy as np
@@ -294,8 +297,8 @@ if __name__ == "__main__":
         for l in x:
             fo.write(l)
 
-    print(os)
-    print(hs)
-    print(vns)
+    print("Some values of omega", os)
+    print("Some values of h^3", hs)
+    print("Some values of V_n", vns)
 
     # test_h2()
