@@ -8,38 +8,38 @@ from math import sqrt, log
 import numpy as np
 
 
-def eigenvalue(M):
+def dpi(M):
 
     p00 = M[0, 0]
     p01 = M[0, 1]
     p10 = M[1, 0]
     p11 = M[1, 1]
 
-    e_vect = numpy.linalg.eig(M)
+    # e_vect = numpy.linalg.eig(M)
 
-    pi_0 = p10 / (p01 + p10)
-    pi_1 = p01 / (p01 + p10)
+    # pi_0 = p10 / (p01 + p10)
+    # pi_1 = p01 / (p01 + p10)
 
-    h = entropy(M)
+    h = entropy(M) # ok
 
-    delta = p00 * p11 - p01 * p10
-    der_delta = - log( p00 * p11 ) * (p00 * p11) + log( p01 * p10 ) * (p01 * p10)
-    
-    g_0 = (- log(p11) * p11 + log(p01) * p01) * delta \
-            - (p11 - p01) * der_delta
+    d1 = p00 * p11 - p01 * p10 # ok
+    dd1 = - log( p00 * p11 ) * p00 * p11 + log( p01 * p10) * p01 * p10 # ok
 
-    g_1 = (- log(p00) * p00 + log(p10) * p10) * delta \
-            + (p00 - p10) * der_delta
+    g0 = p11 - p01 # ok
+    dg0 = - log( p11 ) * p11 + log( p01 ) * p01 # ok
 
-    der_pi_0 = h * (p11 - p01) / delta + g_0 / (delta ** 2)
-    der_pi_1 = h * (p00 - p10) / delta + g_1 / (delta ** 2)
+    g1 = p00 - p10 # ok
+    dg1 = - log( p00 ) * p00 + log( p10 ) * p10 # ok
 
-    return der_pi_0, der_pi_1
+    dpi0 = h * g0 / d1 + (dg0 * d1 - g0 * dd1) / (d1 ** 2) # ok
+    dpi1 = h * g1 / d1 + (dg1 * d1 - g1 * dd1) / (d1 ** 2) # ok
+
+    return dpi0, dpi1
 
 
 def lambda_2(M):
 
-    dp0, dp1 = eigenvalue(M)
+    dp0, dp1 = dpi(M)
 
     p00 = M[0, 0]
     p01 = M[0, 1]
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     las = []
     for _ in range(10):
         M = markov_chain(2)
-        comps.append(eigenvalue(M))
+        comps.append(dpi(M))
         las.append(lambda_2(M))
 
 

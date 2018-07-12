@@ -160,8 +160,8 @@ def pi_q_psi(M, p):
     p10 = M[1, 0]
 
     s += p[0] * p11 * log(p11)
-    s += p[1] * p10 * log(p10)
-    s += p[0] * p01 * log(p01)
+    s -= p[1] * p10 * log(p10)
+    s -= p[0] * p01 * log(p01)
     s += p[1] * p00 * log(p00)
 
     return s  # verified
@@ -201,7 +201,7 @@ def variances(M, n):
 
     s *= log(m)
 
-    return (s, (1 / h ** 3, bo, pqp, h2, log(m)))  # verified
+    return (s, (o, h ** 3, 1 / h ** 3, bo, pqp, h2, log(m)))  # verified
 
 
 def var(M, n):
@@ -255,17 +255,19 @@ def psi(n):
 if __name__ == "__main__":
     import pandas as pd
 
-    unhs, vns, h2s, pqps, bos, lns = [], [], [], [], [], []
+    os, hs, unhs, vns, h2s, pqps, bos, lns = [], [], [], [], [], [], [], []
 
     for _ in range(10):
         m_chain = markov_chain(2)
         n = 500
 
-        (v, (unh, bo, pqp, h2, lg)) = variances(m_chain, n)
+        (v, (o, h3, unh, bo, pqp, h2, lg)) = variances(m_chain, n)
         print("For M =", m_chain)
         print("n =", n)
         print("var =", var(m_chain, n))
 
+        os.append(o)
+        hs.append(h3)
         unhs.append(unh)
         vns.append(v)
         h2s.append(h2)
@@ -274,6 +276,8 @@ if __name__ == "__main__":
         lns.append(lg)
 
     d = {
+        "omegas": os,
+        "h^3 values": hs,
         "unhs": unhs,
         "$\f{\beta}{\omega}$": bos,
         "$\f{2}{\omega}\pi \dot{Q}^{\star}\psi$": pqps,
@@ -290,4 +294,8 @@ if __name__ == "__main__":
         for l in x:
             fo.write(l)
 
-    test_h2()
+    print(os)
+    print(hs)
+    print(vns)
+
+    # test_h2()
