@@ -176,40 +176,7 @@ process :
 	
 	\noindent 
 	
-	Now, I'm trying to compute the variance using the formula from	Jacquet and Szpankowski, 
-	\textit{Average profile of the Lempel-Ziv parsing scheme for a markovian source},
-	using the formula for the variance $V_n$ :
 	
-	\centers{$h^3 V_n = -\f{\beta}{\omega} - \f2{\omega} \pi \dot{Q}^{\star} \psi - h^2$}
-	\vspace{2mm}
-	\begin{egalites}
-	where & \omega 
-			& \det \begin{matrice}
-							1 & -p_{0 1} & \cdots & -p_{0 V-1} \\
-							1 & -p_{1 1} & \cdots & -p_{1 V-1} \\
-							\vdots & \vdots & \ddots & \vdots \\
-							1 & -p_{V-1 1} & \cdots & 1 - p_{V-1 V-1} \\
-						  \end{matrice}    \\[10mm]
-						  
-		  && (1 - p_{1 1})\, p_{0 1} & in our case \\[4mm]
-	
-	and & \beta 
-			& \rest{\pac{\det Q''(s)}}{s=-1} \\[4mm]
-			&& p_{0 0}\, p_{1 1} \ln^2 p_{0 0} \cdot \ln^2 p_{1 1}
-				- p_{0 1}\, p_{1 0} \ln^2 p_{0 1} \cdot \ln^2 p_{1 0}
-	\end{egalites}
-	
-	Finally,
-	
-	\begin{calculs}
-		&\pi \dot{Q}^{\star} \psi
-			& = &\pi_0 \, p_{1 1} \, \ln (p_{1 1}) 
-					  - \pi_0\, p_{0 1} \ln (p_{0 1}) \\
-			&&&		  + \pi_1 \, p_{0 0} \ln (p_{0 0})
-					  - \pi_1 \, p_{1 0} \ln (p_{1 0}) \\
-			&&& p_{1 1}\,\ln(p_{1 1}) + p_{0 0}\, \ln(p_{0 0}) + h 
-	\end{calculs}
-
 					  
 	
 	

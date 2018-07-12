@@ -62,52 +62,103 @@ solving for $\pi_0(s)$ and $\pi_1(s)$ :
 
 \centers{$ \pi_0(s) = \lambda(s) \f{ \overbrace{{p_{1 1}}^{-s} - {p_{0 1}}^{-s}}^{g_0(s)} }
                                    { \underbrace{{ (p_{0 0} p_{1 1}) }^{-s} 
-                                        - { (p_{0 1} p_{1 0}) }^{-s}}_{\delta(s)} }$}
-
-\centers{$ \pi_1(s) = \lambda(s) \f{ \overbrace{{p_{0 0}}^{-s} - {p_{1 0}}^{-s}}^{g_1(s)} }
+                                        - { (p_{0 1} p_{1 0}) }^{-s}}_{\delta(s)} }
+            \qquad 
+            \text{and}
+            \qquad
+       \pi_1(s) = \lambda(s) \f{ \overbrace{{p_{0 0}}^{-s} - {p_{1 0}}^{-s}}^{g_1(s)} }
                                    { { (p_{0 0} p_{1 1}) }^{-s} 
                                         - { (p_{0 1} p_{1 0}) }^{-s} }$}
 
-\noindent
-Hence
-\centers{$ \dot{\pi}_0(s) = \dot{\lambda}(s)$}
 
-\noindent
-Now taking $s=-1$ and re-arranging in a linear system of unknown $\dot{\pi}_0(-1)$ and $\dot{\pi}_1(-1)$ :
-\centers
-    {$ \left\{
-        \begin{aligned}
-            \dot{\pi}_0(-1) (p_{0 0} - \lambda)
-            + \dot{\pi}_1(-1) p_{0 1}
-                &= \dot{\lambda}(-1) \pi_0
-                    +   \ln p_{0 0} \cdot p_{0 0} \pi_0
-                    +   \ln p_{0 1} \cdot p_{0 1} \pi_1 \\
-            \dot{\pi}_0(-1) p_{1 0}
-            + \dot{\pi}_1(-1) (p_{1 1} - \lambda)
-                &= \dot{\lambda}(-1) \pi_1
-                    +  \ln p_{1 0} \cdot p_{1 0} \pi_0 
-                    +  \ln p_{1 1} \cdot p_{1 1} \pi_1
-        \end{aligned}
-        \right.
-     $}
+\leftcenters
+    {hence for $i\in\{0,1\}$}
+    {$ \dot{\pi}_i(s) = \dot{\lambda}(s) \f{g_i(s)}{\delta(s)}
+                        + \lambda(s) \f{{g_i}'(s)\delta(s) - g_i(s)\delta'(s)}
+                                        {\delta^2(s)}$}
 
-\noindent This yields an exact formula for $\dot{\pi}(-1)$, using 
-$\dot{\lambda}(-1) = h$ and, for $\lambda$, the exact expression 
-computed by taking the greatest solution of the characteristic polynomial $\rchi_P$ of $P$ :
-
-\centers{$ \rchi_P = (X-p_{0 0})(X-p_{0 1}) - p_{1 0} p_{0 1}
-                 = X^2 - (p_{0 0} + p_{1 1}) X + p_{0 0} p_{1 1}
-                                               - p_{1 0} p_{0 1} $}
+\leftcenters
+    {so}
+    {$ \dot{\pi}_i(-1) = h \f{g_i(-1)}{\delta(-1)}
+                        + \f{{g_i}'(-1) \delta(-1) - g_i(-1) \delta'(-1) }
+                            {\delta^2(-1)} $}
 
 \begin{egalites}
-which is  &\lambda
-        &\f{ (p_{0 0} + p_{1 1}) 
-           + \sqrt{ (p_{0 0} + p_{1 1})^2 - 4 (p_{0 0} p_{1 1} - p_{1 0} p_{0 1}) }}
-           {2}\\[3mm]
-        &&\f{ (p_{0 0} + p_{1 1}) 
-           + \sqrt{ (p_{0 0} - p_{1 1})^2 + 4 p_{1 0} p_{0 1} }}
-           {2}   
+    with & \delta(-1) 
+            & p_{0 0} p_{1 1} - p_{0 1} p_{1 0} \\[3mm]
+         &g_0(-1) 
+            & p_{1 1} - p_{0 1} \\[3mm]
+        &{g_0}'(-1)
+            & -\ln (p_{1 1}) p_{1 1} + \ln (p_{0 1}) p_{0 1} \\[3mm]
+        &g_1(-1)
+            & p_{0 0} - p_{1 0} \\[3mm]
+        &{g_1}'(-1) 
+            & -\ln (p_{0 0}) p_{0 0} + \ln (p_{1 0}) p_{1 0} 
 \end{egalites}
+
+
+% \leftcenters
+%     {where}
+%     {  $\left\{
+%         \begin{minipage}{0.6\textwidth}
+%        $ {g_0}'(s) = - \ln(p_{1 1}) {p_{1 1}}^{-s}
+%                  + \ln(p_{0 1}) {p_{0 1}}^{-s}$ \\[3mm]
+%         $\delta'(s) = - \ln( p_{0 0} p_{1 1}) { (p_{0 0} p_{1 1}) }^{-s}
+%                         +  \ln ( p_{0 1} p_{1 0} ) { (p_{0 1} p_{1 0}) }^{-s} $
+%         \end{minipage}
+%         \right.$ }
+
+
+
+% \noindent
+% Now taking $s=-1$ and re-arranging in a linear system of unknown $\dot{\pi}_0(-1)$ and $\dot{\pi}_1(-1)$ :
+% \centers
+%     {$ \left\{
+%         \begin{aligned}
+%             \dot{\pi}_0(-1) (p_{0 0} - \lambda)
+%             + \dot{\pi}_1(-1) p_{0 1}
+%                 &= \dot{\lambda}(-1) \pi_0
+%                     +   \ln p_{0 0} \cdot p_{0 0} \pi_0
+%                     +   \ln p_{0 1} \cdot p_{0 1} \pi_1 \\
+%             \dot{\pi}_0(-1) p_{1 0}
+%             + \dot{\pi}_1(-1) (p_{1 1} - \lambda)
+%                 &= \dot{\lambda}(-1) \pi_1
+%                     +  \ln p_{1 0} \cdot p_{1 0} \pi_0 
+%                     +  \ln p_{1 1} \cdot p_{1 1} \pi_1
+%         \end{aligned}
+%         \right.
+%      $}
+
+% \noindent since
+% $\dot{\lambda}(-1) = h$ and,
+% $\lambda(-1) = 1$ :
+
+% \centers
+%     {$ \left\{
+%         \begin{aligned}
+%             \dot{\pi}_0(-1) (p_{0 0} - 1)
+%             + \dot{\pi}_1(-1) p_{0 1}
+%                 &= h \pi_0
+%                     +   \ln p_{0 0} \cdot p_{0 0} \pi_0
+%                     +   \ln p_{0 1} \cdot p_{0 1} \pi_1 \\
+%             \dot{\pi}_0(-1) p_{1 0}
+%             + \dot{\pi}_1(-1) (p_{1 1} - 1)
+%                 &= h \pi_1
+%                     +  \ln p_{1 0} \cdot p_{1 0} \pi_0 
+%                     +  \ln p_{1 1} \cdot p_{1 1} \pi_1
+%         \end{aligned}
+%         \right.
+%      $}
+
+% \begin{egalites}
+% which is  &\lambda
+%         &\f{ (p_{0 0} + p_{1 1}) 
+%            + \sqrt{ (p_{0 0} + p_{1 1})^2 - 4 (p_{0 0} p_{1 1} - p_{1 0} p_{0 1}) }}
+%            {2}\\[3mm]
+%         &&\f{ (p_{0 0} + p_{1 1}) 
+%            + \sqrt{ (p_{0 0} - p_{1 1})^2 + 4 p_{1 0} p_{0 1} }}
+%            {2}   
+% \end{egalites}
 
 
 
