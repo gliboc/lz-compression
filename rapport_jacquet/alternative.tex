@@ -57,44 +57,46 @@ and computing an approximation of the largest eigenvalue $\lambda$.
         \right.
      $}
 
-\noindent
-solving for $\pi_0(s)$ and $\pi_1(s)$ :
+which I'm not sure how to solve formally.
+% \noindent
+% solving for $\pi_0(s)$ and $\pi_1(s)$, 
+% assuming $ p_{0 0} p_{1 1} \neq p_{0 1} p_{1 0} $ :
 
-\centers{$ \pi_0(s) = \lambda(s) \f{ \overbrace{{p_{1 1}}^{-s} - {p_{0 1}}^{-s}}^{g_0(s)} }
-                                   { \underbrace{{ (p_{0 0} p_{1 1}) }^{-s} 
-                                        - { (p_{0 1} p_{1 0}) }^{-s}}_{\delta(s)} }
-            \qquad 
-            \text{and}
-            \qquad
-       \pi_1(s) = \lambda(s) \f{ \overbrace{{p_{0 0}}^{-s} - {p_{1 0}}^{-s}}^{g_1(s)} }
-                                   { { (p_{0 0} p_{1 1}) }^{-s} 
-                                        - { (p_{0 1} p_{1 0}) }^{-s} }$}
+% \centers{$ \pi_0(s) = \lambda(s) \f{ \overbrace{{p_{1 1}}^{-s} - {p_{0 1}}^{-s}}^{g_0(s)} }
+%                                    { \underbrace{{ (p_{0 0} p_{1 1}) }^{-s} 
+%                                         - { (p_{0 1} p_{1 0}) }^{-s}}_{\delta(s)} }
+%             \qquad 
+%             \text{and}
+%             \qquad
+%        \pi_1(s) = \lambda(s) \f{ \overbrace{{p_{0 0}}^{-s} - {p_{1 0}}^{-s}}^{g_1(s)} }
+%                                    { { (p_{0 0} p_{1 1}) }^{-s} 
+%                                         - { (p_{0 1} p_{1 0}) }^{-s} }$}
 
 
-\leftcenters
-    {hence for $i\in\{0,1\}$}
-    {$ \dot{\pi}_i(s) = \dot{\lambda}(s) \f{g_i(s)}{\delta(s)}
-                        + \lambda(s) \f{{g_i}'(s)\delta(s) - g_i(s)\delta'(s)}
-                                        {\delta^2(s)}$}
+% \leftcenters
+%     {hence for $i\in\{0,1\}$}
+%     {$ \dot{\pi}_i(s) = \dot{\lambda}(s) \f{g_i(s)}{\delta(s)}
+%                         + \lambda(s) \f{{g_i}'(s)\delta(s) - g_i(s)\delta'(s)}
+%                                         {\delta^2(s)}$}
 
-\leftcenters
-    {so}
-    {$ \dot{\pi}_i(-1) = h \f{g_i(-1)}{\delta(-1)}
-                        + \f{{g_i}'(-1) \delta(-1) - g_i(-1) \delta'(-1) }
-                            {\delta^2(-1)} $}
+% \leftcenters
+%     {so}
+%     {$ \dot{\pi}_i(-1) = h \f{g_i(-1)}{\delta(-1)}
+%                         + \f{{g_i}'(-1) \delta(-1) - g_i(-1) \delta'(-1) }
+%                             {\delta^2(-1)} $}
 
-\begin{egalites}
-    with & \delta(-1) 
-            & p_{0 0} p_{1 1} - p_{0 1} p_{1 0} \\[3mm]
-         &g_0(-1) 
-            & p_{1 1} - p_{0 1} \\[3mm]
-        &{g_0}'(-1)
-            & -\ln (p_{1 1}) p_{1 1} + \ln (p_{0 1}) p_{0 1} \\[3mm]
-        &g_1(-1)
-            & p_{0 0} - p_{1 0} \\[3mm]
-        &{g_1}'(-1) 
-            & -\ln (p_{0 0}) p_{0 0} + \ln (p_{1 0}) p_{1 0} 
-\end{egalites}
+% \begin{egalites}
+%     with & \delta(-1) 
+%             & p_{0 0} p_{1 1} - p_{0 1} p_{1 0} \\[3mm]
+%          &g_0(-1) 
+%             & p_{1 1} - p_{0 1} \\[3mm]
+%         &{g_0}'(-1)
+%             & -\ln (p_{1 1}) p_{1 1} + \ln (p_{0 1}) p_{0 1} \\[3mm]
+%         &g_1(-1)
+%             & p_{0 0} - p_{1 0} \\[3mm]
+%         &{g_1}'(-1) 
+%             & -\ln (p_{0 0}) p_{0 0} + \ln (p_{1 0}) p_{1 0} 
+% \end{egalites}
 
 
 % \leftcenters
