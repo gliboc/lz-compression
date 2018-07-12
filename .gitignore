@@ -6,6 +6,7 @@
 *.pdf
 .vscode
 *.ps
+test.py
 __pycache__/*
 papier_flexible/*
 rapport_jacquet/*
