@@ -56,7 +56,7 @@ import seaborn as sns
 
 # import pandas as pd
 from scipy import stats
-from eigenvalues import eigenvalue
+from eigenvalues import lambda_2
 
 sns.set(color_codes=True)
 np.random.seed(sum(map(ord, "distributions")))
