@@ -56,7 +56,7 @@ import seaborn as sns
 
 # import pandas as pd
 from scipy import stats
-from eigenvalues import lambda_2
+from eigenvalues import lambda_2, eigenvalue_std
 
 sns.set(color_codes=True)
 np.random.seed(sum(map(ord, "distributions")))
@@ -270,7 +270,8 @@ def data_analysis(
         print("n is", n)
         print("Value for variance var(M)", var(M, n))
         print("Value of log(m)", log(mean))
-        std_szpan = sqrt(var(M, n))
+        std_szpan = sqrt(abs(var(M, n)))
+        std_eig = eigenvalue_std(M, n)
         exp["std_nein"] = std_nein
         exp["std_szpan"] = std_szpan
 
