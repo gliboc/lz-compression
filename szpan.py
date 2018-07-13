@@ -21,8 +21,8 @@ def entropy(M, p=None):
 
     """
 
-    if p is None:
-        p = stationary_distribution(M)
+    o = M[1, 0] + M[0, 1]
+    p = [M[1, 0] / o, M[0, 1] / o]
 
     h = 0
     n = len(M)

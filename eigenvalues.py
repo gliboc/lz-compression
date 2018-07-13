@@ -7,39 +7,50 @@ import numpy.linalg
 from math import sqrt, log
 import numpy as np
 
+# based on wrong computations
+# def dpi(M):
 
-def dpi(M):
-
-    p00 = M[0, 0]
-    p01 = M[0, 1]
-    p10 = M[1, 0]
-    p11 = M[1, 1]
+#     p00 = M[0, 0]
+#     p01 = M[0, 1]
+#     p10 = M[1, 0]
+#     p11 = M[1, 1]
 
     # e_vect = numpy.linalg.eig(M)
 
     # pi_0 = p10 / (p01 + p10)
     # pi_1 = p01 / (p01 + p10)
 
-    h = entropy(M) # ok
+    # h = entropy(M) # ok
 
-    d1 = p00 * p11 - p01 * p10 # ok
-    dd1 = - log( p00 * p11 ) * p00 * p11 + log( p01 * p10) * p01 * p10 # ok
+    # d1 = p00 * p11 - p01 * p10 # ok
+    # dd1 = - log( p00 * p11 ) * p00 * p11 + log( p01 * p10) * p01 * p10 # ok
 
-    g0 = p11 - p01 # ok
-    dg0 = - log( p11 ) * p11 + log( p01 ) * p01 # ok
+    # g0 = p11 - p01 # ok
+    # dg0 = - log( p11 ) * p11 + log( p01 ) * p01 # ok
 
-    g1 = p00 - p10 # ok
-    dg1 = - log( p00 ) * p00 + log( p10 ) * p10 # ok
+    # g1 = p00 - p10 # ok
+    # dg1 = - log( p00 ) * p00 + log( p10 ) * p10 # ok
 
-    dpi0 = h * g0 / d1 + (dg0 * d1 - g0 * dd1) / (d1 ** 2) # ok
-    dpi1 = h * g1 / d1 + (dg1 * d1 - g1 * dd1) / (d1 ** 2) # ok
+    # dpi0 = h * g0 / d1 + (dg0 * d1 - g0 * dd1) / (d1 ** 2) # ok
+    # dpi1 = h * g1 / d1 + (dg1 * d1 - g1 * dd1) / (d1 ** 2) # ok
 
-    return dpi0, dpi1
+    # return dpi0, dpi1
 
+
+def dpi2(M):
+    p00 = M[0, 0]
+    p01 = M[0, 1]
+    p10 = M[1, 0]
+    p11 = M[1, 1]
+
+    pi_0 = p10 / (p01 + p10)
+    pi_1 = p01 / (p01 + p10)
+
+    return (-log(pi_0) * pi_0, -log(pi_1) * pi_1)
 
 def lambda_2(M):
 
-    dp0, dp1 = dpi(M)
+    dp0, dp1 = dpi2(M)
 
     p00 = M[0, 0]
     p01 = M[0, 1]
@@ -62,24 +73,42 @@ def lambda_2(M):
 
     return t0 + t1 + t2
 
+from math import sqrt
+
+def eigenvalue_std(M, n):
+    h = entropy(M)
+    la = lambda_2(M)
+    m = n * h / log(n)
+
+    return sqrt(log(m) * (la - h ** 2) / (h ** 3))
+
 
 if __name__ == "__main__":
     import pandas as pd 
 
     comps = []
     las = []
+    
+
+    vs = []
+
     for _ in range(10):
         M = markov_chain(2)
-        comps.append(dpi(M))
-        las.append(lambda_2(M))
+        comps.append(dpi2(M))
+        h = entropy(M) 
+        la = lambda_2(M)
+        las.append(la)
+        vs.append((la-h**2)/(h**3))
+
 
 
     dpi0s = [c[0] for c in comps]
     dpi1s = [c[1] for c in comps]
 
-    d = {"dpi0" : dpi0s,
-         "dpi1" : dpi1s,
-         "ddlambda": las}
+    d = {"dpi0": dpi0s,
+         "dpi1": dpi1s,
+         "ddlambda": las,
+         "vars": vs}
 
     df = pd.DataFrame(data=d)
 
