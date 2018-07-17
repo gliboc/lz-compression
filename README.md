@@ -11,7 +11,7 @@ The repository contains:
   or experiment with the subject
 
 - Two LaTeX source repositories without the style file needed
-  for compilation
+  for compilation, though they both contain a compiled version :
     - `rapport_jacquet` is a report on my numerical
       simulations
     - `flexible_paper` is a report on a paper doing an analysis of
