@@ -250,7 +250,7 @@ def data_analysis(
         M = exp["M"]
 
         print(
-            "\n ===== This experiment has %d samples of words of size %d ====="
+            "\n ===== This experiment has %d samples of words of size %d\nUsing chain 
             % (n_exp, n)
         )
 
@@ -270,7 +270,8 @@ def data_analysis(
         print("n is", n)
         print("Value for variance var(M)", var(M, n))
         print("Value of log(m)", log(mean))
-        std_szpan = sqrt(abs(var(M, n)))
+        #std_szpan = sqrt(abs(var(M, n)))
+        std_szpan = eigenvalue_std(M, n) # computed with lambda
         std_eig = eigenvalue_std(M, n)
         exp["std_nein"] = std_nein
         exp["std_szpan"] = std_szpan
@@ -278,15 +279,17 @@ def data_analysis(
         if not fast_mode:
             input(
                 "\nComputed std_szpan and std_nein are: {}, {}".format(
-                    std_nein, std_szpan
+                    std_szpan, std_nein
                 )
             )
 
         # Normalized values from Nein and Szpan papers
         d_nein = [(m_n - mean) / std_nein for m_n in exp["data"]]
         d_szpan = [(m_n - mean) / std_szpan for m_n in exp["data"]]
+        d_eig =  [(m_n - mean) / std_eig for m_n in exp["data"]]
         exp["d_nein"] = d_nein
         exp["d_szpan"] = d_szpan
+        exp["d_eig"] = d_eig
 
         # Empirical variance and mean
         # Samples corresponding to normal distribution p
@@ -298,7 +301,7 @@ def data_analysis(
         exp["std"] = std
 
         if not fast_mode:
-            input("\nFitting mean and variance are mu=%f and var=%f" % (mu, std ** 2))
+            input("\nFitting mean and std are mu=%f and var=%f" % (mu, std))
 
         # Empirical variance, theoretical mean
         # also theoretical mean and theoretical variance
@@ -383,7 +386,10 @@ def analysing_theoretical_std(filesave=None, datafile=None, save=None, save_name
     diff2 = [stds[i] - szpans[i] for i in range(len(stds))]
 
     # fsts = [diff[40] - log(ns[40], 2) ** (0.5 + i*0.1 + 0.3) for i in range(N)]
-    fst = diff1[10] - log(ns[10], 2)
+    try:
+        fst = diff1[10] - log(ns[10], 2)
+    except:
+        fst = diff1[0] - log(ns[0], 2)
     # logs = [[log(n, 2) ** (0.5 + i*0.1 + 0.3) + fsts[i]  for n in ns] for i in range(N)]
     logs = [log(n, 2) + fst for n in ns]
 
@@ -565,68 +571,74 @@ def print_histogram_chains(random_markov=True, datafile=None, fast_mode=True):
     # Plotting raw M_n values
     exps = data_analysis(
         random_markov=random_markov, datafile=datafile, fast_mode=fast_mode
-    )
-    figs_raw, axs = plt.subplots(1, len(exps))
+    )[-5:]
+    
 
-    axs[0].set_ylabel("Counts")
+    # Raw histograms; not useful anymore
+    # figs_raw, axs = plt.subplots(1, len(exps))
+    # axs[0].set_ylabel("Counts")
+    # 
+    # for (i, exp) in enumerate(exps):
+    #     sns.distplot(exp["data"], ax=axs[i], rug=True, kde=False, bins="auto")
+    #     axs[i].set_title(
+    #         r"$n_{word} ="
+    #         + latex_float(exp["n_word"])
+    #         + r"\quad n_{exp} = "
+    #         + latex_float(exp["n_exp"])
+    #         + "$"
+    #     )
+    #     axs[i].set_xlabel("$M_n$")
 
-    for (i, exp) in enumerate(exps):
-        sns.distplot(exp["data"], ax=axs[i], rug=True, kde=False, bins="auto")
-        axs[i].set_title(
-            r"$n_{word} ="
-            + latex_float(exp["n_word"])
-            + r"\quad n_{exp} = "
-            + latex_float(exp["n_exp"])
-            + "$"
-        )
-        axs[i].set_xlabel("$M_n$")
-
+    # Normalized distirbutions plots, using mu, mean and empirical std
     # k = 0 is empirical mean and variance
     # k = 1 is theoretical mean and empirical variance
-    figs_mean_std, axs_mean_std = plt.subplots(1, len(exps))
-    figs_normalized, axs_normalized = plt.subplots(1, len(exps))
+    empirical_std = False
 
-    axs = [axs_normalized, axs_mean_std]
-    means = ["mu", "mean"]
+    if empirical_std:
+        figs_mean_std, axs_mean_std = plt.subplots(1, len(exps))
+        figs_normalized, axs_normalized = plt.subplots(1, len(exps))
 
-    for k in [0, 1]:
-        ax = axs[k]
-        mean = means[k]
-        ax[0].set_ylabel("Frequency")
+        axs = [axs_normalized, axs_mean_std]
+        means = ["mu", "mean"]
 
-        for (i, exp) in enumerate(exps):
-            norm_distrib = (exp["data"] - exp[mean]) / exp["std"]
-            # statistic, pvalue = normaltest(norm_distrib)
-            sns.distplot(
-                norm_distrib,
-                ax=ax[i],
-                rug=True,
-                label=r"Simulation $\frac{M_n -"
-                + (r"\mu" if mean == "mu" else r"E_{theor}")
-                + r"}{\sigma}$",
-            )
-            # ax[i].text(-4, 0.3, r'$test=%1.3f$' % statistic)
-            # ax[i].text(-4, 0.28, r'$pvalue=%1.3f$' % pvalue)
-            ax[i].set_title(
-                r"$n_{word} ="
-                + latex_float(exp["n_word"])
-                + "\quad n_{exp} = "
-                + latex_float(exp["n_exp"])
-                + "$"
-            )
-            ax[i].set_xlabel(
-                r"$\frac{(M_n-"
-                + ("\mu" if mean == "mu" else "E_{theor}")
-                + ")}{\sigma}$"
-            )
+        for k in [0, 1]:
+            ax = axs[k]
+            mean = means[k]
+            ax[0].set_ylabel("Frequency")
 
-            # Print awaited normal distribution
-            ax[i].plot(
-                exp["x" + str(k * 3)],
-                exp["p" + str(k * 3)],
-                color="red",
-                label="$\mathcal{N}(0,1)$",
-            )
+            for (i, exp) in enumerate(exps):
+                norm_distrib = (exp["data"] - exp[mean]) / exp["std"]
+                # statistic, pvalue = normaltest(norm_distrib)
+                sns.distplot(
+                    norm_distrib,
+                    ax=ax[i],
+                    rug=True,
+                    label=r"Simulation $\frac{M_n -"
+                    + (r"\mu" if mean == "mu" else r"E_{theor}")
+                    + r"}{\sigma}$",
+                )
+                # ax[i].text(-4, 0.3, r'$test=%1.3f$' % statistic)
+                # ax[i].text(-4, 0.28, r'$pvalue=%1.3f$' % pvalue)
+                ax[i].set_title(
+                    r"$n_{word} ="
+                    + latex_float(exp["n_word"])
+                    + "\quad n_{exp} = "
+                    + latex_float(exp["n_exp"])
+                    + "$"
+                )
+                ax[i].set_xlabel(
+                    r"$\frac{(M_n-"
+                    + ("\mu" if mean == "mu" else "E_{theor}")
+                    + ")}{\sigma}$"
+                )
+
+                # Print awaited normal distribution
+                ax[i].plot(
+                    exp["x" + str(k * 3)],
+                    exp["p" + str(k * 3)],
+                    color="red",
+                    label="$\mathcal{N}(0,1)$",
+                )
 
     # k=0 is plotting distributions centered with empirical mean (mu and nein/szpan)
     # k=1 is plotting distributions norm with theoretical mean and variances (mu and nein/szpan)
@@ -682,16 +694,16 @@ def print_histogram_chains(random_markov=True, datafile=None, fast_mode=True):
                 label="$\mathcal{N}(0,1)$",
             )
 
-    figs_raw.suptitle(
-        "Histogram_chains of the values of $M_n$ for different word lengths"
-    )
-    figs_mean_std.suptitle(
-        "$M_n$ distribution, normalized with theoretical mean"
-        + "($E_{th}$) and empirical variance ($\sigma^2$)"
-    )
-    figs_normalized.suptitle(
-        "$M_n$ distribution, normalized using empirical mean ($\mu$) and variance ($\sigma^2$)"
-    )
+    # figs_raw.suptitle(
+    #     "Histogram_chains of the values of $M_n$ for different word lengths"
+    # )
+    # figs_mean_std.suptitle(
+    #     "$M_n$ distribution, normalized with theoretical mean"
+    #     + "($E_{th}$) and empirical variance ($\sigma^2$)"
+    # )
+    # figs_normalized.suptitle(
+    #     "$M_n$ distribution, normalized using empirical mean ($\mu$) and variance ($\sigma^2$)"
+    # )
 
     i = 0
     for n1 in ["empirical", "theoretical"]:
@@ -710,11 +722,11 @@ def print_histogram_chains(random_markov=True, datafile=None, fast_mode=True):
     hspace = 0.32
     wspace = 0.13
 
-    for ax in axs_normalized:
-        ax.legend()
+    # for ax in axs_normalized:
+    #     ax.legend()
 
-    for ax in axs_mean_std:
-        ax.legend()
+    # for ax in axs_mean_std:
+    #     ax.legend()
 
     for ax in axes:
         for a in ax:
@@ -725,15 +737,15 @@ def print_histogram_chains(random_markov=True, datafile=None, fast_mode=True):
             top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace
         )
 
-    figs_normalized.subplots_adjust(
-        top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace
-    )
-    figs_mean_std.subplots_adjust(
-        top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace
-    )
-    figs_raw.subplots_adjust(
-        top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace
-    )
+    # figs_normalized.subplots_adjust(
+    #     top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace
+    # )
+    # figs_mean_std.subplots_adjust(
+    #     top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace
+    # )
+    # figs_raw.subplots_adjust(
+    #     top=top, bottom=bottom, left=left, right=right, hspace=hspace, wspace=wspace
+    # )
 
     print("Done")
     plt.show()
