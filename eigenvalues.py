@@ -75,12 +75,88 @@ def lambda_2(M):
 
 from math import sqrt
 
+
+
+def compute_lambda(M):
+    p00 = M[0, 0]
+    p01 = M[0, 1]
+    p11 = M[1, 1]
+    p10 = M[1, 0]
+
+    q0 = p00 * p11
+    q1 = p01 * p10
+
+    alpha = p00 ** 2 + p11 ** 2 - 2 * q0 + 4 * q1
+
+    der_alpha = - 2 * log(p00) * (p00 ** 2) - 2 * log(p11) * (p11 ** 2) \
+                + 2 * q0 * log(q0) \
+                - 4 * q1 * log(q1)
+
+    der2_alpha = 4 * (log(p00) ** 2) * (p00 ** 2) \
+                 + 4 * (log(p11) ** 2) * (p11 ** 2) \
+                 - 2 * (log(q0) ** 2) * q0 \
+                 + 4 * (log(q1) ** 2) * q1
+
+    beta = 0
+    der_beta = 0
+    der2_beta = 0
+
+    gamma = der_alpha * alpha # beta terms are zero
+    der_gamma = der2_alpha * alpha + (der_alpha ** 2) # beta terms are zero
+
+    kappa = sqrt(alpha**2 + beta**2) # basically alpha
+    der_kappa = (alpha * der_alpha) / (sqrt(alpha**2))
+
+    f = 0.5 * (sqrt(alpha ** 2 + beta ** 2) + alpha)
+    der_f = 0.5 * ((der_alpha * alpha) / (sqrt(alpha**2)) + der_alpha)
+    der2_f = 0.5 * ( (der_gamma * kappa + gamma * der_kappa) / (kappa ** 2) + der2_alpha )
+
+    x = sqrt(alpha)
+    der_x = der_f / (2 * x)
+    der2_x = (der2_f * x + der_f * der_x) / (2 * (x**2))
+
+    lamb = 0.5 * (p00 + p11 + x)
+    der_lamb = 0.5 * (- log(p00) * p00 - log(p11) * p11 + der_x)
+    der2_lamb = 0.5 * ( (log(p00)**2) * p00 + (log(p11)**2) * p11 + der2_x )
+
+    print(alpha)
+    print(der_alpha)
+
+    print(f)
+    print(der_f)
+
+    print(x)
+    print(der_x)
+    print(der2_x)
+
+    o = M[1, 0] + M[0, 1]
+    p = [M[1, 0] / o, M[0, 1] / o]
+
+    h = 0
+    n = len(M)
+
+    for i in range(n):
+        for j in range(n):
+
+            h -= p[i] * M[i, j] * log(M[i, j])
+
+    var_coeff = (der2_lamb - der_lamb ** 2) / (der_lamb**3)
+    print("lambda", lamb)
+    print("der_lamb", der_lamb)
+    print("entropy", h)
+    print("der2_lamb", der2_lamb)
+    print("variance_constant_coeff", (var_coeff))
+    
+    return var_coeff
+
+
 def eigenvalue_std(M, n):
+    v_coeff = compute_lambda(M)
     h = entropy(M)
-    la = lambda_2(M)
     m = n * h / log(n)
 
-    return sqrt(log(m) * (la - h ** 2) / (h ** 3))
+    return sqrt(log(m) * v_coeff)
+
 
 
 if __name__ == "__main__":
@@ -88,9 +164,9 @@ if __name__ == "__main__":
 
     comps = []
     las = []
-    
-
+    v_coeffs = []
     vs = []
+    stds = []
 
     for _ in range(10):
         M = markov_chain(2)
@@ -99,7 +175,8 @@ if __name__ == "__main__":
         la = lambda_2(M)
         las.append(la)
         vs.append((la-h**2)/(h**3))
-
+        v_coeffs.append(compute_lambda(M))
+        stds.append(eigenvalue_std(M, 500))
 
 
     dpi0s = [c[0] for c in comps]
@@ -108,7 +185,9 @@ if __name__ == "__main__":
     d = {"dpi0": dpi0s,
          "dpi1": dpi1s,
          "ddlambda": las,
-         "vars": vs}
+         "vars": vs,
+         "var_coeffs": v_coeffs,
+         "stds": stds}
 
     df = pd.DataFrame(data=d)
 

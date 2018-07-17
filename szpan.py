@@ -9,10 +9,7 @@ from markov import stationary_distribution, markov_chain
 
 
 def entropy(M, p=None):
-    """Computes the entropy of a known Markov chain by computing a
-    stationary distribution.
-
-    Args:
+    """Args:
      M (float matrix): The Markov chain.
      [p] (float array): A previously computed stationary distribution.
 
