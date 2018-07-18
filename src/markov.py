@@ -112,6 +112,13 @@ def markov_source2(M, n):
     return word
 
 
+
 def word_generator(M, n):
     return lambda: markov_source(M, n)
 
+
+from progress.bar import Bar
+
+if __name__ == "__main__":
+    M = markov_chain(2)
+    bar = Bar("Processing", max=20)

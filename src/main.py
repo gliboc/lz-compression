@@ -58,70 +58,40 @@ import seaborn as sns
 from scipy import stats
 from eigenvalues import lambda_2, eigenvalue_std
 
+from progress.bar import Bar
+
 sns.set(color_codes=True)
 np.random.seed(sum(map(ord, "distributions")))
 
 DEBUG = True
 
+# Failed attempt at speeding the simulation of words
+# def fast_word_generator(M, f, n, N):
+#     "Outputs N words of size n from M"
+#     probas = np.random.rand(N, n)
+#     m00 = M[0, 0]
+#     m10 = M[1, 0]
+#     d = {0: m00, 1: m10}
+#     words = [[f[int(probas[i, 0] > m00)]] for i in range(N)]
 
-def test_neininger():
-    m_chains = [markov_chain(2) for _ in range(100)]
-    neins = [sigma2_H3(M) for M in m_chains]
-    ours = [(h_2(M) - entropy(M) ** 2) * entropy(M) ** 3 for M in m_chains]
+#     for j in range(1, n):
+#         for i in range(N):
+#             w = words[i][-1]
+#             words[i].append(f[(w + int(probas[i, j] > d[w])) % 2])
 
-    cell_text = []
-
-    for i in range(len(m_chains)):
-        cell_text.append(["%1.5f" % x for x in [neins[i], ours[i]]])
-
-    columns = ["Neiningers H^3 * sigma^2", "h2 - h^2"]
-    rows = [str((M[0, 0], M[1, 0])) for M in m_chains]
-
-    plt.table(cellText=cell_text, rowLabels=rows, colLabels=columns)
-
-    plt.plot(neins, color="r", label="Neininger")
-    plt.plot(ours, color="g", label="Szpankowski")
-
-    plt.legend()
-    plt.title("Szpan vs Nein comparison")
-    plt.show()
-
-
-def test_entropy():
-    m_chains = [markov_chain(i) for i in range(2, 10)]
-    ents = [entropy(M) for M in m_chains]
-
-    for i in range(len(m_chains)):
-        print("The Markov chain:")
-        input(m_chains[i])
-        print("Its entropy:")
-        input(ents[i])
-
-
-def fast_word_generator(M, f, n, N):
-    "Outputs N words of size n from M"
-    probas = np.random.rand(N, n)
-    m00 = M[0, 0]
-    m10 = M[1, 0]
-    d = {0: m00, 1: m10}
-    words = [[f[int(probas[i, 0] > m00)]] for i in range(N)]
-
-    for j in range(1, n):
-        for i in range(N):
-            w = words[i][-1]
-            words[i].append(f[(w + int(probas[i, j] > d[w])) % 2])
-
-    input("Generated words")
-    return words
+#     input("Generated words")
+#     return words
 
 
 def simulation(
     random_markov=True, filesave="experiment_data.npy", length_values=None, n_exp=None
 ):
-    """Makes a simulation of the redundancy distribution for different word length values.
+    """Generates words from a Markov source.
     """
-    i = 1000
+
+    # Taking care of the different interactive modes
     if length_values is None:
+        i = 1000
         length_values = [10 * i, 50 * i, 100 * i]
 
         style_mode = False
@@ -151,8 +121,7 @@ def simulation(
         fast_mode = True
         style_mode = False
 
-    print("Random markov has values", random_markov)
-
+    # In case the Markov chain isn't randomized, this is the chain we'll use
     if not random_markov:
         p_a = 0.9
         M = np.matrix([[p_a, 1 - p_a], [1 - p_a, p_a]])
@@ -164,19 +133,25 @@ def simulation(
         M = markov_chain(N)
         h = entropy(M)
         f = [0, 1]
+        print("Random markov has values", M)
 
-    if not fast_mode:
-        print("\nUsing a random Markov chain of size " + str(N))
-        input(M)
-        print("\nIts state function f is:")
-        input(f)
-        print("\nIts entropy is:")
-        input(h)
-        print("\nIts h2 is:")
-        input(h_2(M))
-        print("\nh2-h^2 is:")
-        input(h_2(M) - h ** 2)
+    # Some output for slow mode
+    # if not fast_mode:
+    # print("\nUsing a random Markov chain of size " + str(N))
+    # input(M)
+    # print("\nIts state function f is:")
+    # input(f)
+    # print("\nIts entropy is:")
+    # input(h)
+    # print("\nIts h2 is:")
+    # input(h_2(M))
+    # print("\nh2-h^2 is:")
+    # input(h_2(M) - h ** 2)
 
+    # Initializing the dictionaries used to store the experiments
+    # Many keys are being used, such as "h" for entropy, "M" for
+    # the chain, "n_exp", "n_word", etc.
+    # The experiments are stored in this format in npy files.
     exps = [dict() for _ in range(len(length_values))]
 
     for i, n in enumerate(length_values):
@@ -209,7 +184,12 @@ def simulation(
         # l = fast_word_generator(M,f,n,n_exp)
         # c = [compress2(w) for w in l]
         # m = [len(x) for x in c]
-        m = [compress2(markov_source2(M, n)) for _ in range(n_exp)]
+        bar = Bar("Processing", max=n_exp)
+        m = []
+        for _ in range(n_exp):
+            m.append(compress2(markov_source2(M, n)))
+            bar.next()
+
         exp["data"] = m
 
     exps[0]["ns"] = length_values
@@ -228,6 +208,8 @@ def data_analysis(
     n_exp=None,
     fast_mode=False,
 ):
+
+    # If no experiments were given as argument, start simulation.
     if exps is None:
         if datafile is None:
             if n_exp is None:
@@ -250,43 +232,38 @@ def data_analysis(
         M = exp["M"]
 
         print(
-            "\n ===== This experiment has %d samples of words of size %d\nUsing chain 
-            % (n_exp, n)
+            "\n ===== This experiment has %d samples of words of size %d" % (n_exp, n)
         )
+        print("Using chain {}".format(M))
 
         # Theoretical mean
         mean = h * n / log(n)
         # mean2 = H(M) * n / log(n, 2)
-        H(M)  # à enlever
+        # H(M)  # à enlever
 
-        if not fast_mode:
-            input("\nTheoretical mean is {}".format(mean))
+        # if not fast_mode:
+        #     input("\nTheoretical mean is {}".format(mean))
         exp["mean"] = mean
 
         # Theoretical variances
         std_nein = sqrt(sigma2_H3(M) * n) / log(n, 2)
         # std_szpan = sqrt ( -(h_2(M) - (h**2)) * h**3 * n )
-        print("M is", M)
-        print("n is", n)
-        print("Value for variance var(M)", var(M, n))
-        print("Value of log(m)", log(mean))
-        #std_szpan = sqrt(abs(var(M, n)))
-        std_szpan = eigenvalue_std(M, n) # computed with lambda
+        # print("M is", M)
+        print("\nNumber of experiments: ", n)
+        # print("\nValue for variance var(M)", var(M, n))
+        print("\nValue of log(m): ", log(mean))
+        # std_szpan = sqrt(abs(var(M, n)))
+        std_szpan = eigenvalue_std(M, n)  # computed with lambda
         std_eig = eigenvalue_std(M, n)
         exp["std_nein"] = std_nein
         exp["std_szpan"] = std_szpan
 
-        if not fast_mode:
-            input(
-                "\nComputed std_szpan and std_nein are: {}, {}".format(
-                    std_szpan, std_nein
-                )
-            )
+        print("\nComputed std_szpan and std_nein: ({}, {})".format(std_szpan, std_nein))
 
         # Normalized values from Nein and Szpan papers
         d_nein = [(m_n - mean) / std_nein for m_n in exp["data"]]
         d_szpan = [(m_n - mean) / std_szpan for m_n in exp["data"]]
-        d_eig =  [(m_n - mean) / std_eig for m_n in exp["data"]]
+        d_eig = [(m_n - mean) / std_eig for m_n in exp["data"]]
         exp["d_nein"] = d_nein
         exp["d_szpan"] = d_szpan
         exp["d_eig"] = d_eig
@@ -301,7 +278,7 @@ def data_analysis(
         exp["std"] = std
 
         if not fast_mode:
-            input("\nFitting mean and std are mu=%f and var=%f" % (mu, std))
+            print("\nFitting mean and std are (mu=%f) and (sigma==%f)" % (mu, std))
 
         # Empirical variance, theoretical mean
         # also theoretical mean and theoretical variance
@@ -310,7 +287,7 @@ def data_analysis(
         xmins = [(mi - me) / v for me in [mu, mean] for v in [std, std_nein, std_szpan]]
         xmaxs = [(ma - me) / v for me in [mu, mean] for v in [std, std_nein, std_szpan]]
 
-        # 0 = empirical mean and variance
+        # 0 = mu (empirical mean) and std (empirical standard deviation)
         # 1 = mu and std_nein
         # 2 = mu and std_szpan
         # 3 = mean and std
@@ -572,12 +549,11 @@ def print_histogram_chains(random_markov=True, datafile=None, fast_mode=True):
     exps = data_analysis(
         random_markov=random_markov, datafile=datafile, fast_mode=fast_mode
     )[-5:]
-    
 
     # Raw histograms; not useful anymore
     # figs_raw, axs = plt.subplots(1, len(exps))
     # axs[0].set_ylabel("Counts")
-    # 
+    #
     # for (i, exp) in enumerate(exps):
     #     sns.distplot(exp["data"], ax=axs[i], rug=True, kde=False, bins="auto")
     #     axs[i].set_title(

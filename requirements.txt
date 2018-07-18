@@ -2,3 +2,4 @@ seaborn
 matplotlib
 scipy
 numpy
+progress
