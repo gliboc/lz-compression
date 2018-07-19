@@ -193,7 +193,7 @@ def simulation(
         exp["data"] = m
 
     exps[0]["ns"] = length_values
-    input("\nNow savings experiments to " + filesave)
+    print("\nNow savings experiments to " + filesave)
     np.save(filesave, exps)
 
     return exps, fast_mode
