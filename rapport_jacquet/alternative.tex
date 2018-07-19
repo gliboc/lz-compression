@@ -24,7 +24,8 @@ and computing an approximation of the largest eigenvalue $\lambda$.
             \end{array}
                     \right. $}
          
-did not seem to allow me to directly compute $\dot{\pi}(s)$ (one was missing).
+did not seem to allow me to directly compute $\dot{\pi}(s)$ (it seemed like I need
+one more).
 Therefore, I computed $\lambda(s)$ as the greatest 
 eigenvalue of $P(s)$. Let $\chi$ the characteristic polynomial,
 and $\Delta$ its discrimant
@@ -43,10 +44,10 @@ write $\Delta$ as :
 
 \begin{calculs}
     & \Delta 
-        &=& \underbrace{p_{0 0}^{-2\Re(s)} \cos(2\ln(p_{0 0})\Im(s))}_{a_0(s)} \\
-          &&+& \underbrace{p_{1 1}^{-2\Re(s)} \cos(2\ln(p_{1 1})\Im(s))}_{a_1(s)} \\
-           &&& \underbrace{- 2 (p_{0 0}\,p_{1 1})^{-\Re(s)} \cos(\ln(p_{0 0}\,p_{1 1})\Im(s))}_{a_2(s)} \\
-           &&+&  \underbrace{4 (p_{0 1}\,p_{1 0})^{-\Re(s)} \cos(\ln(p_{0 1}\,p_{1 0})\Im(s))}_{a_3(s)} \\
+        &=& \underbrace{p_{0 0}^{-2\Re(s)} \cos(2\ln(p_{0 0})\Im(s))}_{a_0(s)} \\[6mm]
+          &&+& \underbrace{p_{1 1}^{-2\Re(s)} \cos(2\ln(p_{1 1})\Im(s))}_{a_1(s)} \\[6mm]
+           &&& \underbrace{- 2 (p_{0 0}\,p_{1 1})^{-\Re(s)} \cos(\ln(p_{0 0}\,p_{1 1})\Im(s))}_{a_2(s)} \\[6mm]
+           &&+&  \underbrace{4 (p_{0 1}\,p_{1 0})^{-\Re(s)} \cos(\ln(p_{0 1}\,p_{1 0})\Im(s))}_{a_3(s)} \\[6mm]
           &&+& i \Im(\Delta) 
 \end{calculs}
 
@@ -89,29 +90,32 @@ And since $2xy = \beta$, we have $\epsilon \in \{-1,1\}$ such that
     {\text{i.e.}}
     {$\ddot{{\lambda}}(-1) = \f{ p_{0 0} \ln^2(p_{0 0})
                                     + p_{1 1} \ln^2(p_{1 1})
-                                    \pm (\ddot{{x}}(-1) + \ir \epsilon \ddot{{y}}(-1)}
+                                    \pm (\ddot{{x}}(-1) + \ir \epsilon \ddot{{y}}(-1))}
                                   {2} $}
+where we'll have to choose the signs. 
 
-Now $x(s) = \sqrt{f(s)} = (f(s))^{\f12}$ so $\dot{x}(s) = \f{f'(s)}{2x(s)}$
-and 
-    \centers{$\ddot{{x}}(s) = \f{ f''(s) x(s) + f'(s) \cdot \f{f'(s)}{2x(s)} }
+But first, computing the derivatives of $x(s) = \sqrt{f(s)} $:
+    \centers{$\dot{x}(s) = \f{f'(s)}{2x(s)}$}
+    \leftcenters
+        {and}
+        {$\ddot{{x}}(s) = \f{ f''(s) x(s) + f'(s) \cdot \f{f'(s)}{2x(s)} }
                                    { 2 x^2(s) } $}
 
 Computing $f(s)$ :
 
     \centers{$ f(s) = \f12 (\sqrt{\alpha^2+\beta^2} + \alpha) $}
-    \centers{$ f'(s) = \f12 \left[ \f{ \overbrace{ 2\dot{\alpha}\alpha + 2\dot{\beta}\beta }^{ \gamma(s) } }
+    \centers{$ f'(s) = \f12 \left[ \f{ \overbrace{ \dot{\alpha}\alpha + \dot{\beta}\beta }^{ \gamma(s) } }
                                      { \underbrace{\sqrt{\alpha^2 + \beta^2}}_{\kappa(s)} }
                                     + \dot{\alpha} \right] $}
 
     \leftcenters{with}{$ \dot{\alpha} = \dot{a_0} + \dot{a_1} + \dot{a_2} + \dot{a_3} $}
 
-Deriving according to $s$ amounts to deriving according to $\Re(s)$ so here :
+Deriving according to $s$ amounts to deriving according to $\Re(s)$ so here, already in $s=-1$
 
-    \centers{$ \dot{\alpha} = -2\ln p_{0 0} a_0
-                              -2\ln p_{1 1} a_1
-                              -\ln q_0 a_2
-                              -\ln q_1 a_3 $}
+    \centers{$ \dot{\alpha}(-1) = -2\ln p_{0 0} a_0(-1)
+                              -2\ln p_{1 1} a_1(-1)
+                              -\ln q_0 a_2(-1)
+                              -\ln q_1 a_3(-1) $}
 
 \leftcenters
     {As for $f''(s) :$}
@@ -125,10 +129,16 @@ Deriving according to $s$ amounts to deriving according to $\Re(s)$ so here :
     {with}
     {$\dot{\gamma}(s) = \ddot{{\alpha}} \alpha + {\dot{\alpha}}^2 + \ddot{{\beta}}\beta + {\dot{\beta}}^2$}
 
-\leftcenters
-    {and}
+\centers
     {$ \dot{\kappa}(s) = \f{2 \alpha \dot{\alpha} + 2 \beta \dot{\beta}}
                            {2\sqrt{\alpha^2+\beta^2}}$}
+
+\leftcenters
+    {and}
+    {$ \ddot{\alpha}(-1) = 4\ln^2 p_{0 0} a_0(-1)
+                             + 4\ln^2 p_{1 1} a_1(-1)
+                              +\ln^2 q_0 a_2(-1)
+                              +\ln^2 q_1 a_3(-1) $}
 
 At this point we have fully determined $\ddot{{x}}(s)$, and we realise two things:
 

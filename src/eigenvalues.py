@@ -119,15 +119,15 @@ def compute_lambda(M):
     der_lamb = 0.5 * (- log(p00) * p00 - log(p11) * p11 + der_x)
     der2_lamb = 0.5 * ( (log(p00)**2) * p00 + (log(p11)**2) * p11 + der2_x )
 
-    print(alpha)
-    print(der_alpha)
+    # print(alpha)
+    # print(der_alpha)
 
-    print(f)
-    print(der_f)
+    # print(f)
+    # print(der_f)
 
-    print(x)
-    print(der_x)
-    print(der2_x)
+    # print(x)
+    # print(der_x)
+    # print(der2_x)
 
     o = M[1, 0] + M[0, 1]
     p = [M[1, 0] / o, M[0, 1] / o]
@@ -140,22 +140,24 @@ def compute_lambda(M):
 
             h -= p[i] * M[i, j] * log(M[i, j])
 
-    var_coeff = (der2_lamb - der_lamb ** 2) / (der_lamb**3)
-    print("lambda", lamb)
-    print("der_lamb", der_lamb)
-    print("entropy", h)
-    print("der2_lamb", der2_lamb)
-    print("variance_constant_coeff", (var_coeff))
-    
+    # var_coeff = (der2_lamb - der_lamb ** 2) / (der_lamb**3)
+    var_coeff = (der2_lamb - der_lamb ** 2) # the h^3 leaves
+    # print("lambda", lamb)
+    # print("der_lamb", der_lamb)
+    # print("entropy", h)
+    # print("der2_lamb", der2_lamb)
+    # print("variance_constant_coeff", (var_coeff))
+    print(der_lamb, h)
+    assert(abs(der_lamb - h) < 1e-6)
+
     return var_coeff
 
 
 def eigenvalue_std(M, n):
     v_coeff = compute_lambda(M)
     h = entropy(M)
-    m = n * h / log(n)
 
-    return sqrt(log(m) * v_coeff)
+    return sqrt(n * v_coeff) / log(n, 2)
 
 
 

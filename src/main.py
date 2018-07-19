@@ -361,6 +361,11 @@ def analysing_theoretical_std(filesave=None, datafile=None, save=None, save_name
     szpans = [exp["std_szpan"] for exp in exps]
     diff1 = [stds[i] - neins[i] for i in range(len(stds))]
     diff2 = [stds[i] - szpans[i] for i in range(len(stds))]
+    
+    al = 40 / (1000 * (sqrt(5) -1))
+    be = 40 * (1 - (1 / (sqrt(5)-1) ))
+
+    sqrt1 = [-(al * sqrt(n) + be) for n in ns]
 
     # fsts = [diff[40] - log(ns[40], 2) ** (0.5 + i*0.1 + 0.3) for i in range(N)]
     try:
@@ -388,7 +393,7 @@ def analysing_theoretical_std(filesave=None, datafile=None, save=None, save_name
     #    e = 0.5 + i*0.1 + 0.3
     #    axs[1].plot(ns, logs[i], label=r'${(\log_2(n))}^{%1.2f}-%1.2f$' % (e, -fsts[i]))
 
-    axs[1].plot(ns, logs, label=r"${(\log_2(n))}-%1.2f$" % -fst)
+    axs[1].plot(ns, sqrt1, label=r"${-(\alpha\sqrt{n}+\beta)}$")
     axs[1].set_title(
         "Difference between standard deviations, $n_{exp}$ = " + str(n_exp)
     )
