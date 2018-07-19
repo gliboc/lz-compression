@@ -109,11 +109,11 @@ def compute_lambda(M):
 
     f = 0.5 * (sqrt(alpha ** 2 + beta ** 2) + alpha)
     der_f = 0.5 * ((der_alpha * alpha) / (sqrt(alpha**2)) + der_alpha)
-    der2_f = 0.5 * ( (der_gamma * kappa + gamma * der_kappa) / (kappa ** 2) + der2_alpha )
+    der2_f = 0.5 * ( (der_gamma * kappa - gamma * der_kappa) / (kappa ** 2) + der2_alpha )
 
     x = sqrt(alpha)
     der_x = der_f / (2 * x)
-    der2_x = (der2_f * x + der_f * der_x) / (2 * (x**2))
+    der2_x = (der2_f * x - der_f * der_x) / (2 * (x**2))
 
     lamb = 0.5 * (p00 + p11 + x)
     der_lamb = 0.5 * (- log(p00) * p00 - log(p11) * p11 + der_x)
@@ -157,7 +157,7 @@ def eigenvalue_std(M, n):
     v_coeff = compute_lambda(M)
     h = entropy(M)
 
-    return sqrt(n * v_coeff) / log(n, 2)
+    return sqrt(n * v_coeff) / log(n, 2) # - sqrt(n) * (40 / (1000 * (sqrt(5) - 1) ) )
 
 
 
