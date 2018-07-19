@@ -38,7 +38,63 @@ and $\Delta$ its discrimant
     {$ \Delta = (\poo + \pii)^2 - 4[\pooii - \poiio] = {p_{0 0}}^{-2s} 
                 + {p_{1 1}}^{-s} - 2\pooii + 4\poiio $}
 
-\noindent We need to compute $\delta$, a complex root of 
+\question{A simple computation} We have, unformally :
+\centers{$ \lambda(s) = \f{ \poo + \pii \pm \sqrt{\Delta(s)}}{2} $}
+
+\begin{egalites}
+    & \Delta(-1) 
+        & (p_{0 0} + p_{1 1})^2 
+                        - 2 p_{0 0} p_{1 1} 
+                        + 4 p_{0 1} p_{1 0} \\
+        && (p_{0 0} + p_{1 1} - 2)^2 
+\end{egalites}
+
+Therefore $\sqrt{\Delta(-1)} = 2 - p_{0 0} - p_{1 1} = p_{0 1} + p_{1 0} $, 
+and we also verify that  $\lambda(-1) = 1 = \f{ p_{0 0} + p_{1 1} + \sqrt{\Delta(-1)}}{2} $}
+
+\leftcenters
+    {Derivating}
+    {$ \dot{\lambda}(s) = \f{ -\ln p_{0 0} \poo - \ln p_{1 1} \pii + \f{ \Delta'(s) }{ 2 \Delta(s) } }{2} $}
+
+Using the expression of $\Delta'(s)$
+\centers{$ \Delta'(s) = - 2 \ln p_{0 0} \poo - 2 \ln p_{1 1} \pii
+                        + 2 \ln (p_{0 0} p_{1 1}) \pooii 
+                        - 4 \ln (p_{0 1} p_{1 0}) \poiio $}
+and 
+\centers{$ \Delta'(-1) = - 2 \ln p_{0 0} p_{0 0} - 2 \ln p_{1 1} p_{1 1}
+                        + 2 \ln (p_{0 0} p_{1 1}) (p_{0 0} p_{1 1})
+                        - 4 \ln (p_{0 1} p_{1 0}) (p_{0 1} p_{1 0})  $}
+
+
+we verified numerically that $ \dot{\lambda}(-1) = h $. Finally,
+
+\centers{$ \ddot{\lambda}(s) =
+                \f{ \ln^2 p_{0 0} \poo + \ln^2 p_{1 1} \pii
+                    + \f{ \Delta''(s) \sqrt{\Delta(s)} - \Delta'(s) \cdot \f{\Delta'(s)}
+                                                                            {2\sqrt{\Delta(s)}} }
+                        {2\Delta(s)}}
+                  {2} $}
+
+\leftcenters
+    {with}
+    {$ \Delta''(s) = 4 \ln^2 p_{0 0} \poo + 4 \ln^2 p_{1 1} \pii  
+                     - 2 \ln^2 (p_{0 0} p_{1 1}) \pooii
+                     + 4 \ln^2 (p_{0 1} p_{1 0}) \poiio $}
+
+\leftencadre
+    {Finally}
+    {$\ddot{\lambda}(-1) = \f { \ln^2 p_{0 0} p_{0 0} + \ln^2 p_{1 1}
+                                +  + \f{ \Delta''(-1) \sqrt{\Delta(-1)} - \Delta'(-1) \cdot \f{\Delta'(-1)}
+                                                                            {2\sqrt{\Delta(-1)}} }
+                                        {2\Delta(-1)}}
+                              {2} $}
+
+
+This code computes it :
+
+\question{Another (more complicated) computation of $\ddot{\lambda}(-1)$}
+This expression gives the sames numerical results that the first one, 
+but is longer. We compute $\delta$, a complex root of 
 $\Delta$, in order to find the roots of $\chi$. First, we
 write $\Delta$ as :
 
