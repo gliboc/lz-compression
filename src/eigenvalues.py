@@ -153,12 +153,67 @@ def compute_lambda(M):
     return var_coeff
 
 
+def compute_lambda2(M):
+
+    p00 = M[0, 0]
+    p01 = M[0, 1]
+    p10 = M[1, 0]
+    p11 = M[1, 1]
+
+    q0 = p00 * p11
+    q1 = p01 * p10
+
+    Delta = p00 ** 2 + p11 ** 2 - 2.0 * q0 + 4.0 * q1
+
+    sqrt_Delta = p01 + p10
+
+    assert(abs(sqrt_Delta - sqrt(Delta)) < 1e-8)
+    
+    der_Delta = -2.0 * log(p00) * (p00 ** 2) \
+                -2.0 * log(p11) * (p11 ** 2) \
+                + 2.0 * log(q0) * q0 \
+                - 4.0 * log(q1) * q1
+
+    der2_Delta = 4.0 * (log(p00) ** 2) * (p00 ** 2) \
+                 + 4.0 * (log(p11) ** 2) * (p11 ** 2) \
+                 - 2.0 * (log(q0) ** 2) * q0 \
+                 + 4.0 * (log(q1) ** 2) * q1
+
+    lam = 0.5 * ( p00 + p11 + sqrt_Delta )
+
+    assert(abs(lam - 1) < 1e-8)
+
+    der_lam = 0.5 * ( - log(p00) * p00 - log(p11) * p11 \
+                      + der_Delta / (2 * sqrt_Delta) )
+
+    h = entropy(M)
+
+    assert(abs(der_lam - h) < 1e-6)
+
+    der2_lam = 0.
+    der2_lam += p00 * (log(p00)**2)
+    der2_lam += p11 * (log(p11)**2)
+
+    snd_part = der2_Delta * sqrt_Delta - (der_Delta ** 2) / (2.0 * sqrt_Delta)
+    snd_part /= 2
+    snd_part /= Delta
+
+    der2_lam += snd_part
+    der2_lam /= 2
+
+    print(der2_lam)
+    v_coeff = der2_lam - der_lam ** 2
+
+    print(v_coeff)
+    assert(v_coeff >= 0)
+    return (der2_lam - der_lam ** 2)
+
+
 def eigenvalue_std(M, n):
-    v_coeff = compute_lambda(M)
+    v_coeff = compute_lambda2(M)
     h = entropy(M)
 
     return sqrt(n * v_coeff) / log(n, 2) # - sqrt(n) * (40 / (1000 * (sqrt(5) - 1) ) )
-
 
 
 if __name__ == "__main__":
