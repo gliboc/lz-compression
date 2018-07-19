@@ -16,10 +16,15 @@ and computing an approximation of the largest eigenvalue $\lambda$.
                         + 2 \dot{\pi}(-1) \dot{P}(-1) \psi
                         - 2 \dot{\lambda}(-1) \dot{\pi}(-1) \psi $}
 \noindent However, the relations defining $\pi(s)$ : 
-    \centers{$ \pi(s) P(s)  = \lambda(s) \pi(s)$}
-    \centers{$ P(s) \psi(s) = \lambda(s) \psi(s)$}
-    \centers{$ \pi(s) \psi(s) = \lambda(s) $}
-did not seem to allow me to directly compute $\dot{\pi}(s)$.
+   
+        \centers{ $ \left\{
+            \begin{array}{rl} \pi(s) P(s)  &= \lambda(s) \pi(s) \\
+                          P(s) \psi(s) &= \lambda(s) \psi(s) \\
+                          \pi(s) \psi(s) &= \lambda(s) 
+            \end{array}
+                    \right. $}
+         
+did not seem to allow me to directly compute $\dot{\pi}(s)$ (one was missing).
 Therefore, I computed $\lambda(s)$ as the greatest 
 eigenvalue of $P(s)$. Let $\chi$ the characteristic polynomial,
 and $\Delta$ its discrimant
@@ -36,14 +41,14 @@ and $\Delta$ its discrimant
 $\Delta$, in order to find the roots of $\chi$. First, we
 write $\Delta$ as :
 
-\begin{egalites}
+\begin{calculs}
     & \Delta 
-        & \underbrace{p_{0 0}^{-2\Re(s)} \cos(2\ln(p_{0 0})\Im(s))}_{a_0(s)}
-            + \underbrace{p_{1 1}^{-2\Re(s)} \cos(2\ln(p_{1 1})\Im(s))}_{a_1(s)}
-            \underbrace{- 2 (p_{0 0}\,p_{1 1})^{-\Re(s)} \cos(\ln(p_{0 0}\,p_{1 1})\Im(s))}_{a_2(s)}
-            + \underbrace{4 (p_{0 1}\,p_{1 0})^{-\Re(s)} \cos(\ln(p_{0 1}\,p_{1 0})\Im(s))}_{a_3(s)}
-          + i \Im(\Delta) 
-\end{egalites}
+        &=& \underbrace{p_{0 0}^{-2\Re(s)} \cos(2\ln(p_{0 0})\Im(s))}_{a_0(s)} \\
+          &&+& \underbrace{p_{1 1}^{-2\Re(s)} \cos(2\ln(p_{1 1})\Im(s))}_{a_1(s)} \\
+           &&& \underbrace{- 2 (p_{0 0}\,p_{1 1})^{-\Re(s)} \cos(\ln(p_{0 0}\,p_{1 1})\Im(s))}_{a_2(s)} \\
+           &&+&  \underbrace{4 (p_{0 1}\,p_{1 0})^{-\Re(s)} \cos(\ln(p_{0 1}\,p_{1 0})\Im(s))}_{a_3(s)} \\
+          &&+& i \Im(\Delta) 
+\end{calculs}
 
 where $\Im(\Delta) = b_0(s) + b_1(s) + b_2(s) + b_3(s)$, with each $b_i(s)$ being
 the same term as $a_i(s)$ with $\cos$ replaced by $\sin$. We write 
@@ -52,19 +57,168 @@ the same term as $a_i(s)$ with $\cos$ replaced by $\sin$. We write
 
 and we are searching for $\delta = x(s) + i y(s)$, which means that 
 
- \begin{egalites} &x^2 - y^2 &= \alpha \\
-                 &2\, x\, y &= \beta \\
-                 &x^2 + y^2 &= \sqrt{\alpha^2+\beta^2}
-                 \end{egalites} 
+\centers{$ \left\{
+                \begin{array}{rl}
+                    x^2 - y^2 &= \alpha \\
+                    2\, x\, y &= \beta \\
+                    x^2 + y^2 &= \sqrt{\alpha^2+\beta^2}
+                \end{array}
+            \right.
+        $}
     
 
 This solves into 
-  \begin{egalites} 
-                     &x &= \pm \sqrt{\f{1}{2}(\sqrt{\alpha^2+\beta^2}+\alpha)} \\
-                     &y &= \pm \sqrt{\f{1}{2}(\sqrt{\alpha^2+\beta^2}-\alpha)} 
-            \end{egalites}
-             
+ 
+    \centers{$
+        \left\{
+            \begin{array}{rl}
+                     x &= \pm \sqrt{\f{1}{2}(\sqrt{\alpha^2+\beta^2}+\alpha)} \\
+                     y &= \pm \sqrt{\f{1}{2}(\sqrt{\alpha^2+\beta^2}-\alpha)} 
+            \end{array}
+        \right. 
+            $}
 
+And since $2xy = \beta$, we have $\epsilon \in \{-1,1\}$ such that
+             \centers{$ \delta = \pm (x + \ir \epsilon y) $}
+
+\leftcenters    
+    {So}
+    {$\lambda(s) = \f{ \poo + \pii \pm (x + \ir \epsilon y)}{2}$}
+
+\leftcenters
+    {\text{i.e.}}
+    {$\ddot{{\lambda}}(-1) = \f{ p_{0 0} \ln^2(p_{0 0})
+                                    + p_{1 1} \ln^2(p_{1 1})
+                                    \pm (\ddot{{x}}(-1) + \ir \epsilon \ddot{{y}}(-1)}
+                                  {2} $}
+
+Now $x(s) = \sqrt{f(s)} = (f(s))^{\f12}$ so $\dot{x}(s) = \f{f'(s)}{2x(s)}$
+and 
+    \centers{$\ddot{{x}}(s) = \f{ f''(s) x(s) + f'(s) \cdot \f{f'(s)}{2x(s)} }
+                                   { 2 x^2(s) } $}
+
+Computing $f(s)$ :
+
+    \centers{$ f(s) = \f12 (\sqrt{\alpha^2+\beta^2} + \alpha) $}
+    \centers{$ f'(s) = \f12 \left[ \f{ \overbrace{ 2\dot{\alpha}\alpha + 2\dot{\beta}\beta }^{ \gamma(s) } }
+                                     { \underbrace{\sqrt{\alpha^2 + \beta^2}}_{\kappa(s)} }
+                                    + \dot{\alpha} \right] $}
+
+    \leftcenters{with}{$ \dot{\alpha} = \dot{a_0} + \dot{a_1} + \dot{a_2} + \dot{a_3} $}
+
+Deriving according to $s$ amounts to deriving according to $\Re(s)$ so here :
+
+    \centers{$ \dot{\alpha} = -2\ln p_{0 0} a_0
+                              -2\ln p_{1 1} a_1
+                              -\ln q_0 a_2
+                              -\ln q_1 a_3 $}
+
+\leftcenters
+    {As for $f''(s) :$}
+    {$ f''(s) = \f12 \left[ 
+                        \f{ \dot{\gamma}(s) \kappa(s) + \gamma(s) \dot{\kappa}(s) }
+                          {\kappa^2(s)} 
+                        + \ddot{{\alpha}}(s) 
+                    \right] $}
+
+\leftcenters
+    {with}
+    {$\dot{\gamma}(s) = \ddot{{\alpha}} \alpha + {\dot{\alpha}}^2 + \ddot{{\beta}}\beta + {\dot{\beta}}^2$}
+
+\leftcenters
+    {and}
+    {$ \dot{\kappa}(s) = \f{2 \alpha \dot{\alpha} + 2 \beta \dot{\beta}}
+                           {2\sqrt{\alpha^2+\beta^2}}$}
+
+At this point we have fully determined $\ddot{{x}}(s)$, and we realise two things:
+
+\begin{enumerate}
+    \item In $s=-1$, since $Im(-1) =0$ and because of the sinus function,
+          all the $\beta$ terms, including derivatives, are equal to 0.
+          This will simplify the expression for $\ddot{{x}}(-1)$. \\
+
+    \item Furthermore, it also means that $\ddot{{y}}(-1) = 0$,
+          so
+          \encadre{ $\ddot{{\lambda}}(-1) = \f{ p_{0 0} \ln^2(p_{0 0})
+                                    + p_{1 1} \ln^2(p_{1 1})
+                                    + \ddot{{x}}(-1) }
+                                  {2} $ }
+          where the $+$ comes from the fact that $\lambda(s)$ is 
+          the highest eigenvalue (and $\ddot{{x}}(-1) > 0$, so by
+          continuity the expression around $s=-1$ retained the same sign)
+\end{enumerate}
+
+The final expression of $\ddot{{\lambda}}$ (as well as $\dot{\lambda}(-1))$)
+can be fully expressed with $\alpha(-1), \dot{\alpha}(-1)$ and $\ddot{{\alpha}}(-1)$.
+I empirically verified that $\dot{\lambda}(-1)) = h$, which is encouraging.
+This is the code that computes 
+\centers{$\f{\ddot{\lambda}(-1)-{\dot{\lambda}(-1)}^2}{{\dot{\lambda}(-1)}^3}$}
+where \verb|der_lamb| reads as $\dot{\lambda}(-1)$, etc.
+
+\vspace{1em}
+{\centering
+\begin{lstlisting}[language=Python]
+def compute_lambda(M):
+    p00 = M[0, 0]
+    p01 = M[0, 1]
+    p11 = M[1, 1]
+    p10 = M[1, 0]
+
+    q0 = p00 * p11
+    q1 = p01 * p10
+
+    alpha = p00 ** 2 + p11 ** 2 - 2 * q0 + 4 * q1
+
+    der_alpha = - 2 * log(p00) * (p00 ** 2) - 2 * log(p11) * (p11 ** 2) \
+                + 2 * q0 * log(q0) \
+                - 4 * q1 * log(q1)
+
+    der2_alpha = 4 * (log(p00) ** 2) * (p00 ** 2) \
+                 + 4 * (log(p11) ** 2) * (p11 ** 2) \
+                 - 2 * (log(q0) ** 2) * q0 \
+                 + 4 * (log(q1) ** 2) * q1
+
+    beta = 0
+    der_beta = 0
+    der2_beta = 0
+
+    gamma = der_alpha * alpha # beta terms are zero
+    der_gamma = der2_alpha * alpha + (der_alpha ** 2) # beta terms are zero
+
+    kappa = sqrt(alpha**2 + beta**2) # basically alpha
+    der_kappa = (alpha * der_alpha) / (sqrt(alpha**2))
+
+    f = 0.5 * (sqrt(alpha ** 2 + beta ** 2) + alpha)
+    der_f = 0.5 * ((der_alpha * alpha) / (sqrt(alpha**2)) + der_alpha)
+    der2_f = 0.5 * ( (der_gamma * kappa + gamma * der_kappa) / (kappa ** 2) + der2_alpha )
+
+    x = sqrt(alpha)
+    der_x = der_f / (2 * x)
+    der2_x = (der2_f * x + der_f * der_x) / (2 * (x**2))
+
+    lamb = 0.5 * (p00 + p11 + x)
+    der_lamb = 0.5 * (- log(p00) * p00 - log(p11) * p11 + der_x)
+    der2_lamb = 0.5 * ( (log(p00)**2) * p00 + (log(p11)**2) * p11 + der2_x )
+
+    # Verifying der_lamb = h (entropy)
+    h = 0
+    o = M[1, 0] + M[0, 1]
+    p = [M[1, 0] / o, M[0, 1] / o]
+    n = len(M)
+
+    for i in range(n):
+        for j in range(n):
+
+            h -= p[i] * M[i, j] * log(M[i, j])
+
+    assert(der_lamb == h) # fails if der_lamb is not equal to h
+
+    var_coeff = (der2_lamb - der_lamb ** 2) / (der_lamb**3)
+    
+    return var_coeff
+\end{lstlisting}
+}
+ 
 % \noindent First term is
 % \centers
 %     { $\pi_0 \, p_{0 0} \, \log^2 (p_{0 0}) 
