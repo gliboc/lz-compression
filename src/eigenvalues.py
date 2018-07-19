@@ -213,7 +213,7 @@ def eigenvalue_std(M, n):
     v_coeff = compute_lambda2(M)
     h = entropy(M)
 
-    return sqrt(n * v_coeff) / log(n, 2) # - sqrt(n) * (40 / (1000 * (sqrt(5) - 1) ) )
+    return sqrt(n * v_coeff) / log(n) # - sqrt(n) * (40 / (1000 * (sqrt(5) - 1) ) )
 
 
 if __name__ == "__main__":

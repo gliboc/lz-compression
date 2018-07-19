@@ -4,11 +4,9 @@
 \noindent
 Another expression for the variance might be
 
-\centers{$  \left( \ddot{\lambda}(-1) - { \dot{\lambda}(-1) }^2 \right) \f{n}{\log_2^2 n} $}
+\centers{$  \left( \ddot{\lambda}(-1) - { \dot{\lambda}(-1) }^2 \right) \f{n}{\ln^2 n} $}
 
-\noindent I was able to compute this coefficient for a Markov chain of size 2. It 
-might be applied to the general case~$n$ by solving a linear system of the same size
-and computing an approximation of the largest eigenvalue $\lambda$. 
+\noindent Let's compute $\ddot{\lambda}(-1)$ with a Markov chain of order 1.
 
 \leftcenters
     {In the paper,}
@@ -42,58 +40,121 @@ and $\Delta$ its discrimant
 \centers{$ \lambda(s) = \f{ \poo + \pii \pm \sqrt{\Delta(s)}}{2} $}
 
 \begin{egalites}
-    & \Delta(-1) 
+    Since & \Delta(-1) 
         & (p_{0 0} + p_{1 1})^2 
                         - 2 p_{0 0} p_{1 1} 
                         + 4 p_{0 1} p_{1 0} \\
         && (p_{0 0} + p_{1 1} - 2)^2 
 \end{egalites}
 
-Therefore $\sqrt{\Delta(-1)} = 2 - p_{0 0} - p_{1 1} = p_{0 1} + p_{1 0} $, 
-and we also verify that  $\lambda(-1) = 1 = \f{ p_{0 0} + p_{1 1} + \sqrt{\Delta(-1)}}{2} $}
+then, we have $ \sqrt{ \Delta(-1) } = 2 - p_{0 0} - p_{1 1} = p_{0 1} + p_{1 0} $, 
+and, picking the $+$ sign in the expression, we can already verify that  
+\centers{$ \lambda(-1) =  \f{ p_{0 0} + p_{1 1} + \sqrt{ \Delta(-1) } }
+                                               {2} = 1 $}
 
 \leftcenters
-    {Derivating}
-    {$ \dot{\lambda}(s) = \f{ -\ln p_{0 0} \poo - \ln p_{1 1} \pii + \f{ \Delta'(s) }{ 2 \Delta(s) } }{2} $}
+    {Derivating:}
+    {$ \dot{\lambda}(s) = \f12 \left( -\ln p_{0 0}\, \poo - \ln p_{1 1}\, \pii + \f{ \Delta'(s) }{ 2 \sqrt{\Delta(s)} } \right) $}
 
-Using the expression of $\Delta'(s)$
-\centers{$ \Delta'(s) = - 2 \ln p_{0 0} \poo - 2 \ln p_{1 1} \pii
-                        + 2 \ln (p_{0 0} p_{1 1}) \pooii 
-                        - 4 \ln (p_{0 1} p_{1 0}) \poiio $}
+Using the expression for $\Delta'(s)$
+\centers{$ \Delta'(s) = - 2 \ln p_{0 0}\, \poodeux - 2 \ln p_{1 1}\, \piideux
+                        + 2 \ln (p_{0 0} p_{1 1})\, \pooii 
+                        - 4 \ln (p_{0 1} p_{1 0})\, \poiio $}
 and 
-\centers{$ \Delta'(-1) = - 2 \ln p_{0 0} p_{0 0} - 2 \ln p_{1 1} p_{1 1}
-                        + 2 \ln (p_{0 0} p_{1 1}) (p_{0 0} p_{1 1})
-                        - 4 \ln (p_{0 1} p_{1 0}) (p_{0 1} p_{1 0})  $}
+\centers{$ \Delta'(-1) = - 2 \ln p_{0 0}\, {p_{0 0}}^2 - 2 \ln p_{1 1}\, {p_{1 1}}^2
+                        + 2 \ln (p_{0 0} p_{1 1})\, (p_{0 0} p_{1 1})
+                        - 4 \ln (p_{0 1} p_{1 0})\, (p_{0 1} p_{1 0})  $}
 
-
-we verified numerically that $ \dot{\lambda}(-1) = h $. Finally,
+We can compute $\dot{\lambda}(-1)$. 
+We verified numerically that $ \dot{\lambda}(-1) = h $. Derivating again,
 
 \centers{$ \ddot{\lambda}(s) =
-                \f{ \ln^2 p_{0 0} \poo + \ln^2 p_{1 1} \pii
-                    + \f{ \Delta''(s) \sqrt{\Delta(s)} - \Delta'(s) \cdot \f{\Delta'(s)}
+                \f12 \left( \ln^2 p_{0 0} \poo + \ln^2 p_{1 1} \pii
+                    + \f{ \Delta''(s) \sqrt{\Delta(s)} - \Delta'(s) \cdot \tf{\Delta'(s)}
                                                                             {2\sqrt{\Delta(s)}} }
-                        {2\Delta(s)}}
-                  {2} $}
+                        {2\Delta(s)} \right)
+                   $}
 
 \leftcenters
     {with}
-    {$ \Delta''(s) = 4 \ln^2 p_{0 0} \poo + 4 \ln^2 p_{1 1} \pii  
-                     - 2 \ln^2 (p_{0 0} p_{1 1}) \pooii
-                     + 4 \ln^2 (p_{0 1} p_{1 0}) \poiio $}
+    {$ \Delta''(s) = 4 \ln^2 p_{0 0}\, \poodeux + 4 \ln^2 p_{1 1}\, \piideux
+                     - 2 \ln^2 (p_{0 0} p_{1 1})\, \pooii
+                     + 4 \ln^2 (p_{0 1} p_{1 0})\, \poiio $}
 
 \leftencadre
     {Finally}
-    {$\ddot{\lambda}(-1) = \f { \ln^2 p_{0 0} p_{0 0} + \ln^2 p_{1 1}
-                                +  + \f{ \Delta''(-1) \sqrt{\Delta(-1)} - \Delta'(-1) \cdot \f{\Delta'(-1)}
-                                                                            {2\sqrt{\Delta(-1)}} }
-                                        {2\Delta(-1)}}
-                              {2} $}
+    {$\ddot{\lambda}(-1) = \f12 \left( \ln^2 p_{0 0}\, p_{0 0} + \ln^2 p_{1 1}\, p_{1 1}
+                                + \f{ \Delta''(-1) \sqrt{\Delta(-1)} - \tf { {\Delta'(-1)}^2 }
+                                                                              {2\sqrt{\Delta(-1)}} }
+                                        {2\Delta(-1)} \right)
+                         $}
 
+The simulations using this coefficient for the variance are quite good, but not perfect.
+Compared to the coefficient used in the unpublished paper \emph{Probabilistic Analysis of
+Lempel-Ziv Parsing for Markov Sources} by Leckey, Wormald and Neininger, this variance
+seems to be very slightly closer to the empirical variance, as can be seen on this graph :
 
 This code computes it :
 
+\begin{lstlisting}[language=Python]
+def compute_lambda2(M):
+
+    p00 = M[0, 0]
+    p01 = M[0, 1]
+    p10 = M[1, 0]
+    p11 = M[1, 1]
+
+    q0 = p00 * p11
+    q1 = p01 * p10
+
+    Delta = p00 ** 2 + p11 ** 2 - 2.0 * q0 + 4.0 * q1
+
+    sqrt_Delta = p01 + p10
+    
+    der_Delta = -2.0 * log(p00) * (p00 ** 2) \
+                -2.0 * log(p11) * (p11 ** 2) \
+                + 2.0 * log(q0) * q0 \
+                - 4.0 * log(q1) * q1
+
+    der2_Delta = 4.0 * (log(p00) ** 2) * (p00 ** 2) \
+                 + 4.0 * (log(p11) ** 2) * (p11 ** 2) \
+                 - 2.0 * (log(q0) ** 2) * q0 \
+                 + 4.0 * (log(q1) ** 2) * q1
+
+    lam = 0.5 * ( p00 + p11 + sqrt_Delta )
+
+    assert(abs(lam - 1) < 1e-8) # verify that lambda(-1) = 1
+
+    der_lam = 0.5 * ( - log(p00) * p00 - log(p11) * p11 \
+                      + der_Delta / (2 * sqrt_Delta) )
+
+    h = entropy(M)
+
+    assert(abs(der_lam - h) < 1e-6) # we find the entropy for der_lambda(-1)
+
+    der2_lam = 0.
+    der2_lam += p00 * (log(p00)**2)
+    der2_lam += p11 * (log(p11)**2)
+
+    snd_part = der2_Delta * sqrt_Delta - (der_Delta ** 2) / (2.0 * sqrt_Delta)
+    snd_part /= 2
+    snd_part /= Delta
+
+    der2_lam += snd_part
+    der2_lam /= 2
+
+    print(der2_lam)
+    v_coeff = der2_lam - der_lam ** 2
+
+    print(v_coeff)
+    assert(v_coeff >= 0) # we only raise positive value
+
+    return (der2_lam - der_lam ** 2)
+\end{lstlisting}
+
+
 \question{Another (more complicated) computation of $\ddot{\lambda}(-1)$}
-This expression gives the sames numerical results that the first one, 
+This expression gives the sames numerical results as the first one, 
 but is longer. We compute $\delta$, a complex root of 
 $\Delta$, in order to find the roots of $\chi$. First, we
 write $\Delta$ as :
