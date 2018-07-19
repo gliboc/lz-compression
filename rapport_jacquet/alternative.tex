@@ -4,7 +4,7 @@
 \noindent
 Another expression for the variance might be
 
-\centers{$ \f{ \ddot{\lambda}(-1) - { \dot{\lambda}(-1) }^2 }{ { \dot{\lambda}(-1) }^3 } $}
+\centers{$  \left( \ddot{\lambda}(-1) - { \dot{\lambda}(-1) }^2 \right) \f{n}{\log_2^2 n} $}
 
 \noindent I was able to compute this coefficient for a Markov chain of size 2. It 
 might be applied to the general case~$n$ by solving a linear system of the same size
@@ -68,7 +68,7 @@ and we are searching for $\delta = x(s) + i y(s)$, which means that
         $}
     
 
-This solves into 
+Yielding
  
     \centers{$
         \left\{
@@ -92,13 +92,13 @@ And since $2xy = \beta$, we have $\epsilon \in \{-1,1\}$ such that
                                     + p_{1 1} \ln^2(p_{1 1})
                                     \pm (\ddot{{x}}(-1) + \ir \epsilon \ddot{{y}}(-1))}
                                   {2} $}
-where we'll have to choose the signs. 
+where we'll have to find what is $\epsilon$ and which sign to pick.
 
 But first, computing the derivatives of $x(s) = \sqrt{f(s)} $:
     \centers{$\dot{x}(s) = \f{f'(s)}{2x(s)}$}
     \leftcenters
         {and}
-        {$\ddot{{x}}(s) = \f{ f''(s) x(s) + f'(s) \cdot \f{f'(s)}{2x(s)} }
+        {$\ddot{{x}}(s) = \f{ f''(s) x(s) - f'(s) \cdot \f{f'(s)}{2x(s)} }
                                    { 2 x^2(s) } $}
 
 Computing $f(s)$ :
@@ -110,17 +110,10 @@ Computing $f(s)$ :
 
     \leftcenters{with}{$ \dot{\alpha} = \dot{a_0} + \dot{a_1} + \dot{a_2} + \dot{a_3} $}
 
-Deriving according to $s$ amounts to deriving according to $\Re(s)$ so here, already in $s=-1$
-
-    \centers{$ \dot{\alpha}(-1) = -2\ln p_{0 0} a_0(-1)
-                              -2\ln p_{1 1} a_1(-1)
-                              -\ln q_0 a_2(-1)
-                              -\ln q_1 a_3(-1) $}
-
 \leftcenters
     {As for $f''(s) :$}
     {$ f''(s) = \f12 \left[ 
-                        \f{ \dot{\gamma}(s) \kappa(s) + \gamma(s) \dot{\kappa}(s) }
+                        \f{ \dot{\gamma}(s) \kappa(s) - \gamma(s) \dot{\kappa}(s) }
                           {\kappa^2(s)} 
                         + \ddot{{\alpha}}(s) 
                     \right] $}
@@ -133,6 +126,13 @@ Deriving according to $s$ amounts to deriving according to $\Re(s)$ so here, alr
     {$ \dot{\kappa}(s) = \f{2 \alpha \dot{\alpha} + 2 \beta \dot{\beta}}
                            {2\sqrt{\alpha^2+\beta^2}}$}
 
+
+Deriving according to $s$ amounts to deriving according to $\Re(s)$ so, in $s=-1$,
+
+    \centers{$ \dot{\alpha}(-1) = -2\ln p_{0 0} a_0(-1)
+                              -2\ln p_{1 1} a_1(-1)
+                              -\ln q_0 a_2(-1)
+                              -\ln q_1 a_3(-1) $}
 \leftcenters
     {and}
     {$ \ddot{\alpha}(-1) = 4\ln^2 p_{0 0} a_0(-1)
@@ -140,7 +140,7 @@ Deriving according to $s$ amounts to deriving according to $\Re(s)$ so here, alr
                               +\ln^2 q_0 a_2(-1)
                               +\ln^2 q_1 a_3(-1) $}
 
-At this point we have fully determined $\ddot{{x}}(s)$, and we realise two things:
+At this point we have fully determined $\ddot{{x}}(s)$, and we realize two things:
 
 \begin{enumerate}
     \item In $s=-1$, since $Im(-1) =0$ and because of the sinus function,
@@ -160,7 +160,9 @@ At this point we have fully determined $\ddot{{x}}(s)$, and we realise two thing
 
 The final expression of $\ddot{{\lambda}}$ (as well as $\dot{\lambda}(-1))$)
 can be fully expressed with $\alpha(-1), \dot{\alpha}(-1)$ and $\ddot{{\alpha}}(-1)$.
-I empirically verified that $\dot{\lambda}(-1)) = h$, which is encouraging.
+I empirically verified that $\dot{\lambda}(-1) = h$, which is encouraging. It could 
+mean that if there is a mistake in my computations, it happens in the computation 
+of either $\ddot{x}(s)$, $f''(s)$ or $\ddot{\alpha}$.
 This is the code that computes 
 \centers{$\f{\ddot{\lambda}(-1)-{\dot{\lambda}(-1)}^2}{{\dot{\lambda}(-1)}^3}$}
 where \verb|der_lamb| reads as $\dot{\lambda}(-1)$, etc.
