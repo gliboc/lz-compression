@@ -1,5 +1,5 @@
 
-\centers{\question{Alternative representation}}
+\section{Alternative representation}
 
 \noindent
 An expression which seems to be succesful for the variance is :
@@ -25,7 +25,7 @@ An expression which seems to be succesful for the variance is :
 did not seem to allow me to directly compute $\dot{\pi}(s)$ (it seemed like I need
 one more).
 Therefore, I computed $\lambda(s)$ as the greatest 
-eigenvalue of $P(s)$. Let $\chi$ the characteristic polynomial,
+eigenvalue of $P(s)$. Let $\chi$ the characteristic polynomial of $P(s)$,
 and $\Delta$ its discrimant
 
 \centers{$ \chi = (X - {p_{0 0}}^{-s}) 
@@ -36,37 +36,37 @@ and $\Delta$ its discrimant
     {$ \Delta = (\poo + \pii)^2 - 4[\pooii - \poiio] = {p_{0 0}}^{-2s} 
                 + {p_{1 1}}^{-s} - 2\pooii + 4\poiio $}
 
-\question{A simple computation} We have, unformally :
+\question{A simple computation} Unformally, we have this expression for $\lambda(s)$ 
+where we need to decide which sign is the correct one :
 \centers{$ \lambda(s) = \f{ \poo + \pii \pm \sqrt{\Delta(s)}}{2} $}
 
-\begin{egalites}
-    Since & \Delta(-1) 
-        & (p_{0 0} + p_{1 1})^2 
+\leftcenters
+    {Since}
+    {$\Delta(-1) 
+        = (p_{0 0} + p_{1 1})^2 
                         - 2 p_{0 0} p_{1 1} 
-                        + 4 p_{0 1} p_{1 0} \\
-        && (p_{0 0} + p_{1 1} - 2)^2 
-\end{egalites}
-
-then, we have $ \sqrt{ \Delta(-1) } = 2 - p_{0 0} - p_{1 1} = p_{0 1} + p_{1 0} $, 
-and, picking the $+$ sign in the expression, we can already verify that  
+                        + 4 p_{0 1} p_{1 0}
+        = (p_{0 0} + p_{1 1} - 2)^2 $}
+then $ \sqrt{ \Delta(-1) } = 2 - p_{0 0} - p_{1 1} = p_{0 1} + p_{1 0}$. 
+Thus, picking the $+$ sign in the former expression, we verify that  
 \centers{$ \lambda(-1) =  \f{ p_{0 0} + p_{1 1} + \sqrt{ \Delta(-1) } }
                                                {2} = 1 $}
 
 \leftcenters
-    {Derivating:}
+    {Derivating}
     {$ \dot{\lambda}(s) = \f12 \left( -\ln p_{0 0}\, \poo - \ln p_{1 1}\, \pii + \f{ \Delta'(s) }{ 2 \sqrt{\Delta(s)} } \right) $}
 
-Using the expression for $\Delta'(s)$
+and after the expression for $\Delta'(s)$
 \centers{$ \Delta'(s) = - 2 \ln p_{0 0}\, \poodeux - 2 \ln p_{1 1}\, \piideux
                         + 2 \ln (p_{0 0} p_{1 1})\, \pooii 
                         - 4 \ln (p_{0 1} p_{1 0})\, \poiio $}
-and 
+gives
 \centers{$ \Delta'(-1) = - 2 \ln p_{0 0}\, {p_{0 0}}^2 - 2 \ln p_{1 1}\, {p_{1 1}}^2
                         + 2 \ln (p_{0 0} p_{1 1})\, (p_{0 0} p_{1 1})
                         - 4 \ln (p_{0 1} p_{1 0})\, (p_{0 1} p_{1 0})  $}
 
-We can compute $\dot{\lambda}(-1)$. 
-We verified numerically that $ \dot{\lambda}(-1) = h $. Derivating again,
+we can compute $\dot{\lambda}(-1)$. 
+Numerically, we verified that $ \dot{\lambda}(-1) = h $. Derivating again yields
 
 \centers{$ \ddot{\lambda}(s) =
                 \f12 \left( \ln^2 p_{0 0} \poo + \ln^2 p_{1 1} \pii
@@ -89,78 +89,26 @@ We verified numerically that $ \dot{\lambda}(-1) = h $. Derivating again,
                                         {2\Delta(-1)} \right)
                          $}
 
-The simulations using this coefficient for the variance are quite good, but not perfect.
-Compared to the coefficient used in the unpublished paper \emph{Probabilistic Analysis of
-Lempel-Ziv Parsing for Markov Sources} by Leckey, Wormald and Neininger, this variance
-seems to be very slightly closer to the empirical variance, as can be seen on this graph :
+The simulations using this coefficient for the variance are quite good. It also seems that 
+this formula for the variance is equivalent to the one used in the unpublished paper 
+\emph{Probabilistic Analysis of Lempel-Ziv Parsing for Markov Sources} by Leckey, 
+Wormald and Neininger, but our two ways of deriving it differs. Numerical instability
+might account for the tiny differences found for high $n$ values ($10^7$), although
+this hasn't been verified.
 
 \centers{
  	 \begin{minipage}{12cm}
         \includegraphics[width = 12cm,
         				    trim = 20.5cm 0 0 0,
-        				    	clip=true]{std_analysis_approx_2e4_500.png}	
+        				    	clip=true]{./figs/eig_fig1.png}	
 	\end{minipage} 
 	}
-This code computes it :
 
-\begin{lstlisting}[language=Python]
-def compute_lambda2(M):
-
-    p00 = M[0, 0]
-    p01 = M[0, 1]
-    p10 = M[1, 0]
-    p11 = M[1, 1]
-
-    q0 = p00 * p11
-    q1 = p01 * p10
-
-    Delta = p00 ** 2 + p11 ** 2 - 2.0 * q0 + 4.0 * q1
-
-    sqrt_Delta = p01 + p10
-    
-    der_Delta = -2.0 * log(p00) * (p00 ** 2) \
-                -2.0 * log(p11) * (p11 ** 2) \
-                + 2.0 * log(q0) * q0 \
-                - 4.0 * log(q1) * q1
-
-    der2_Delta = 4.0 * (log(p00) ** 2) * (p00 ** 2) \
-                 + 4.0 * (log(p11) ** 2) * (p11 ** 2) \
-                 - 2.0 * (log(q0) ** 2) * q0 \
-                 + 4.0 * (log(q1) ** 2) * q1
-
-    lam = 0.5 * ( p00 + p11 + sqrt_Delta )
-
-    assert(abs(lam - 1) < 1e-8) # verify that lambda(-1) = 1
-
-    der_lam = 0.5 * ( - log(p00) * p00 - log(p11) * p11 \
-                      + der_Delta / (2 * sqrt_Delta) )
-
-    h = entropy(M)
-
-    assert(abs(der_lam - h) < 1e-6) # we find the entropy for der_lambda(-1)
-
-    der2_lam = 0.
-    der2_lam += p00 * (log(p00)**2)
-    der2_lam += p11 * (log(p11)**2)
-
-    snd_part = der2_Delta * sqrt_Delta - (der_Delta ** 2) / (2.0 * sqrt_Delta)
-    snd_part /= 2
-    snd_part /= Delta
-
-    der2_lam += snd_part
-    der2_lam /= 2
-
-    print(der2_lam)
-    v_coeff = der2_lam - der_lam ** 2
-
-    print(v_coeff)
-    assert(v_coeff >= 0) # we only raise positive value
-
-    return (der2_lam - der_lam ** 2)
-\end{lstlisting}
+This code that computes it can be found in \ref{app:comp_lam2}.
 
 
-\question{Another (more complicated) computation of $\ddot{\lambda}(-1)$}
+
+\section{Another (more complicated) computation of $\ddot{\lambda}(-1)$}
 This expression gives the sames numerical results as the first one, 
 but is longer. We compute $\delta$, a complex root of 
 $\Delta$, in order to find the roots of $\chi$. First, we
@@ -284,76 +232,16 @@ At this point we have fully determined $\ddot{{x}}(s)$, and we realize two thing
 
 The final expression of $\ddot{{\lambda}}$ (as well as $\dot{\lambda}(-1))$)
 can be fully expressed with $\alpha(-1), \dot{\alpha}(-1)$ and $\ddot{{\alpha}}(-1)$.
-I empirically verified that $\dot{\lambda}(-1) = h$, which is encouraging. It could 
-mean that if there is a mistake in my computations, it happens in the computation 
-of either $\ddot{x}(s)$, $f''(s)$ or $\ddot{\alpha}$.
-This is the code that computes 
-\centers{$\f{\ddot{\lambda}(-1)-{\dot{\lambda}(-1)}^2}{{\dot{\lambda}(-1)}^3}$}
-where \verb|der_lamb| reads as $\dot{\lambda}(-1)$, etc.
+I empirically verified that $\dot{\lambda}(-1) = h$, and the final result is the same
+as with the first method of computation.
 
-\vspace{1em}
-{\centering
-\begin{lstlisting}[language=Python]
-def compute_lambda(M):
-    p00 = M[0, 0]
-    p01 = M[0, 1]
-    p11 = M[1, 1]
-    p10 = M[1, 0]
 
-    q0 = p00 * p11
-    q1 = p01 * p10
-
-    alpha = p00 ** 2 + p11 ** 2 - 2 * q0 + 4 * q1
-
-    der_alpha = - 2 * log(p00) * (p00 ** 2) - 2 * log(p11) * (p11 ** 2) \
-                + 2 * q0 * log(q0) \
-                - 4 * q1 * log(q1)
-
-    der2_alpha = 4 * (log(p00) ** 2) * (p00 ** 2) \
-                 + 4 * (log(p11) ** 2) * (p11 ** 2) \
-                 - 2 * (log(q0) ** 2) * q0 \
-                 + 4 * (log(q1) ** 2) * q1
-
-    beta = 0
-    der_beta = 0
-    der2_beta = 0
-
-    gamma = der_alpha * alpha # beta terms are zero
-    der_gamma = der2_alpha * alpha + (der_alpha ** 2) # beta terms are zero
-
-    kappa = sqrt(alpha**2 + beta**2) # basically alpha
-    der_kappa = (alpha * der_alpha) / (sqrt(alpha**2))
-
-    f = 0.5 * (sqrt(alpha ** 2 + beta ** 2) + alpha)
-    der_f = 0.5 * ((der_alpha * alpha) / (sqrt(alpha**2)) + der_alpha)
-    der2_f = 0.5 * ( (der_gamma * kappa + gamma * der_kappa) / (kappa ** 2) + der2_alpha )
-
-    x = sqrt(alpha)
-    der_x = der_f / (2 * x)
-    der2_x = (der2_f * x + der_f * der_x) / (2 * (x**2))
-
-    lamb = 0.5 * (p00 + p11 + x)
-    der_lamb = 0.5 * (- log(p00) * p00 - log(p11) * p11 + der_x)
-    der2_lamb = 0.5 * ( (log(p00)**2) * p00 + (log(p11)**2) * p11 + der2_x )
-
-    # Verifying der_lamb = h (entropy)
-    h = 0
-    o = M[1, 0] + M[0, 1]
-    p = [M[1, 0] / o, M[0, 1] / o]
-    n = len(M)
-
-    for i in range(n):
-        for j in range(n):
-
-            h -= p[i] * M[i, j] * log(M[i, j])
-
-    assert(der_lamb == h) # fails if der_lamb is not equal to h
-
-    var_coeff = (der2_lamb - der_lamb ** 2) / (der_lamb**3)
-    
-    return var_coeff
-\end{lstlisting}
-}
+\clearpage
+\begin{appendices}
+\section{First lambda computation}
+\label{app:comp_lam2}
+\lstinputlisting[firstline=156,lastline=206]{../src/eigenvalues.py}
+\end{appendices}
  
 % \noindent First term is
 % \centers

@@ -166,8 +166,6 @@ def compute_lambda2(M):
     Delta = p00 ** 2 + p11 ** 2 - 2.0 * q0 + 4.0 * q1
 
     sqrt_Delta = p01 + p10
-
-    assert(abs(sqrt_Delta - sqrt(Delta)) < 1e-8)
     
     der_Delta = -2.0 * log(p00) * (p00 ** 2) \
                 -2.0 * log(p11) * (p11 ** 2) \
@@ -181,14 +179,14 @@ def compute_lambda2(M):
 
     lam = 0.5 * ( p00 + p11 + sqrt_Delta )
 
-    assert(abs(lam - 1) < 1e-8)
+    assert(abs(lam - 1) < 1e-8) # verify lambda(-1) is 1 
 
     der_lam = 0.5 * ( - log(p00) * p00 - log(p11) * p11 \
                       + der_Delta / (2 * sqrt_Delta) )
 
     h = entropy(M)
 
-    assert(abs(der_lam - h) < 1e-6)
+    assert(abs(der_lam - h) < 1e-6) # verify we find entropy h for der_lambda in -1
 
     der2_lam = 0.
     der2_lam += p00 * (log(p00)**2)
@@ -201,11 +199,10 @@ def compute_lambda2(M):
     der2_lam += snd_part
     der2_lam /= 2
 
-    print(der2_lam)
     v_coeff = der2_lam - der_lam ** 2
 
-    print(v_coeff)
-    assert(v_coeff >= 0)
+    assert(v_coeff >= 0)    # verify variance is positive
+
     return (der2_lam - der_lam ** 2)
 
 
