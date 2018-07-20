@@ -31,7 +31,7 @@ process :
 			p_{1 0} & p_{1 1} \\
 		  \end{matrice}$}	 
  \item
- Generating $n_{\text{exp}} \sim 10^3$ words of length $n $ (or $n_{\text{word}}$), with $n \leq 10^6 - 10^7$
+ Generating $n_{\text{exp}} \sim 10^3$ words of length $n $ (or $n_{\text{word}}$), with $n \sim 10^6 \text{ or } 10^7$
  
  \item Applying LZ78 on each of these words to estimate, for each $n$,
  the number of phrases $M_n$. A simple histogram of these values
@@ -41,7 +41,7 @@ process :
  
  	\begin{itemize}
  		\item the empirical mean ($\mu$) and the empirical variance ($\sigma^2$)
- 		\item different theoretical expressions of the mean and variance
+ 		\item different theoretical expressions for the variance
  	\end{itemize}
  	
  \item Using these expressions to standardize $M_n$ in different ways, plotting
@@ -52,8 +52,8 @@ process :
  		\item the cumulative distribution function of $M_n$ (standardized)
  	\end{itemize}
  
- \item Finally, comparing the different theoretical expressions for the mean and 
- variance by plotting their differences for a large range of values of $n$, and
+ \item Finally, comparing the different theoretical expressions for the variance 
+ by plotting their differences for a large range of values of $n$, and
  a constant number of experiments $n_{\text{exp}}$.
 \end{itemize}
  
@@ -129,11 +129,9 @@ process :
 	\section{Validating variance candidates}
 	\subsection{A first expression}
 	As it will be used in the next section, this is the detail of the expression
+	from \cite{nein} :
 
-		\centers{ $\f{H^3 \sigma^2}{n \log_2^2 (n)}$ }
-		
-	from K. Lecket, N. Wormald and R. Neininger's paper 
-	\textit{Probabilistic Analysis of Lempel-Ziv Parsing for Markov Sources},  :
+		\centers{ $V_n = \f{H^3 \sigma^2 n}{\log_2^2 (n)}$ }
 		
 	\centers{$\sigma^2 = \sigma_0^2 + \sigma_1^2$}
 	\leftcenters{where}{$\sigma_i^2 = \f{\pi_i p_{i 0} p_{i 1}}{ H^3 } \pa { \log_2 \pa{ \f{ p_{i 0} }{ p_{i 1} } }

@@ -301,7 +301,7 @@ def data_analysis(
             exp["p" + str(i)] = p
 
     if datafile is not None:
-        input("\nNow savings data analysis to " + datafile)
+        print("\nNow savings data analysis to " + datafile)
         np.save(datafile, exps)
 
     return exps
@@ -425,10 +425,8 @@ def analysing_theoretical_mean(filesave=None, datafile=None, save=None, save_nam
     exps, ns = data_loading(filesave=filesave, datafile=datafile)
     n_exp = exps[0]["n_exp"]
 
-    input(ns)
     mus = [exp["mu"] for exp in exps]
     means = [exp["mean"] for exp in exps]
-    input(means)
     diff = [mus[i] - means[i] for i in range(len(mus))]
     # inv_diff = [1/d for d in diff]
     n_log2 = [n / log(n, 2) ** 2 for n in ns]

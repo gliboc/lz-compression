@@ -7,16 +7,20 @@
 #     command
 #
 
-eig_fig1.npy =>
+eig_fig1.png =>
     larger_range.npy
     python main.py -v --file larger_range.npy
     More info on the dataset:
         python experiments.py -single eig_fig1.npy
 
-{eig_fig2.npy, eig_fig3.npy} =>
+{eig_fig2.png, eig_fig3.png} =>
     exp2.npy
     python main.py exp2.npy
 
-eig_fig4.npy =>
+eig_fig4.png =>
     much_longer_words.npy
     python main.py -v --file much_longer_words.npy
+
+eig_fig5.png =>
+    exp_var2.npy
+    python main.py -v --file exp_var2.npy

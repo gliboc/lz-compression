@@ -201,7 +201,7 @@ def compute_lambda2(M):
 
     v_coeff = der2_lam - der_lam ** 2
 
-    assert(v_coeff >= 0)    # verify variance is positive
+    assert(v_coeff >= 0) # verify variance is positive
 
     return (der2_lam - der_lam ** 2)
 
