@@ -64,16 +64,21 @@ def add_all(filename, n_add):
 
 from glob import glob
 
+
+def show_single(filename):
+
+    exps = np.load(filename)
+    input("Data file {} contains {} experiments with chain {}".format(filename, len(exps), exps[0]["M"]))
+    print("These are their lengths:")
+    print(*["(n_exp, n_word) = ({}, {})".format(exp["n_exp"], exp["n_word"]) for exp in exps], sep="\t\n")
+
+
 def show_experiments(dirname):
 
     names = glob(dirname + '*.npy')
 
     for filename in names:
-        exps = np.load(filename)
-        input("Data file {} contains {} experiments with chain {}".format(filename, len(exps), exps[0]["M"]))
-        print("These are their lengths:")
-        print(*["(n_exp, n_word) = ({}, {})".format(exp["n_exp"], exp["n_word"]) for exp in exps], sep="\t\n")
-
+        show_single(filename)
 
 
 if __name__ == "__main__":
@@ -86,6 +91,9 @@ if __name__ == "__main__":
 
     elif sys.argv[1] == '-show':
         show_experiments(sys.argv[2])
+
+    elif sys.argv[1] == '-single':
+        show_single(sys.argv[2])
 
     else:
         add_words(sys.argv[1])

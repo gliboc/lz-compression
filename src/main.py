@@ -382,10 +382,10 @@ def analysing_theoretical_std(filesave=None, datafile=None, save=None, save_name
 
     figs, axs = plt.subplots(1, 2, tight_layout=True)
     
-    
     axs[0].plot(ns, stds, label=r"$\sigma$")
-    axs[0].plot(ns, neins, label=r"$\sigma_{Neininger}$")
+    axs[0].plot(ns, neins,  label=r"$\sigma_{Neininger}$")
     axs[0].plot(ns, szpans, label=r"$\sigma_{Szpankowski}$")
+
     axs[0].set_title(
         r"Empirical standard deviation ($\sigma$)"
         + r" and theoretical ones ($\sigma_{Neininger}$, $\sigma_{S}$), $n_{exp}$ = "
@@ -404,9 +404,14 @@ def analysing_theoretical_std(filesave=None, datafile=None, save=None, save_name
         "Difference between standard deviations, $n_{exp}$ = " + str(n_exp)
     )
 
+    import importlib
+
     for ax in axs:
         ax.set_xlabel("Word length n")
         ax.legend()
+        sns.reset_defaults()
+        ax.plot(ns, np.zeros(len(ns)), 'b+', ms=10)
+        importlib.reload(sns)
         ax.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
 
     if save:
