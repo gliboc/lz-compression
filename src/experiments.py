@@ -62,6 +62,19 @@ def add_all(filename, n_add):
     input("\nNow savings experiments to " + filename)
     np.save(filename, exps)        
 
+from glob import glob
+
+def show_experiments(dirname):
+    
+    names = glob('*.npy')
+
+    for filename in names:
+        exps = np.load(filename)
+        input("Data file {} contains {} experiments with chain {}".format(filename, len(exps), exps[0]["M"]))
+        print("These are their lengths:")
+        print(*["(n_exp, n_word) = ({}, {})".format(exp["n_exp"], exp["n_word"]) for exp in exps], sep="\t\n")
+
+
 
 if __name__ == "__main__":
 
@@ -71,5 +84,10 @@ if __name__ == "__main__":
         n_add = int(input("How many words do you want to add to all experiments ?"))
         add_all(sys.argv[2], n_add)
 
+    elif sys.argv[1] == '-show':
+        show_experiments(sys.argv[2])
+
     else:
         add_words(sys.argv[1])
+
+    
