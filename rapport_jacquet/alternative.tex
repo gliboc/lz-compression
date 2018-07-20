@@ -1,5 +1,5 @@
 
-\section{Alternative representation}
+\subsection{Using the Frobenius eigenvalue of $P(s)$}
 
 \noindent
 An expression which seems to be succesful for the variance is :
@@ -32,13 +32,16 @@ and $\Delta$ its discrimant
                   (X - {p_{1 1}}^{-s}) 
                     - (p_{0 1} \, p_{1 0})^{-s} $}
 
-\centers
-    {$ \Delta = (\poo + \pii)^2 - 4[\pooii - \poiio] = {p_{0 0}}^{-2s} 
-                + {p_{1 1}}^{-s} - 2\pooii + 4\poiio $}
+\begin{egalites}
+ and   & \Delta 
+        & (\poo + \pii)^2 - 4[\pooii - \poiio] \\[2mm]
+        && {p_{0 0}}^{-2s} 
+                + {p_{1 1}}^{-s} - 2\pooii + 4\poiio
+\end{egalites}
 
-\question{A simple computation} Unformally, we have this expression for $\lambda(s)$ 
+ Informally, we have this expression for $\lambda(s)$ 
 where we need to decide which sign is the correct one :
-\centers{$ \lambda(s) = \f{ \poo + \pii \pm \sqrt{\Delta(s)}}{2} $}
+\encadre{$ \lambda(s) = \f{ \poo + \pii \pm \sqrt{\Delta(s)}}{2} $}
 
 \leftcenters
     {Since}
@@ -56,7 +59,7 @@ Thus, picking the $+$ sign in the former expression, we verify that
     {Derivating}
     {$ \dot{\lambda}(s) = \f12 \left( -\ln p_{0 0}\, \poo - \ln p_{1 1}\, \pii + \f{ \Delta'(s) }{ 2 \sqrt{\Delta(s)} } \right) $}
 
-and after the expression for $\Delta'(s)$
+and the expression for $\Delta'(s)$
 \centers{$ \Delta'(s) = - 2 \ln p_{0 0}\, \poodeux - 2 \ln p_{1 1}\, \piideux
                         + 2 \ln (p_{0 0} p_{1 1})\, \pooii 
                         - 4 \ln (p_{0 1} p_{1 0})\, \poiio $}
@@ -65,7 +68,7 @@ gives
                         + 2 \ln (p_{0 0} p_{1 1})\, (p_{0 0} p_{1 1})
                         - 4 \ln (p_{0 1} p_{1 0})\, (p_{0 1} p_{1 0})  $}
 
-we can compute $\dot{\lambda}(-1)$. 
+allowing to compute $\dot{\lambda}(-1)$. 
 Numerically, we verified that $ \dot{\lambda}(-1) = h $. Derivating again yields
 
 \centers{$ \ddot{\lambda}(s) =
@@ -94,25 +97,86 @@ this formula for the variance is equivalent to the one used in the unpublished p
 \emph{Probabilistic Analysis of Lempel-Ziv Parsing for Markov Sources} by Leckey, 
 Wormald and Neininger, but our two ways of deriving it differs. Numerical instability
 might account for the tiny differences found for high $n$ values ($10^7$), although
-this hasn't been verified.
+this hasn't been verified. 
+The code that computes it can be found in appendix \ref{app:comp_lam2}, and another 
+way of computing $\lambda(s)$ is in appendix \ref{app:comp_lam1}.
 
 \centers{
- 	 \begin{minipage}{12cm}
-        \includegraphics[width = 12cm,
-        				    trim = 20.5cm 0 0 0,
+ 	 \begin{minipage}{11cm}
+        \includegraphics[width = 11cm,
+        				    trim = 0 0 16.5cm 0,
         				    	clip=true]{./figs/eig_fig1.png}	
 	\end{minipage} 
 	}
 
-This code that computes it can be found in \ref{app:comp_lam2}.
+\centers{
+ 	 \begin{minipage}{11cm}
+        \includegraphics[width = 11cm,
+        				    trim = 18.5cm 0 0 0,
+        				    	clip=true]{./figs/eig_fig1.png}	
+	\end{minipage} 
+	}
+
+\pagebreak
+Now, for some distributions of very long words that were normalized using 
+our theoretical standard deviations, and empirical means. The blue plot is 
+a gaussian fit for the simulation results, which also appear as a blue histogram.
+The two sets of figures are identical but obtained using different expressions.
+
+\noindent
+ 	 \begin{minipage}{\textwidth}
+        \includegraphics[width = \textwidth,
+        				    trim = 0 0.5cm 0 0,
+        				    	clip=true]{./figs/eig_fig2.png}	
+	\end{minipage} 
+
+\noindent
+ 	 \begin{minipage}{\textwidth}
+        \includegraphics[width = \textwidth,
+        				    trim = 0 0.5cm 0 0,
+        				    	clip=true]{./figs/eig_fig3.png}	
+	\end{minipage} 
+
+
+\section{Conclusion}
+Similar results were obtained for a variety of randomly generated Markov sources,
+which seem to indicate that this formula for the variance could be proven theoretically
+correct. 
+
+\begin{remarque}
+\noindent \textbf{Limits of this work}
+
+
+The figures suffer from imprecision over the computation of the empirical 
+variance : this is due to the difficulties encountered in computing large amounts
+of long words (of size over $10^6$). Possible ideas of improvement might come from parallelization,
+rewriting functions in a computationnal language such as Julia, or using/devising a datastructure
+specific to the task of building very long words.
+
+Another problem is that the space of random Markov chains (here: stochastic matrices
+of size 2) is not sampled thoroughly, therefore this claim might only seem to hold for some
+specific Markov chains. Sampling a small number of Markov chains uniformly
+according to their entropy might be interesting as a representation of the space,
+ because otherwise it would be hard to sample a large number of stochastic matrices
+due to the necessity of computing large words for each of them.
+
+\end{remarque}
+
+
+\begin{appendices}
+\section{First lambda computation}
+\label{app:comp_lam2}
+\lstinputlisting[firstline=156,lastline=206]{../src/eigenvalues.py}
 
 
 
 \section{Another (more complicated) computation of $\ddot{\lambda}(-1)$}
+\label{app:comp_lam1}
 This expression gives the sames numerical results as the first one, 
-but is longer. We compute $\delta$, a complex root of 
-$\Delta$, in order to find the roots of $\chi$. First, we
-write $\Delta$ as :
+but is more complex to compute for no apparent gain other than having 
+yet another similar way of computing $\ddot{\lambda}(-1)$. 
+Computing $\delta(s)$, a complex root of 
+$\Delta(s)$, writing $\Delta$ as :
 
 \begin{calculs}
     & \Delta 
@@ -124,11 +188,11 @@ write $\Delta$ as :
 \end{calculs}
 
 where $\Im(\Delta) = b_0(s) + b_1(s) + b_2(s) + b_3(s)$, with each $b_i(s)$ being
-the same term as $a_i(s)$ with $\cos$ replaced by $\sin$. We write 
+the same term as $a_i(s)$ with $\cos$ replaced by $\sin$. Writing
 
 \centers{$\Delta = \alpha(s) + i \beta(s)$}
 
-and we are searching for $\delta = x(s) + i y(s)$, which means that 
+and searching for $\delta = x(s) + i y(s)$, meaning that
 
 \centers{$ \left\{
                 \begin{array}{rl}
@@ -140,7 +204,7 @@ and we are searching for $\delta = x(s) + i y(s)$, which means that
         $}
     
 
-Yielding
+This yields
  
     \centers{$
         \left\{
@@ -151,11 +215,11 @@ Yielding
         \right. 
             $}
 
-And since $2xy = \beta$, we have $\epsilon \in \{-1,1\}$ such that
+and since $2xy = \beta$, there is $\epsilon \in \{-1,1\}$ such that
              \centers{$ \delta = \pm (x + \ir \epsilon y) $}
 
 \leftcenters    
-    {So}
+    {so}
     {$\lambda(s) = \f{ \poo + \pii \pm (x + \ir \epsilon y)}{2}$}
 
 \leftcenters
@@ -173,7 +237,7 @@ But first, computing the derivatives of $x(s) = \sqrt{f(s)} $:
         {$\ddot{{x}}(s) = \f{ f''(s) x(s) - f'(s) \cdot \f{f'(s)}{2x(s)} }
                                    { 2 x^2(s) } $}
 
-Computing $f(s)$ :
+and then computing $f(s)$ :
 
     \centers{$ f(s) = \f12 (\sqrt{\alpha^2+\beta^2} + \alpha) $}
     \centers{$ f'(s) = \f12 \left[ \f{ \overbrace{ \dot{\alpha}\alpha + \dot{\beta}\beta }^{ \gamma(s) } }
@@ -183,7 +247,7 @@ Computing $f(s)$ :
     \leftcenters{with}{$ \dot{\alpha} = \dot{a_0} + \dot{a_1} + \dot{a_2} + \dot{a_3} $}
 
 \leftcenters
-    {As for $f''(s) :$}
+    {As for $f''(s)$, it is}
     {$ f''(s) = \f12 \left[ 
                         \f{ \dot{\gamma}(s) \kappa(s) - \gamma(s) \dot{\kappa}(s) }
                           {\kappa^2(s)} 
@@ -199,7 +263,7 @@ Computing $f(s)$ :
                            {2\sqrt{\alpha^2+\beta^2}}$}
 
 
-Deriving according to $s$ amounts to deriving according to $\Re(s)$ so, in $s=-1$,
+Derivating according to $s$ amounts to derivating according to $\Re(s)$, so in $s=-1$ :
 
     \centers{$ \dot{\alpha}(-1) = -2\ln p_{0 0} a_0(-1)
                               -2\ln p_{1 1} a_1(-1)
@@ -235,12 +299,6 @@ can be fully expressed with $\alpha(-1), \dot{\alpha}(-1)$ and $\ddot{{\alpha}}(
 I empirically verified that $\dot{\lambda}(-1) = h$, and the final result is the same
 as with the first method of computation.
 
-
-\clearpage
-\begin{appendices}
-\section{First lambda computation}
-\label{app:comp_lam2}
-\lstinputlisting[firstline=156,lastline=206]{../src/eigenvalues.py}
 \end{appendices}
  
 % \noindent First term is

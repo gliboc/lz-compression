@@ -6,7 +6,6 @@
 #     dataset_name
 #     command
 #
-##################################################################
 
 eig_fig1.npy =>
     larger_range.npy
@@ -17,5 +16,7 @@ eig_fig1.npy =>
 {eig_fig2.npy, eig_fig3.npy} =>
     exp2.npy
     python main.py exp2.npy
-    More info on the dataset:
-        python experiments.py -single exp2.npy
+
+eig_fig4.npy =>
+    much_longer_words.npy
+    python main.py -v --file much_longer_words.npy
