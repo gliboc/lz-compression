@@ -29,9 +29,9 @@ def add_words(filename):
         exp["n_exp"] += n_add
 
         print("There are now {} words in this experiment".format(len(exp["data"])))
-    
+
     input("\nNow savings experiments to " + filename)
-    np.save(filename, exps)        
+    np.save(filename, exps)
 
 
 def add_all(filename, n_add):
@@ -58,9 +58,9 @@ def add_all(filename, n_add):
         exp["n_exp"] += n_add
 
         print("There are now {} words in this experiment".format(len(exp["data"])))
-    
+
     input("\nNow savings experiments to " + filename)
-    np.save(filename, exps)        
+    np.save(filename, exps)
 
 from glob import glob
 
@@ -74,8 +74,8 @@ def show_single(filename):
 
 
 def show_experiments(dirname):
-    
-    names = glob('*.npy')
+
+    names = glob(dirname + '*.npy')
 
     for filename in names:
         show_single(filename)
@@ -98,4 +98,4 @@ if __name__ == "__main__":
     else:
         add_words(sys.argv[1])
 
-    
+

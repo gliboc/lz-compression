@@ -343,7 +343,12 @@ def data_loading(filesave=None, datafile=None):
     try:
         ns = exps[0]["ns"]
     except:
-        ns = list(range(100, 20000, 200))  # maybe something else
+        print("ns wasn't defined in exps, attempting to define it automatically")  # maybe something else
+        ns = [exp['n_word'] for exp in exps]
+        exps[0]["ns"] = ns
+
+        if datafile:
+            np.save(datafile, exps)
 
     return exps, ns
 
