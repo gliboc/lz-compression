@@ -2,7 +2,7 @@
 \centers{\question{Alternative representation}}
 
 \noindent
-Another expression for the variance might be
+An expression which seems to be succesful for the variance is :
 
 \centers{$  \left( \ddot{\lambda}(-1) - { \dot{\lambda}(-1) }^2 \right) \f{n}{\ln^2 n} $}
 
@@ -94,6 +94,13 @@ Compared to the coefficient used in the unpublished paper \emph{Probabilistic An
 Lempel-Ziv Parsing for Markov Sources} by Leckey, Wormald and Neininger, this variance
 seems to be very slightly closer to the empirical variance, as can be seen on this graph :
 
+\centers{
+ 	 \begin{minipage}{12cm}
+        \includegraphics[width = 12cm,
+        				    trim = 20.5cm 0 0 0,
+        				    	clip=true]{std_analysis_approx_2e4_500.png}	
+	\end{minipage} 
+	}
 This code computes it :
 
 \begin{lstlisting}[language=Python]
