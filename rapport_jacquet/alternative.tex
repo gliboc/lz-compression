@@ -98,10 +98,6 @@ this formula for the variance is equivalent to the one used in the unpublished p
 Wormald and Neininger, but our two ways of deriving it differs. Numerical instability
 might account for the tiny differences found for high $n$ values ($10^7$), although
 this hasn't been verified. 
-The code that computes it can be found in appendix \ref{app:comp_lam2},
-and the rest of the code, with detailed procedures for reproducibility,
-is hosted on GitHub in a repository that, for the moment, private.
-Another way of computing $\lambda(s)$ is in appendix \ref{app:comp_lam1}. 
 
 \centers{
  	 \begin{minipage}{11cm}
@@ -158,8 +154,7 @@ rewriting functions in a computationnal language such as Julia, or using/devisin
 specific to the task of building very long words.
 
 Another problem is that the space of random Markov chains (here: stochastic matrices
-of size 2) is not sampled thoroughly, therefore this claim might only seem to hold for some
-specific Markov chains. Sampling a small number of Markov chains uniformly
+of size 2) is not sampled thoroughly. Sampling a small number of Markov chains uniformly
 according to their entropy might be interesting as a representation of the space,
  because otherwise it would be hard to sample a large number of stochastic matrices
 due to the necessity of computing large words for each of them.
@@ -173,6 +168,12 @@ expression ($\sigma_{\text{Neininger}}$). Anyway, the figures obtained seem to
 indicate that we are close to the exact solution.
 
 \end{remarque}
+
+
+The code for these experiments, with detailed procedures for reproducibility,
+is hosted on GitHub in one of my private repositories (which I plan to make public
+eventually).
+Another (probably bad) way of computing $\lambda(s)$ is in appendix \ref{app:comp_lam1}. 
 
 
 

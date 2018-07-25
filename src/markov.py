@@ -111,6 +111,18 @@ def markov_source2(M, n):
 
     return word
 
+def markov_iter(M):
+    yield "0" 
+
+    c_state = "0"
+    d = {"0": M[0, 0], "1": M[1, 0]}
+
+    while True:
+        proba = np.random.rand(1)
+        c_state = str(int(proba > d[c_state]))
+        yield c_state
+
+
 
 
 def word_generator(M, n):

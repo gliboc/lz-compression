@@ -10,3 +10,7 @@ test.py
 __pycache__/*
 papier_flexible/*
 rapport_jacquet/*
+tail_symbols/*
+woj
+Pipfile
+.*checkpoints
