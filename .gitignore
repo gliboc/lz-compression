@@ -11,6 +11,7 @@ __pycache__/*
 papier_flexible/*
 rapport_jacquet/*
 tail_symbols/*
+lempelziv_report_2018/*
 woj
 Pipfile
 .*checkpoints

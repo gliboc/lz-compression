@@ -51,7 +51,6 @@ def run_simulation(n_exp, n, c, M=None):
     if M is None:
         M = markov_chain(2)
 
-    summary = dict()
 
     print("\nGenerating trees with {} nodes.".format(n))
 
@@ -60,7 +59,12 @@ def run_simulation(n_exp, n, c, M=None):
         exp = run_experiment(n, M)
         exps.append(exp)
 
-    # Add infos from the experiments into the summary
+    return exps
+
+    
+def get_summary(exps):
+
+    summary = dict()
     summary["M"] = M
     summary["n_exp"] = n_exp
     summary["n_range"] = [n]
@@ -135,7 +139,7 @@ def run_range_simulation(n_exp, ns, c):
 
     for n in ns:
 
-        sims.append(run_simulation(n_exp, n, c, M))
+        sims.append(get_summary(run_simulation(n_exp, n, c, M)))
         bar.next()
 
     return sims
@@ -150,7 +154,7 @@ def double_plot(fignumber, sims, ns, var1, var2, ylabel1, ylabel2):
 
 
     figs, axs = plt.subplots(1, 2, num = fignumber)
-    
+
 
     sns.regplot(ns, plot1, ax=axs[0])
     axs[0].set_ylabel(ylabel1)
@@ -164,8 +168,8 @@ def double_plot(fignumber, sims, ns, var1, var2, ylabel1, ylabel2):
 def simple_plot(fignumber, sims, ns, var, ylabel):
     def extract_sum(name):
         if name == "cov_tnclnc":
-            return [abs(summary["variables"][name]) for (_, summary) in sims]
-        else:  
+            return [summary["variables"][name] for (_, summary) in sims]
+        else:
             return [summary["variables"][name] for (_, summary) in sims]
 
     plot = extract_sum(var)
@@ -182,19 +186,19 @@ def main():
     import sys
 
     if sys.argv[1] == '-s':
-        ns = list(range(10, 1000 + 10, 10))
+        ns = list(range(10, 10000 + 10, 10))
         n_exp = 700
 
         sims = run_range_simulation(n_exp, ns, "0")
 
         np.save(sys.argv[2], (sims, ns))
-    
+
     elif sys.argv[1] == '-load':
         sims, ns = np.load(sys.argv[2])
 
     else:
         raise Instruction_Unclear
-    
+
 
     ns = list(ns)
     print(ns)
@@ -209,7 +213,7 @@ def main():
     double_plot(2, sims, ns, "mean_tnc", "mean_lnc", r"${T_n}^c$", r"${L_n}^c$")
     plt.show()
     # Watching mean_tnc and mean_lnc
-    
+
 
 if __name__ == "__main__":
     main()
