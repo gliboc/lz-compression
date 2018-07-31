@@ -10,8 +10,9 @@ test.py
 __pycache__/*
 papier_flexible/*
 rapport_jacquet/*
-tail_symbols/*
+tail_symbols_definition/*
 lempelziv_report_2018/*
+tails_report_2018/*
 woj
 Pipfile
 .*checkpoints
