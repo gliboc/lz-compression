@@ -142,8 +142,8 @@ def compute_variables(exps, n_exp, n, c):
 
 def print_summary(summary):
     print(
-        "\nThis is a set of {} experiments on the range {}".format(
-            summary["n_exp"], summary["n_range"]
+        "\nThis is a set of {} experiments.".format(
+            summary["n_exp"]
         )
     )
     print("The results are :")
@@ -190,7 +190,7 @@ def double_plot(fignumber, sims, ns, n_exp, var1, var2, ylabel1, ylabel2):
         ax.set_title(r"$n_{exp} = " + str(n_exp) + "$")
 
 
-def simple_plot(fignumber, sims, ns, var, ylabel):
+def simple_plot(fignumber, sims, ns, n_exp, var, ylabel):
     def extract_sum(name):
         if name == "cov_tnclnc":
             return [summary["variables"][name] for (_, summary) in sims]
@@ -205,9 +205,10 @@ def simple_plot(fignumber, sims, ns, var, ylabel):
 
     ax.set_ylabel(ylabel)
     ax.set_xlabel("Number of sequences n")
+    ax.set_title(r"$n_{exp} = " + str(n_exp) + "$")
 
 
-def simple_plot_fit(fignumber, sims, ns, var, ylabel):
+def simple_plot_fit(fignumber, sims, ns, n_exp, var, ylabel):
 
     def extract_sum(name):
         if name == "cov_tnclnc":
@@ -238,6 +239,7 @@ def simple_plot_fit(fignumber, sims, ns, var, ylabel):
 
     ax.set_ylabel(ylabel)
     ax.set_xlabel("Number of sequences n")
+    ax.set_title(r"$n_{exp} = " + str(n_exp) + "$")
 
 
 if __name__ == "__main__":
@@ -275,7 +277,7 @@ if __name__ == "__main__":
     double_plot(
         1, sims, ns, n_exp, "var_tnc", "var_lnc", r"$Var({T_n}^c)$", r"$Var({L_n}^c)$"
     )
-    simple_plot_fit(3, sims, ns, "cov_tnclnc", r"$Cov({T_n}^c, {L_n}^c)$")
+    simple_plot_fit(3, sims, ns, n_exp, "cov_tnclnc", r"$Cov({T_n}^c, {L_n}^c)$")
     double_plot(2, sims, ns, n_exp, "mean_tnc", "mean_lnc", r"${T_n}^c$", r"${L_n}^c$")
     plt.show()
     # Watching mean_tnc and mean_lnc

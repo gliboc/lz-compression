@@ -48,7 +48,7 @@ def union(sims1, sims2):
     return sims
 
 
-def add_all(filename):
+def add_all(filename, new=False):
     from parallel_tails import parallel_simu
 
     sims1 = np.load(filename)
@@ -68,8 +68,10 @@ def add_all(filename):
 
     print("Now this set has {} experiments".format(len(sims[0][0])))
 
-    np.save(filename, sims)
-
+    if not new:
+        np.save(filename, sims)
+    else:
+        np.save(filename[:-4] + "-new", sims)
 
 if __name__ == "__main__":
 
@@ -77,6 +79,9 @@ if __name__ == "__main__":
 
     if sys.argv[1] == '-add':
         add_all(sys.argv[2])
+
+    elif sys.argv[1] == '-addnew':
+        add_all(sys.argv[2], new=True)
 
     elif sys.argv[1] == '-show':
         show_all_sims(sys.argv[2])
