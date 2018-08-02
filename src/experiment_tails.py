@@ -73,6 +73,16 @@ def add_all(filename, new=False):
     else:
         np.save(filename[:-4] + "-new", sims)
 
+
+def recompute(filename):
+    sims = np.load(filename)
+
+    new_sims = []
+    for (exps, _) in sims:
+        new_sims.append(get_summary(exps))
+
+    np.save(filename, new_sims)
+
 if __name__ == "__main__":
 
     import sys
@@ -88,4 +98,7 @@ if __name__ == "__main__":
 
     elif sys.argv[1] == '-single':
         show_single_sims(sys.argv[2])
+
+    elif sys.argv[1] == '-recompute':
+        recompute(sys.argv[2])
 

@@ -98,11 +98,13 @@ def get_summary(exps, c="0"):
 def compute_variables(exps, n_exp, n, c):
     """ Computes $E[T_n^c]$, etc. """
 
+    assert n_exp == len(exps)
+
     def lnc(exp):
         try:
             return exp["lnc"]
         except KeyError:
-            return sum( len(exp[str(k)]) for k in range(1, n+1) )
+            return sum(len(exp[str(k)]) for k in range(1, n + 1))
 
     def tnc(exp):
         try:
@@ -123,6 +125,23 @@ def compute_variables(exps, n_exp, n, c):
     var_tnc = snd_order_tnc - (mean_tnc) ** 2
     var_lnc = snd_order_lnc - (mean_lnc) ** 2
 
+    # Now directly computing a better estimator
+    # See https://en.wikipedia.org/wiki/Estimation_of_covariance_matrices
+
+    cov_estimator = 0.
+    for exp in exps:
+        cov_estimator += (tnc(exp) - mean_tnc) * (lnc(exp) - mean_lnc)
+    cov_estimator /= n_exp - 1
+
+    try:
+        assert cov_estimator == cov_tnclnc
+    except AssertionError:
+        print(
+            "The difference between cov_estimator and cov_tnclnc is {}".format(
+                abs(cov_estimator - cov_tnclnc)
+            )
+        )
+
     d = dict()
 
     for name in [
@@ -134,6 +153,7 @@ def compute_variables(exps, n_exp, n, c):
         "snd_order_lnc",
         "var_tnc",
         "var_lnc",
+        "cov_estimator",
     ]:
         d[name] = eval(name)
 
@@ -141,11 +161,7 @@ def compute_variables(exps, n_exp, n, c):
 
 
 def print_summary(summary):
-    print(
-        "\nThis is a set of {} experiments.".format(
-            summary["n_exp"]
-        )
-    )
+    print("\nThis is a set of {} experiments.".format(summary["n_exp"]))
     print("The results are :")
     print(
         *["{} = {}".format(name, var) for (name, var) in summary["variables"].items()],
@@ -209,13 +225,11 @@ def simple_plot(fignumber, sims, ns, n_exp, var, ylabel):
 
 
 def simple_plot_fit(fignumber, sims, ns, n_exp, var, ylabel):
-
     def extract_sum(name):
         if name == "cov_tnclnc":
             return [summary["variables"][name] for (_, summary) in sims]
         else:
             return [summary["variables"][name] for (_, summary) in sims]
-
 
     plot = extract_sum(var)
 
@@ -278,6 +292,7 @@ if __name__ == "__main__":
         1, sims, ns, n_exp, "var_tnc", "var_lnc", r"$Var({T_n}^c)$", r"$Var({L_n}^c)$"
     )
     simple_plot_fit(3, sims, ns, n_exp, "cov_tnclnc", r"$Cov({T_n}^c, {L_n}^c)$")
+    simple_plot_fit(4, sims, ns, n_exp, "cov_estimator", r"$Cov({T_n}^c, {L_n}^c)$")
     double_plot(2, sims, ns, n_exp, "mean_tnc", "mean_lnc", r"${T_n}^c$", r"${L_n}^c$")
     plt.show()
     # Watching mean_tnc and mean_lnc

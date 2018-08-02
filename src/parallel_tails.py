@@ -63,7 +63,7 @@ def run_simu_mr(M, n, N):
     return exps
 
 
-def parallel_simu(M, ns, n_exp, d=7):
+def parallel_simu(M, ns, n_exp, d=4):
     from progress.bar import Bar
 
     N = n_exp // d
