@@ -6,6 +6,93 @@ from tails import run_experiment, get_summary
 from markov import markov_chain, markov_iter_rng
 import gc
 
+# Left : 0 - Right : 1
+class DST:
+
+    def __init__(self):
+        self.l = False
+        self.r = False
+
+    def dive(self, c):
+        if c == '0':
+            if self.l:
+                return self.l
+            else:
+                self.l = DST()
+                return False
+        elif c == '1':
+            if self.r:
+                return self.r
+            else:
+                self.r = DST()
+                return False
+        else:
+            print("Wrong character")
+            exit()
+
+
+# This algo should be optimal, but actually it's very slow.
+# It's probably because the class function calls are too slow.
+def tree_simu(M, n, N):
+
+    exps = []
+
+    for i in range(1, N+1):
+        
+        exp = dict()
+
+        d = DST()
+        # tail_symbols = ""
+        lnc = 0
+        tnc = 0
+
+        # To be deleted
+        # sequences = []
+        # sequences_with_tail = []
+
+        for k in range(1, n+1):
+
+            rng = rng_gen(N, n)
+            m_iter = markov_iter_rng(M, rng)
+
+            s = next(m_iter)
+            ref = d
+
+            # To be deleted
+            # seq = s
+
+            while ref:
+                lnc += 1
+                ref = ref.dive(s)
+                s = next(m_iter)
+
+                # To be deleted 
+                # seq += s
+
+            if s == '0':
+                tnc += 1
+
+            # To be deleted 
+            # sequences_with_tail.append(seq)
+            # seq = seq[:-1]
+            # sequences.append(seq)
+
+        # tnc = tail_symbols.count("0")
+
+        exp["tnc"] = tnc
+        exp["lnc"] = lnc
+
+        exps.append(exp)
+
+        print("Finished experiment {}".format(i))
+
+    exps[0]["M"] = M
+    exps[0]["n"] = n
+
+    return exps
+    
+
+
 
 def rng_gen(N, n):
 
@@ -90,7 +177,7 @@ def parallel_simu(M, ns, n_exp, d=4):
         sims.append(get_summary(exps))
 
         print(
-            "\nAverage total path length: {}".format(
+            "Average total path length: {}".format(
                 sims[-1][1]["variables"]["mean_lnc"]
             )
         )

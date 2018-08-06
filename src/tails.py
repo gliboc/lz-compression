@@ -137,7 +137,7 @@ def compute_variables(exps, n_exp, n, c):
         assert cov_estimator == cov_tnclnc
     except AssertionError:
         print(
-            "The difference between cov_estimator and cov_tnclnc is {}".format(
+            "\nThe difference between cov_estimator and cov_tnclnc is {}".format(
                 abs(cov_estimator - cov_tnclnc)
             )
         )
