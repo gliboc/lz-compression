@@ -5,10 +5,29 @@ The repository contains:
 - A program `main.py` which can be used for Markov sources simulations,
   LZ78 compression and quantitative visualizations of these processes.
 
-- Several libraries written in Python that are used by `main.py`
+- Several libraries written in Python that are used by `main.py` : 
+    - `eigenvalues.py`
+    - `experiments.py`
+    - `lempelziv.py`
+    - `markov.py`
+    - `neininger.py`
+    - `normal.py`
+    - `szpan.py`
+
+- Another program, `tails.py` coupled with `parallel_tails.py`
+  and `experimenttails.py`, which
+  allows to simulate a different model for Markov sources (the Markov
+  Independent model), and make experiments regarding tail symbols.
 
 - Jupyter notebooks which were used to compute some expressions
   or experiment with the subject
+    - `computing_lambda.ipynb`
+    - `datastructure_experiment.ipynb`
+    - `markov_julia.ipynb`
+    - `parallel_tails.ipynb`
+    - `pi_computation.ipynb`
+    - `tail_symbols.ipynb`
+    - `variance_expression.ipynb`
 
 - Two LaTeX source repositories without the style file needed
   for compilation, though they both contain a compiled version :

@@ -1,0 +1,458 @@
+\input{beamer_annales.sty}
+
+
+
+%\usepackage[utf8]{inputenc}
+\mode<presentation>
+{
+	\usetheme{Warsaw}
+	\setbeamercovered{transparent}
+}
+
+\usepackage{times}
+
+\usepackage{graphicx}
+\usepackage{capt-of}
+\usepackage{booktabs}
+\usepackage{varwidth}
+
+\newcommand\Fontvi{\fontsize{8}{8.2}\selectfont}
+
+\usepackage{appendixnumberbeamer}
+
+\usepackage[]{algorithm2e}
+
+\usepackage{booktabs}
+
+\usepackage[scale=2]{ccicons}
+
+\usepackage{pgfplots}
+\usepgfplotslibrary{dateplot}
+
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+\usepackage{xspace}
+\newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
+
+\title[Asymptotics on the Lempel-Ziv 78 compression of Markov sources]
+{Asymptotics on the Lempel-Ziv 78 compression of Markov sources}
+
+\subtitle
+{Exploring analytic information theory : from Markov source 
+sampling to combinatorial analysis proofs}
+
+\author[Duboc]
+{Guillaume~Duboc}
+
+\institute[
+	Universities of Somewhere and Elsewhere]
+{
+	Computer Science Department\\
+	Ecole Normale Supérieure de Lyon}
+
+\date[M1 2018]
+{M1 Internship, 2018}
+
+\subject{Theoretical Computer Science}
+
+\pgfdeclareimage[height=0.5cm]{logoENS}{logoENS}
+\logo{\pgfuseimage{logoENS}}
+
+% \date{\today}
+% \titlegraphic{\hfill\includegraphics[height=1.5cm]{logo.pdf}}
+\AtBeginSubsection[]
+{
+	\begin{frame}<beamer>{Table des matières}
+	\tableofcontents[currentsection,currentsubsection]
+\end{frame}
+}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+\insertshorttitle\hfill%
+\insertframenumber\,/\,\inserttotalframenumber}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Table of contents}
+  \tableofcontents
+\end{frame}
+
+
+\section{The data compression problem}
+\subsection{ Introduction to information sources }
+
+\begin{frame}{ Words or sequences, and memoryless sources }
+
+	\begin{block}{Definition: word or sequence or string}
+		Given an alphabet $\mathcal{A}$, a \emph{\bfseries word} or \emph{\bfseries sequence}
+		or \emph{\bfseries string} is an infinite sequence of random variables 
+		$ X = {(X_k)}_{k \Nstar} $, each $X_k$ representing a symbol in $\mathcal{A}$.
+	\end{block}
+
+	\begin{block}{Definition : Bernoulli or Memoryless source}
+		A source of information is a \emph{\bfseries Bernoulli} or \emph{\bfseries memoryless
+		source} when all the symbols of $\mathcal{A}$ occur independently with a fixed probability.
+		The word can be seen as an \emph{infinite sequence of Bernoulli trials}.
+	\end{block}
+
+\end{frame}
+
+\begin{frame}{ Markov sources definition }
+
+	\begin{block}{Definition: Markov source}
+		An information source is a \emph{\bfseries Markov source} when 
+		there is a \emph{\bfseries Markov dependency} between the consecutive symbols of a string.
+	\end{block}
+
+	\begin{block}{Definition: order of a Markov source}
+		Let $V = |\mathcal{A}|$. A \emph{\bfseries Markov source} is of \emph{\bfseries order $r$}
+		when the dependency can be encoded in a transition matrix of size $V^r \times V$, with 
+		coefficients :
+		\centers{$P(c | w)  \qquad  \forall\, (w, c) \in \mathcal{A}^r \times \mathcal{A}$}
+
+		Informally : \emph{the probability that a symbols occurs depends on the previous $r$ symbols.}
+	\end{block}
+
+\end{frame}
+
+\subsection{ The LZ78 compression scheme }
+
+\begin{frame}{Description of the LZ78 algorithm}
+
+	\begin{block}{ Algorithm }
+		Given a word $w$.
+		\begin{itemize}
+			\item Initialize an empty dictionary
+			\item While it is possible :
+				\begin{description}
+					\item Find longest prefix of $w$ that is not in the dictionary
+					\item Add it to the dictionary, cut it from $w$
+				\end{description}
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	\begin{block}{ Elements description }
+		The data representation is $(\text{dictionary\_reference}, \text{symbol})$.
+	\end{block}
+
+	\begin{block}{ Remarks }
+		The LZ78 algorithm builds a prefix tree from which the original word
+		can be reconstructed.
+	\end{block}
+\end{frame}
+
+\begin{frame}
+
+	\begin{block}{ Definition : number of phrases }
+		After compressing a word $w$, the number of phrases in the dictinary
+		is noted $M(w)$.
+
+		For words of size $n$, we write $M_n(w)$.
+	\end{block}
+
+	\begin{block}{ Code length }
+		\centers{$ C(w) = \Sum{k=0}{M(w)} 
+							\left( \ceil{\log_2(k)} 
+								+ \ceil{\log_2(\mathcal{A})} \right) $}
+	\end{block}
+
+\end{frame}
+
+\subsection{ The compression ratio, and entropy }
+
+
+\begin{frame}
+
+	\begin{block}{Definition : compression ratio}
+		Let $w$ a word, and $C(w)$ its \emph{encoding} by a compression 
+		algorithm.  The \emph{\bfseries	compression ratio} of $w$ is 
+		$\f{|C(w)|}{|w|}$.
+	\end{block}
+
+	\begin{block}{ Main goals of compression algorithms }
+		\begin{itemize}
+			\item Improving the compression ratio
+			\item Fast compression/decompression speed in Mb/s
+		\end{itemize}
+	\end{block}
+
+	\begin{block}
+		The tradeoff between these two goals is a sensitive research problem.
+		Different compression standards :
+		\begin{itemize}
+			\item Google (Brotli, 2015)
+			\item Facebook (Zstandard, 2016)
+			\item Dropbox (DivANS, 2018)
+		\end{itemize}
+	\end{block}
+
+\end{frame}
+
+
+\begin{frame}{ Optimal encoding }
+	\begin{block}{ Entropy of a Markov source }
+		Let $\pi$ be a stationary distribution. 
+		The entropy of a Markov chain is 
+		\centers{$ h = - \Sum{i=1}{V} \pi \Sum{j=1}{V} p_{i j} \log(p_{i j}) $}
+	\end{block}
+
+	\begin{block}{ Optimality of LZ78 }
+		Considering words of length $n$.
+
+		\centers{$ \f{|C(w)|}{|w|} -h$ goes to zero for $n \rightarrow \pinf$}
+	\end{block}
+\end{frame}
+
+\subsection{ Algorithmic improvements }
+	\begin{frame}{ Optimal parsing}
+	\end{frame}
+	\begin{frame}{ Flexible parsing }
+	\end{frame}
+
+\section{Process evaluation}
+\subsection{Theoretical models}
+
+
+{\setbeamercolor{background canvas}{bg=white}
+\begin{frame}{Markov Independent Model}
+\begin{egalites}
+  & X(1) 
+    & {\color{red}{0}} {\color{green}{0}} 00000\dots \\
+  &X(2) 
+    & {\color{red}{1}} {\color{green}{0}}10101\dots \\
+  & X(3) 
+    & {\color{red}{10}} {\color{green}{0}} 1101 \dots \\
+  & X(4) 
+    & {\color{red}{00}} {\color{green}{1}} 100111\dots
+\end{egalites}
+
+\end{frame}}
+
+\subsection{Experimental conditions}
+
+\begin{frame}
+	\begin{block}{ Coding details }
+	\begin{itemize}
+		\item Python code $\sim$ 2000 lines 
+		\item Markov source sampling 
+		\item Optimized datastructure (digital search tree)
+		\item Parallelization
+		\item Reproducibility of datasets
+	\end{itemize}
+	\end{block}
+
+\end{frame}
+
+
+\subsection{ Extracting results }
+
+\begin{frame}{Central Limit Theorem confirmation}
+	\includegraphics[width = \textwidth]{empirical_normalization_10e6_500.png}
+\end{frame}
+
+\begin{frame}{Hypothesis testing for the variance}
+
+		\begin{block}{ Complex matrix }
+			Defining $P(s)$ as 
+			$
+			\begin{array}{rl}
+				p_{1 1}^{-s} & p_{1 2}^{-s} \\
+				p_{2 1}^{-s} & p_{2 2}^{-s} 
+			\end{array}
+			$
+		\end{block}
+
+		\begin{block}{ Variance expression }
+			\centers{$ V_n =  \left( \ddot{\lambda}(-1) - { \dot{\lambda}(-1) }^2 \right) \f{n}{\ln^2 n} $}
+		\end{block}
+\end{frame}
+
+\begin{frame}
+	\includegraphics[width = \textwidth]{eig_fig1.png}
+\end{frame}
+
+
+\section{ Analytic information theory }
+
+\subsection{ Power series }
+	\begin{frame}{ Definition, usage }
+		\begin{block}{Definition}
+			\centers{$ A(z) = \Sum{n\geq0}a_n z^n$}
+		\end{block}
+
+		\begin{block}{Remarks}
+			\begin{itemize}
+				\item Used as an algebraic item with the convolution product
+				\item No convergence problems
+			\end{itemize}
+		\end{block}
+
+	\end{frame}
+
+\subsection{ Complex analysis tools }
+
+	\begin{frame}
+
+	\begin{block}{Poissonization and Depoissonization}
+		\centers{${\tilde G}(z) = \Sum{n\geq 0}{} a_n \f{z^n}{n!} \ex{-z} $}
+	\end{block}
+
+	\begin{block}{Mellin transform}
+		Make recurrence relation between random variables
+		become linear in order to solve them more easily.
+	\end{block}
+
+	\end{frame}
+
+\section{ Application to covariance analysis }
+
+	\subsection{ Tail symbols }
+
+		\begin{frame}{Tail symbols}
+
+			\begin{block}{ Illustration }
+				\begin{egalites}
+	& X(1) 
+		& {\color{red}{0}} {\color{green}{0}} 00000\dots \\
+	&X(2) 
+		& {\color{red}{1}} {\color{green}{0}}10101\dots \\
+	& X(3) 
+		& {\color{red}{10}} {\color{green}{0}} 1101 \dots \\
+	& X(4) 
+		& {\color{red}{00}} {\color{green}{1}} 100111\dots
+	\end{egalites}
+			\end{block}
+
+			\begin{block}{Definition}
+				Let $c$ be a character from our alphabet $\{ a, b \}$.
+				In the case when all the sequences start with a $c$, we 
+				define $T_n^{\,c}$ the \emph{number of times $a$ is a tail symbol in 
+				the experiment}.
+			\end{block}
+
+		\end{frame}
+
+		\begin{frame}{Definition and relation}
+
+			
+
+			\begin{block}{Recurrence}
+				For $n \geq 0$, we have :
+					\[ \boxed{ T_{n+1}^{\,c} = \delta_a + 
+											{{\tilde T}_{N_a}}^a
+											+ {{\tilde T}_{N_b}}^b } \]
+			\end{block}
+		
+			\begin{block}{ Notations }
+				\begin{itemize}
+				\item $\delta_a = 
+							\begin{cases} 
+								1 & \text{if $a$ is the tail symbol of the
+										first sequence}\\
+								0 & \text{else} 
+							\end{cases}$
+
+				\item $N_a$ is the 
+				random variable giving \emph{the size of the left subtree 
+				which contains phrases whose second letter is $a$}
+
+				\item ${{\tilde T}_{N_a}}^a$ is the number of 
+				times $a$ is a tail symbol for the sequences that were 
+				used to  build the subtree with phrases having $a$ as second
+				symbol.
+
+				\item $T_0^c$ for all $c$ by convention.
+			\end{itemize}
+			\end{block}
+
+		\end{frame}
+
+		\begin{frame}{Total path lenght}
+
+			\begin{block}{Definition}
+				Defining $L_n^{\,c}$ as the \emph{total 
+				path length of the nodes of the DST that was built with
+				MI model with $n$ sequences starting with letter $c$}.
+				It is the sum of the lengths of all the prefix phrases.
+			\end{block}
+
+			\begin{block}{Recurrence relation}
+				For all $n\geq 0$ :
+
+				\[
+				\boxed{ 
+					L_{n+1}^c = n + 
+										{{\tilde L}_{N_a}}^a + 
+										{{\tilde L}_{N_b}}^b
+				}
+				\]
+			\end{block}
+		\end{frame}
+
+	\subsection{Simulation results}
+
+		\begin{frame}
+			Inconclusive, but informative
+		\end{frame}
+
+	\subsection{Analytic solution}
+
+		\begin{frame}
+			\begin{block}{Recurrence}
+			  \[ \boxed{ \Cov(T_{n+1}^{\,c}, L_{n+1}^c) = 
+          \Cov ( {{\tilde T}_{N_a}}^a,
+                         {{\tilde L}_{N_a}}^a )
+          + \Cov ( {{\tilde T}_{N_b}}^b, 
+                          {{\tilde L}_{N_b}}^b ) } \]
+			\end{block}
+		\end{frame}
+
+		\begin{frame}
+			\begin{block}{Poisson transform}
+				Defining 
+  \[ \boxed{ C_c(z) 
+            = \Sum{n\geq0}{} \Cov(T_n^{\,c}, L_n^{\,c}) 
+                            \f{z^n}{n!} \ex{-z} } \]
+			\end{block}
+
+			\begin{block}{Differential equation}
+							\[
+			\boxed{
+			\partial_z C_c(z) + C_c(z) 
+				= C_a(zp) + C_b(zq)
+			}
+			\]
+			\end{block}
+		\end{frame}
+
+\begin{frame}
+	\includegraphics[width=\textwidth]{eig_fig2.png}
+\end{frame}
+
+
+\begin{frame}
+	\includegraphics[width=\textwidth]{eig_fig3.png}
+\end{frame}
+
+
+\begin{frame}
+	\includegraphics[width=\textwidth]{eig_fig4.png}
+\end{frame}
+
+
+\begin{frame}
+	\includegraphics[width=\textwidth]{eig_fig5.png}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\nocite{*}
+\bibliographystyle{unsrt}
+\bibliography{sample}
+\end{frame}
+
+\end{document}

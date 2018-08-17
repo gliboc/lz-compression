@@ -62,13 +62,13 @@ Visually, with the \textcolor{red}{prefix phrases} in red and the
 
 Let $c$ be a character from our alphabet $\{ a, b \}$.
 In the case when all the sequences start with a $c$, we 
-define ${T_n}^{c}$ the \emph{number of times $a$ is a tail symbol in 
+define $T_n^{\,c}$ the \emph{number of times $a$ is a tail symbol in 
 the experiment}.
 
 \subsection{Recurrence relation}
 
 For $n \geq 0$, we have :
-    \[ \boxed{ {T_{n+1}}^{c} = \delta_a + 
+    \[ \boxed{ T_{n+1}^{\,c} = \delta_a + 
                             {{\tilde T}_{N_a}}^a
                             + {{\tilde T}_{N_b}}^b } \]
 
@@ -103,7 +103,7 @@ is independent of the one on the right tree :
 
 \subsection{ Definition }
 
-Defining ${L_n}^c$ as the \emph{total 
+Defining $L_n^{\,c}$ as the \emph{total 
 path length of the nodes of the DST that was built with
 MI model with $n$ sequences starting with letter $c$}.
 It is the sum of the lengths of all the prefix phrases.
@@ -115,7 +115,7 @@ this quantity, which is, for all $n\geq 0$ :
 
 \[
   \boxed{ 
-    {L_{n+1}}^c = n + 
+    L_{n+1}^c = n + 
                         {{\tilde L}_{N_a}}^a + 
                         {{\tilde L}_{N_b}}^b
   }
@@ -137,12 +137,12 @@ independent in the same way as previously seen for the tail symbols.
 
 \section{ Poisson tranform differential equation }
 
-% We want to estimate $\Cov({T_n}^c, {L_n}^c)$.
+% We want to estimate $\Cov(T_n^{\,c}, L_n^{\,c})$.
 \subsection{ Covariance recurrence relation }
 
 Using the previous recurrence relations, we have for all $n\geq 0$ :
 
-\centers{$ \Cov({T_{n+1}}^c, {L_{n+1}}^c )
+\centers{$ \Cov(T_{n+1}^{\,c}, L_{n+1}^c )
            = \Cov( \delta_a + 
                             {{\tilde T}_{N_a}}^a
                             + {{\tilde T}_{N_b}}^b 
@@ -157,7 +157,7 @@ we can ignore the term $n$ and expand this quantity into six terms :
 \vspace{\baselineskip}
 $
 \begin{array}{rl}
-   \Cov({T_{n+1}}^c, {L_{n+1}}^c) 
+   \Cov(T_{n+1}^{\,c}, L_{n+1}^c) 
     &
             = \Cov( \delta_a, {{\tilde L}_{N_a}}^a )
               + \Cov (\delta_a,  {{\tilde L}_{N_b}}^b)
@@ -207,7 +207,7 @@ Samely, $\Cov ( {{\tilde T}_{N_b}}^b,
                           {{\tilde L}_{N_a}}^a ) = 0$.
 Yielding :
 
-  \[ \boxed{ \Cov({T_{n+1}}^c, {L_{n+1}}^c) = 
+  \[ \boxed{ \Cov(T_{n+1}^{\,c}, L_{n+1}^c) = 
           \Cov ( {{\tilde T}_{N_a}}^a,
                          {{\tilde L}_{N_a}}^a )
           + \Cov ( {{\tilde T}_{N_b}}^b, 
@@ -218,7 +218,7 @@ Yielding :
 
 Defining 
   \[ \boxed{ C_c(z) 
-            = \Sum{n\geq0}{} \Cov({T_n}^c, {L_n}^c) 
+            = \Sum{n\geq0}{} \Cov(T_n^{\,c}, L_n^{\,c}) 
                             \f{z^n}{n!} \ex{-z} } \]
 
 Computing, with $p = P(a | c)$ and $q = 1-p$ :
@@ -268,7 +268,7 @@ From what we've seen, when derivating $C_c(z)$ we get :
 \partial_z C_c(z) 
       &= \SUM{n\geq0}{} \Cov(T_n^c, L_n^c) n \f{z^{n-1}}{n!} \ex{-z} 
          - C_c(z) \\
-      &= \SUM{n\geq0}{} \Cov({T_{n+1}}^c, {L_{n+1}}^c)  \f{z^{n}}{n!} \ex{-z} 
+      &= \SUM{n\geq0}{} \Cov(T_{n+1}^{\,c}, L_{n+1}^c)  \f{z^{n}}{n!} \ex{-z} 
          - C_c(z) \\
       &= \SUM{n\geq0}{} \left[\Cov ( {{\tilde T}_{N_a}}^a,
                          {{\tilde L}_{N_a}}^a )  
