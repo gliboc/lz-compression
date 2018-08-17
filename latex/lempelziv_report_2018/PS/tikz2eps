@@ -1,0 +1,207 @@
+#!/usr/bin/perl -ws
+
+use Env qw(EDITOR);
+use strict ;
+
+=head1
+
+Pour compiler, convertir en eps et afficher un dessin fait avec TikZ.
+Attention, vous devez avoir BBcut installé quelque part sur votre $PATH.
+
+Syntaxe: $0 fichier.tex
+
+Options: -gvscale=[sans défaut]  Taille d'affichage dans gv
+         -nogv                   Ne pas afficher avec gv
+         -BBcut                  Utiliser BBcut [défaut]
+         -convert                Utiliser convert (au lieu de BBcut)
+         -keep                   Conserver les fichiers .aux, .log et .dvi
+         -h                      Cette aide
+
+                                                © JJ 28/06/06
+
+adaptations par Teteph, 30/06/06
+ -> BBcut
+ -> un peu de menage
+ -> fichier.tex en argument et non option
+
+améliorations sur les idées de Vincent Danjean pour appel de n'importe où
+JJ, 03/06/07
+
+2008.06.17: retouches du code par Seb + ajout de l'option --media=Bbox dans 
+l'appel à 'gv'.
+
+2011-05-11: ajout de find_program et améliorations stylistiques (Seb).
+
+=cut    #fin de la Doc
+
+#
+# Les options
+#
+
+our $h and exec "perldoc -u $0";
+our $e and exec "$EDITOR $0";
+our ($nogv, $gvscale, $BBcut, $convert, $keep) ;
+
+#
+# Initialisation.
+#
+
+my $tex = shift(@ARGV);
+(! -f $tex) and die "Le fichier « $tex » n'existe pas !";
+(! -r $tex) and die "Le fichier « $tex » n'est pas lisible !";
+($tex !~ /\.tex$/) and die "Désolé, il me faut un fichier .tex\n";
+(my $prefix = $tex) =~ s{\.tex\s*$}{}i;
+
+my $GVSCALE = ($gvscale) ? "--scale $gvscale" : "";
+
+#
+# Les chemins.
+#
+
+my ($dir_tex, $tex_filename) = ('.', $tex);
+if ($tex =~ m#^(.*)/([^\/]+)$#) {
+	$dir_tex  = $1;
+	$tex_filename = $2;
+}
+
+#
+# Exécution de latex puis vérification du .log .
+#
+
+print rc("Exécution de LaTeX",60);
+system qq{cd $dir_tex }
+	.  qq{ && latex --interaction=batchmode -shell-escape $tex_filename}
+	.  qq{ > /dev/null}
+	;
+print "OK\n";
+
+print rc("Vérification du .log",60);
+open LOG, "$prefix.log" or die "--> Pas bon <--\nImpossible d'ouvrir $prefix.log\n";
+my ($log_msg, $show_log);
+while (<LOG>) {
+	if ($_ =~ /^!/) {
+		$log_msg .= $_;
+		$show_log = 1;
+	}
+	elsif ($log_msg && $show_log) {
+		chomp;
+		if ($_ =~ /^\s*$/) {
+			$show_log = 0;
+		}
+		else {
+			$log_msg .= $_ . "\n";
+		}
+	}
+}
+close LOG ;
+if ($log_msg) {
+	$| = 1;
+	die "PAS BON\n"
+	.	"Problème à la compilation:\n\n$log_msg\n"
+	.	"Veuillez corriger le code du fichier\n\t$tex\n"
+	;
+}
+else {
+	print "OK\n";
+}
+
+#
+# Conversion : dvi -> ps -> eps
+#
+
+print rc("Exécution de dvips",60) ;
+if (system qq{dvips "$prefix.dvi" -o $prefix.ps 2> /dev/null}) {
+	die "Pas bon: Problème à la conversion par dvips.\n";
+}
+print "OK\n";
+
+if ($convert) {
+	print rc("Conversion en .eps par convert",60);
+	my $convert_prog = &find_program('convert');
+	if (system qq{$convert_prog "$prefix.ps" "$prefix.eps"}) {
+		die "Pas bon: Problème à la conversion par convert.\n";
+	}
+	print "OK\n";
+} else {
+	print rc("Conversion en .eps par BBcut",60);
+	my $BBcut_prog = &find_program('BBcut');
+	if (system qq{$BBcut_prog $prefix.ps > /dev/null && mv "$prefix.ps" "$prefix.eps"}) {
+		die "Pas bon: BBcut non trouvé.\nEst-il bien dans votre \$PATH ?\n";
+	}
+	print "OK\n";
+}
+
+#
+# Ménage.
+#
+
+if (!$keep) {
+	print rc("Suppression des fichiers temporaires",60);
+	unlink "$prefix.dvi", "$prefix.aux", "$prefix.log";
+	print "OK\n";
+}
+
+#
+# Affichage.
+#
+
+if (!$nogv) {
+	print rc("Exécution de gv",60) ;
+	my $gv_prog = &find_program('gv');
+	if (system qq{$gv_prog --media=Bbox $GVSCALE "$prefix.eps"}) {
+		die "Pas bon: Problème à l'exécution de gv.\n" ;
+	}
+	print "OK\n";
+}
+
+
+#######################################################################
+###########################                  ##########################
+###########################   Les routines   ##########################
+###########################                  ##########################
+#######################################################################
+
+# 'rc' ajoute des '.' à droite ("right complete").
+# Syntaxe: (string, int) -> string
+# Exemple: rc("toto", 7);
+
+sub rc {
+	my $string = shift();
+	my $full = shift();
+
+	$string .= "." x ($full - length($string));
+
+	return $string;
+}
+
+sub find_program {
+	my $prog = shift() or die "[find_program] Paramètre non reçu.\n";
+	my $ans;
+
+	# On essaie de deviner le chemin. 
+	foreach my $path (qw(. /sw/bin /opt/local/bin /bin /sbin /usr/bin 
+		/usr/texbin /usr/local/bin /usr/local/util/bin /opt/bin /usr/X11R6/bin
+	)) {
+		if (!$ans && -x "$path/$prog") {
+			$ans = "$path/$prog";
+		}
+	}
+
+	# Sinon, on demande de l'aide au système.
+	if (!$ans) {
+		my $which = `which $prog 2> /dev/null`;
+		chomp $which;
+		if ($which =~ /^\// && $which =~ /bin\// && (split '\/',$which)[-1] eq "$prog") {
+			$ans = $which;
+		}
+	}
+
+	# Réussite ou échec ?
+	if ($ans) {
+		return $ans;
+	}
+	else {
+		die "Je n'ai pas réussi à trouver le programme « $prog », désolé !\n";
+	}
+}
+

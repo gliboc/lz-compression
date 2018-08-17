@@ -1,0 +1,17 @@
+\contentsline {section}{\numberline {I}On the quest for optimal compression : algorithmic improvements}{3}
+\contentsline {subsection}{\numberline {1}What can be done according to information theory}{3}
+\contentsline {subsection}{\numberline {2}Information sources}{3}
+\contentsline {subsection}{\numberline {3}Why Markov sources are good for real world case}{3}
+\contentsline {subsection}{\numberline {4}Flexible Parsing}{3}
+\contentsline {section}{\numberline {II}Combinatorial analysis applied to algorithms}{3}
+\contentsline {subsection}{\numberline {1}Mathematical tools}{3}
+\contentsline {subsection}{\numberline {2}Their limits}{3}
+\contentsline {section}{\numberline {III}Lempel-Ziv 78 in practice}{3}
+\contentsline {subsection}{\numberline {1}Philosophical problematics}{3}
+\contentsline {subsection}{\numberline {2}Business problematics}{3}
+\contentsline {subsection}{\numberline {3}Most important implementations and use cases}{3}
+\contentsline {section}{\numberline {IV}Markov sources simulation}{4}
+\contentsline {subsection}{\numberline {1}Input simulation : Markov sources}{4}
+\contentsline {subsection}{\numberline {2}Related asymptotics}{4}
+\contentsline {subsection}{\numberline {3}Future results}{4}
+\babel@toc {frenchb}{}

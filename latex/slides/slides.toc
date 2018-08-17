@@ -1,0 +1,17 @@
+\babel@toc {frenchb}{}
+\beamer@sectionintoc {1}{The data compression problem}{3}{0}{1}
+\beamer@subsectionintoc {1}{1}{ Introduction to information sources }{3}{0}{1}
+\beamer@subsectionintoc {1}{2}{ The LZ78 compression scheme }{6}{0}{1}
+\beamer@subsectionintoc {1}{3}{ The compression ratio, and entropy }{10}{0}{1}
+\beamer@subsectionintoc {1}{4}{ Algorithmic improvements }{13}{0}{1}
+\beamer@sectionintoc {2}{Process evaluation}{16}{0}{2}
+\beamer@subsectionintoc {2}{1}{Theoretical models}{16}{0}{2}
+\beamer@subsectionintoc {2}{2}{Experimental conditions}{18}{0}{2}
+\beamer@subsectionintoc {2}{3}{ Extracting results }{20}{0}{2}
+\beamer@sectionintoc {3}{ Analytic information theory }{24}{0}{3}
+\beamer@subsectionintoc {3}{1}{ Power series }{24}{0}{3}
+\beamer@subsectionintoc {3}{2}{ Complex analysis tools }{26}{0}{3}
+\beamer@sectionintoc {4}{ Application to covariance analysis }{28}{0}{4}
+\beamer@subsectionintoc {4}{1}{ Tail symbols }{28}{0}{4}
+\beamer@subsectionintoc {4}{2}{Simulation results}{32}{0}{4}
+\beamer@subsectionintoc {4}{3}{Analytic solution}{34}{0}{4}

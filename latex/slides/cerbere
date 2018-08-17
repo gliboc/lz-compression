@@ -1,0 +1,1475 @@
+eval '(exit $?0)' && eval 'exec perl -s -S $0 ${1+"$@"}' && eval 'exec perl -s -S -w $0 $argv:q' if 0;
+
+# TODO: le titre de l'épreuve devrait être vérifié même sans l'option -chef.
+
+use Env qw(PWD);
+use Text::Wrap;
+$Text::Wrap::columns = 76;
+
+=head1
+
+Ce programme est offert aux auteurs de la collection « Annales des Concours »
+pour simplifier leur travail. 
+
+La présentation des Annales et le travail en commun de plusieurs dizaines de
+personnes oblige en effet à imposer un certain nombre de contraintes, qu'il
+est un peu fastidieux de retenir même si la documentation est une aide.
+Le programme 'cerbere' vous permet de vérifier facilement que vous respectez
+les principales contraintes, ou du moins celles qui sont reconnaissables par
+un script.
+
+Le moyen le plus simple de lancer ce script est de taper, en ligne de
+commande:
+	perl cerbere
+
+Si l'ordinateur répond "perl not found", il y a beaucoup de chances qu'il
+ne s'agisse que d'un problème de chemin d'accès. Sur un ordinateur tournant
+sous linux, le chemin d'accès à perl est habituellement /usr/bin/perl. Ce
+chemin peut être légèrement différent sur votre site : typiquement,
+/usr/local/bin/perl ou /usr/local/util/bin/perl. Pour connaître le chemin
+d'accès précis, tapez
+	locate perl
+
+S'il n'y a toujours aucune réponse (ou "database too small"), veuillez
+contacter votre administrateur système pour savoir où 'perl' est installé.
+
+Pour condenser "perl cerbere" en "./cerbere", il vous faut changer la première
+ligne de ce script: remplacez "/usr/bin/perl" par le chemin d'accès à perl sur
+votre site. Notez que la ligne doit absolument commencer par #!.
+
+Si vous constatez un bug, vous pouvez m'en envoyer une description précise par
+courrier électronique (oracle@h-k.fr) et je le corrigerai.
+
+Les coordinateurs disposent de l'option -coordinateur, qui effectue quelques
+vérifications supplémentaires.
+
+-copies: version spécifique à la collection « Les meilleures copies ».
+
+Bon travail !
+
+							Seb.
+
+=cut	# Fin de la doc.
+
+our ($coordinateur, $chef, $coordinateurs, $coord, $compil, $versionCompil, 
+$copies);
+
+# 2009.10.13: adaptation à Windows.
+my $is_windows = ($PWD =~ /^\s*$/) ? 1 : 0;
+
+### On commence par vérifier le contenu du répertoire courant, qui
+### ne doit contenir que les fichiers suivants :
+### 	* main.tex
+### 	* annales.sty
+###	* frenchb.ldf
+### 	* cerbere, et éventuellement cerbere.resultats
+### 	* un fichier .tex, avec éventuellement ses déclinaisons en .log, 
+###		.aux, .dvi et .ps
+### De plus, il doit exister un sous-répertoire, appelé PS, contenant tous
+### les dessins.
+### On tolère un fichier frenchb.cfg, pour contrer les sites où l'installation
+### de latex est débile.
+### On tolère aussi un fichier main.ps.
+
+### Si ces vérifications minimales ne sont pas exactes, le programme meurt
+### très vite et l'auteur peut croire que c'est le seul problème. J'ajoute
+### donc un message standard à diffuser à chaque mort prématurée.
+
+#
+# Les options.
+#
+
+# Les coordinateurs.
+if ($coordinateurs || $chef || $coord || $compil || $versionCompil) {
+	++$coordinateur;
+}
+
+# Voir plus loin:
+our $PremiereRemise;
+our $redaction; # pour compter les occurrences de Donc, Alors et On a.
+
+our $compiler;	# pour imposer de compiler quelle que soit la situation.
+
+$warn = "\nJ'effectuerai un examen plus approfondi quand ce problème\n" .
+	"préliminaire aura été réglé.\n\n";
+
+##
+## On lit le contenu du répertoire.
+##
+
+# S'il existe un fichier main.synctex.gz (TeXShop sous Mac), on l'efface.
+unlink "main.synctex.gz" if (-f "main.synctex.gz");
+
+print rc("Lecture du répertoire...",66);
+
+opendir DIR, ".";
+@ls = grep !/^\.\.?$/, readdir DIR;
+closedir DIR;
+
+print "OK\n";
+
+##
+## On vérifie la présence des principaux fichiers.
+##
+
+@must_be_list = ("main.tex", "annales.sty", "cerbere", "frenchb.ldf");
+
+# Deux auteurs dans la même journée (2013-05-02), tous deux sous Mac, ont 
+# essayé d'appeler Cerbere depuis $HOME, d'où échec. Donc on remplace le test 
+# simple par un message d'erreur explicite.
+#for (@must_be_list) {
+#	Die("\nCe répertoire devrait contenir un fichier nommé $_\n" . $warn) 
+#		unless (member($_ , @ls))
+#}
+my @must_be_list_not_found;
+foreach my $file (@must_be_list) {
+	push @must_be_list_not_found, $file unless (-f $file);
+}
+if (@must_be_list_not_found) {
+	my $year = 1900 + (localtime)[5];
+	my $example = "PC_CHIMIE_CCP_1_${year}";
+	if ($0 =~ /\bAnnales\/([^\/]+)\/cerbere/) {
+		$example = $1;
+	}
+	print "Je ne trouve pas les fichiers suivants dans le répertoire courant:\n\t"
+		, join("\n\t", @must_be_list_not_found)
+		, "\n"
+		, "L'explication la plus probable est qu'il faut descendre dans le"
+		, "\nrépertoire de travail avant d'appeler cerbere, par exemple:"
+		, "\n\tcd \~/Annales/$example"
+		, "\npuis\t./cerbere"
+		, "\n";
+	Die();
+}
+
+Die("\nCe répertoire devrait contenir un sous-répertoire nommé PS\n" . $warn)
+	unless (-d "PS");
+
+##
+## On inspecte le contenu de main.tex
+##
+
+print rc("Lecture de main.tex...",66);
+
+open IN, "main.tex";
+while (<IN>) {
+	next if (/^\s*$/);
+	next if (/^\s*%/);
+	next if (/\\input\{annales\.sty\}/);
+	next if (/\\input\{copies\.sty\}/ && $copies);
+	next if (/\\(begin|end)\{document\}/);
+	next if (/\\usepackage\{lineno\}/);
+	next if (/\\(no)?linenumbers/);
+	next if (/\\versionAuteur/i);
+	next if (/\\versionCompil/i && $coordinateur);
+	chomp;
+	if (/\\input/) {
+		Die("Dans le fichier main.tex, il faut remplacer \"input\"" .
+			" par \"include\"\n" . $warn);
+	}
+	elsif (/\\include/) {
+		if ($include) {
+			Die("Le fichier main.tex ne doit contenir qu'un " .
+				"seul include.\n" . $warn);
+		}
+		$include = $_;
+	}
+	elsif (/\\policesExotiquesAvecAutorisationDuCoordinateur/) {
+		++$check_exotic_fonts;
+	}
+	else {
+		Die("La ligne :\n\t$_\nne devrait pas exister dans le " .
+			"fichier main.tex\.\n" . $warn);
+	}
+}
+
+##
+## On peut maintenant déterminer le nom du fichier .tex dans lequel est tapé
+## le corrigé.
+##
+
+Die("Le fichier main.tex doit comporter un \\include.\n" . $warn)
+	unless ($include);
+$include =~ s/^\s*\\include\{(.*)\}.*$/$1/;
+Die("Le fichier appelé par \\include dans main.tex ne doit pas comporter\n" .
+	"un suffixe .tex.\n" . $warn) if ($include =~ /\.tex$/);
+
+$bare = $include;
+$tex = $bare . ".tex";
+$aux = $bare . ".aux";	
+
+# Connaissant $bare, on peut maintenant vérifier si l'appel au chargement des 
+# fontes était légitime.
+
+if ($check_exotic_fonts) {
+	my @authorized = qw(
+		MP_MATHS_MINES_2_2008
+		MP_INFO_MINES_1_2009
+	);
+	my $ok = 0;
+	foreach my $corrige (@authorized) {
+		$corrige =~ s{\s*\,\s*$}{};
+		$corrige =~ s{(\s*\'\s*|\s*\"\s*)}{}g;
+		if ($bare =~ /$corrige/) {
+			$ok = 1;
+		}
+	}
+
+	if (!$ok) {
+		Die("La commande \\policesExotiquesAvecAutorisationDuCoordinateur"
+			, "\nne devrait pas figurer dans votre fichier main.tex; si"
+			, "\nvotre coordinateur l'a autorisée pour votre corrigé, il"
+			, "\nfaut qu'il prévienne Seb d'adapter mon code."
+			, "\n"
+			);
+	}
+}
+
+
+print "OK\n";
+
+##
+## On vérifie qu'il n'y a pas de fichier indésirable.
+##
+
+print rc("Vérification du contenu du répertoire...",66);
+
+foreach (@ls) {
+	next if (/^main\.tex$/);
+	next if (/^main\.dvi$/);
+	next if (/^main\.log$/);
+	next if (/^main\.aux$/);
+	next if (/^main\.ps$/);
+	next if (/^main\.pdf$/);
+	next if (/^cerbere$/);
+	next if (/^cerbere\.copies$/ && $copies);
+	next if (/^cerbere\.pl$/);
+	next if (/^frenchb\.ldf$/);
+	next if (/^frenchb\.cfg$/);
+	next if (/^annales\.sty$/);
+	next if (/^annales\_integrale\.sty$/);
+	next if (/^special\_integrale\.sty$/);
+	next if (/^(eepic|fig)2ps$/);
+	next if (/$tex/);
+	next if (/$aux/);
+	next if (/^lineno.sty$/);
+	next if (/^\..*DS\_?Store$/);
+	next if (/^PS$/);
+	next if (/^$bare.(ps|pdf|readme)$/i);
+	next if (/^copies\.sty$/i && $copies);
+#	next if (/^makefile$/i);
+	$| = 1;
+	Die("Le répertoire ne devrait pas comporter le fichier $_.\n" . $warn);
+}
+
+print "OK\n";
+
+##
+## Le nom du fichier .tex est-il correct ?
+##
+
+print rc("Vérification du nom du fichier principal...",66);
+
+@temp = split('\_',$bare);
+
+if ($temp[0] =~ /^E(3|4)A/) {	# Les E3A, E4A
+	$die = 	"\nLe nom du fichier .tex doit ressembler à :\n" .
+		"\tE3A_PC_2000_MATHS_2.tex\n" .
+		"(Pour tous les renseignements, voir le chapitre \"Unix\" du ".
+			"livret.)\n" . $warn;
+	@concours = ("E3A", "E4A");
+	@filiere = ("MP", "PC", "PSI");
+	@annee = (1999, 2000, 2001);
+	@matiere = ("MATHS", "PHYSIQUE", "CHIMIE", "PHYSIQUE-CHIMIE",
+		"INFO", "SI");
+	@epreuve = (1, 2, 3);
+
+	Die($die) unless (member($temp[0] , @concours));
+	Die($die) unless (member($temp[1] , @filiere));
+	Die($die) unless (member($temp[2] , @annee));
+	Die($die) unless (member($temp[3] , @matiere));
+	Die($die) unless (member($temp[4] , @epreuve));
+}
+
+else {
+	$die = 	"\nLe nom du fichier .tex doit ressembler à :\n" .
+		"\tPC_MATHS_CENTRALE_1_2000.tex\n" .
+		"(Pour tous les renseignements, voir le chapitre \"Unix\" du ".
+			"livret.)\n" . $warn;
+	@filieres = ("MP", "PC", "PSI", "SUP", "PT");
+	@matiere = ("MATHS", "PHYSIQUE", "CHIMIE", "INFO", "SI");
+	@concours = ("X", "MINES", "CENTRALE", "CCP", "ENAC", "E3A", "BANQUEPT");
+	@epreuve = ("0", "1", "2", "3", "TOUS", "MPSI", "PCSI");
+
+	Die($die) unless (member($temp[0] , @filieres));
+	Die($die) unless (member($temp[1] , @matiere));
+	Die($die) unless (member($temp[2] , @concours));
+	Die($die) unless (member($temp[3] , @epreuve));
+	Die($die) unless ($temp[4] >= 1999 && $temp[4] =~ /\d\d\d\d/);
+}
+
+print "OK\n";
+
+##
+## Le répertoire a-t-il le même nom que le fichier .tex, au suffixe près ?
+##
+
+if (!is_windows) {
+	print rc("Vérification du nom du répertoire...",66);
+
+	$pwd = `pwd` ; chomp $pwd; $pwd =~ s#.*\/##g;
+	Die("Le répertoire courant devrait avoir le même nom que le fichier " .
+		".tex,\nau suffixe près.\n" . $warn) unless ($pwd eq $bare);
+
+	print "OK\n";
+}
+
+##
+## Test pas si grossier que ça pour déterminer si le fichier tex a été composé 
+## sous Windows.
+##
+
+if (!$is_windows) {
+	open TEX, $tex;
+	my @windows = grep /\r/, $tex;
+	close TEX;
+
+	if (scalar @windows) {
+		Die("\nHorreur !! Le fichier $tex n'a pas\nété écrit sous Unix !!\n\n");
+	}
+}
+
+##
+## On va désormais utiliser une variable $comment, dans laquelle seront 
+## stockés les commentaires; pour éviter quelques problèmes, j'initialise
+## cette variable à la chaîne vide.
+##
+
+$comment = "";
+
+##
+## On étudie $tex pour vérifier qu'il contient les macros obligatoires,
+## qu'il ne contient pas les macros interdites, et qu'il est bien tapé
+## en au plus 80 colonnes. On en profile pour tester quelques recommandations.
+##
+
+print rc("Vérification du fichier $tex...",66);
+
+@must = (
+	"\\\\titre", 
+	"\\\\question", 
+	"\\\\begin\\{remarque\\}",
+	"\\\\begin\\{indications\\}"
+	); 
+@must_not = (
+	"\\\\newcommand", 
+	"\\\\renewcommand", 
+	"\\\\newlength",
+	"\\\\setlength",
+	"\\\\unitlength",
+	"\\\\newenvironment", 
+	"\\\\providecommand",
+	"\\\\parindent",
+	"\\\\makeatletter",
+	"\\\\makeatother",
+	"\\\\label" ,
+	"\\\\ref", 
+	"\\\\pageref",
+	"\\\\samepage",		# Quelle saloperie ce truc!
+	"\\\\pageref", 
+	"\\\\index",
+	"\\\\enlargethispage",
+	"\\\$\\\$",
+	"\\\\begin\\{math\\}",
+	"<\\s*<",
+	">\\s*>",
+	"\\{equation\\}",
+	"\\{eqnarray\\}",
+	"\\{equation\\*\\}",
+	"\\{eqnarray\\*\\}",
+	"\\{figure\\}",
+	"\\{table\\}",
+	"\\\\chapter",
+	"\\\\section",
+	"\\\\subsection",
+	"\\\\include",		# Parce qu'ils ne peuvent pas s'emboîter.
+	"\\\\psfrag",       # cf « La Physique par la pratique »
+	"\\\\quote",
+	"\\\\sloppy",
+	"\\\\newcolumntype",
+	"\\\\begingroup",
+	"\\\\endgroup",
+	);
+
+open IN, $tex;
+while (<IN>) {
+	++$numero_ligne;
+	next if (/^\s*%/);
+	s/\%.*//;
+	$line = $_;
+
+	# La longueur des lignes: pas plus de 80 colonnes, et TAB = 4 espaces.
+	(my $line_spaces = $line) =~ s{\t}{    }g;
+	if (length($line_spaces) > 81) { # 81 = 80 + \n
+		push @long_lines, $numero_ligne;
+	}
+
+	# Le cas bizarroïde d'un ^M en plein milieu de ligne (repéré en 2009).
+	if ($line =~ /\r|/) {
+		push @control_M, $numero_ligne;
+	}
+
+	# Les macros obligatoires.
+	foreach $string (@must) {
+		++$must{$string} if ($line =~ /$string/);
+	}
+
+	# Les macros interdites.
+	foreach $string (@must_not) {
+		if ($line =~ /$string/) {
+			push @{$must_not{$string}}, $numero_ligne;
+		}
+	}
+
+	# Les macros interdites à regexp complexe.
+	if ($line =~ /\\smash\s*\[.\]\s*\{\s*\$/) {
+		push @{$must_not{'«\smash[.]{$» (remplacer par «$\smash[.]{»)'}}, $numero_ligne;
+	}
+
+	# Les «recommandations obligatoires» et les fautes de frappe.
+	if (/\\lim[^(i|t)]/) {push @lim, $numero_ligne}
+	if (/\\int[^(o|f|n|ertext)]/) {push @int, $numero_ligne}
+	if (/\\sum/) {push @sum, $numero_ligne}	
+	if (/\\frac/) {push @frac, $numero_ligne unless ($copies)}
+	if (/\\dfrac/) {push @dfrac, $numero_ligne}
+	if (/(^|[^\\])\\\[/) {push @maths, $numero_ligne}
+	if (/\\def[^f]/) {push @def, $numero_ligne}
+	if (/\\center\s*{/) {push @center, $numero_ligne}
+}
+close IN;
+
+## Tests supplémentaires pour les coordinateurs.
+
+if ($coordinateur) {
+
+## Pour les coordinateurs: le nom affiché dans \titre est-il conforme à
+## la base ? Comporte-t-il bien une année ?
+
+	## Recherche du titre dans le .tex .
+	open TEX, $tex or Die("Impossible de lire $tex: $!\n");
+	my ($buffer, $titre_is_found, $skip_tex);
+
+	# Code proposé par Teteph.
+	while (<TEX>) {
+		next if ($skip_tex);
+		++$titre_is_found if (/\\titre/);
+		if ($titre_is_found) {
+			chomp;
+			if (/^\s*$/) {$titre_is_found = 0}
+			elsif (/Corrig(é|\\\'e)\s*\}/i) {
+				s#(orrig.+?\}).*#$1#;
+				$buffer .= " " . $_;
+				++$skip_tex;
+			}
+			else {$buffer .= " " . $_}
+		}
+	}
+	close TEX or Die("Impossible de fermer $tex: $!\n");
+	$buffer =~ s#\s+# #g;
+	$buffer =~ s#^.*\\titre##;
+
+	(my $titre = $buffer) =~ s#[^\{]*\{(.*)\}[^\}]*$#$1#;
+	my $titre_courant;
+	if ($buffer =~ /\[.*\]/) {
+		($titre_courant = $buffer) =~ s#\s*\[(.*)\][^\]]*#$1#;
+	}
+
+	map { s#^\s+## ; s#\s+$## } ($titre, $titre_courant);
+	#print "\n\nDBG: \$titre=|$titre|\nDBG: \$titre_courant=|$titre_courant|\n";
+
+	if (!$titre) {
+		++$coordinateur_makes_die;
+		Print("\n[-coordinateur] Je n'ai pas trouvé de titre !\n");
+	}
+	if ($titre !~ /(\-+|\\\\)/) {
+		++$coordinateur_makes_die;
+		Print("\n[-coordinateur] Le titre n'a pas l'air correct...\n");
+	}
+
+	$titre =~ s#^\s*\%\s*##;
+
+	if ($titre =~ /\-\-/) {
+		$titre =~ s#\s*\-\-+.*##;
+		$titre =~ s#\\\\\[.+?\]##;
+	}
+	else {
+		$titre =~ s#\\\\\[.+?\]##;
+	}
+	$titre =~ s{\s*Corrigé.*}{};
+
+	if ($titre =~ /(\d\d\d\d)\s*$/) {
+		my $year_titre = $1;
+
+		# L'année indiquée dans le titre correspond-elle au nom du .tex ?
+		if ($tex !~ /$year_titre/) {
+			++$coordinateur_makes_die;
+			Print("\n[-coordinateur] L'année n'est pas cohérente !\n\t\\titre: $year_titre\n\t$tex\n");
+		}
+
+		$titre =~ s{\s*$year_titre\s*}{};
+	}
+	else {
+		++$coordinateur_makes_die;
+		Print("\n[-coordinateur] Le titre ne se termine pas par une année !\n");
+	}
+
+	## Le nom à rechercher dans la base.
+	(my $tex_sans_annee = $tex) =~ s#\_\d+\.tex##i;
+
+	## Recherche de $titre dans la base.
+	$bdd = $ENV{'HOME'}. "/Annales/data/titres_des_epreuves";
+	my ($found, $titre_bdd);
+	open TITRES, $bdd or Die("Impossible de lire $bdd: $!\n");
+	while (<TITRES>) {
+		if (/\Q$tex_sans_annee\E/) {
+			chomp;
+			s#\s+# #g;
+			$titre_bdd = ( split('\:', $_, 2) )[1];
+			$titre_bdd =~ s#^\s+##;
+			$titre_bdd =~ s#\s+$##;
+			if ($titre eq $titre_bdd) {++$found}
+		}
+	}
+	close TITRES or Die("Impossible de fermer $bdd: $!\n");
+
+	## Conclusion.
+	if ($found) {
+		Print("\n[-coordinateur] Le \\titre correspond au nom.",
+			"." x 22);
+	}
+	else {
+		++$coordinateur_makes_die;
+		Print("\n[-coordinateur] Le \\titre ne correspond pas au nom du "
+			. "répertoire !\nJ'ai trouvé dans le .tex:\n\t'$titre'\n"
+			. "et dans la base:\n\t\'$titre_bdd\'\n");
+	}
+
+## Pour les coordinateurs: le .tex contient-il les commandes \note ou
+## \notesimple, qui ne doivent pas figurer dans le corrigé pour la dernière
+## version envoyée ?
+
+	my $note;
+	my @lines;
+	my $compteur;
+
+	## Recherche de \note et \notesimple dans le .tex .
+	open TEX, $tex or Die("Impossible de lire $tex: $!\n");
+	while (<TEX>) {
+		++$compteur;
+		s#\%.*##;
+		next unless (/\\note/);
+		push @lines, $compteur;
+	}
+	close TEX or Die("Impossible de fermer $tex: $!\n");
+
+	if (scalar (@lines)) {
+		++$coordinateur_makes_die;
+		Print("\n[-coordinateur] "
+		, "J'ai trouvé une commande commençant par\n\t"
+		, "\\note\n aux lignes suivantes:\n\t"
+		, join(", " , @lines), "\n");
+	}
+
+## Si une erreur a été trouvée par -coordinateur, on meurt.
+
+	if ($coordinateur_makes_die) {
+		Die("\nJ'ai trouvé des erreurs, je m'arrête.\n\n");
+	}
+
+}
+
+## Les lignes de plus de 80 caractères.
+
+if (@long_lines) {
+	Print("Pas bon !\n");
+	Print("\nLes lignes suivantes ont plus de 80 colonnes :\t",
+		join(", ", @long_lines), ".", "\n\n");
+	$comment .= "\n";
+}
+
+## Les ^M au milieu du texte.
+
+if (@control_M) {
+	Print("Pas bon !\n");
+	Print("\nLes lignes suivantes contiennent un ^M:\t",
+		join(", ", @control_M), ".", "\n\n");
+	Print("Veuillez copier-coller les trois lignes suivantes, une à la fois:"
+		, "\n\n\tcp $tex /tmp"
+		, "\n\n\tcat $tex | tr '\\r' ' ' > clean.tex"
+		, "\n\n\t\\mv clean.tex $tex"
+		, "\n\n");
+	$comment .= "\n";
+}
+
+## Les macros obligatoires.
+
+unless ($must{"\\\\titre"} == 1) {
+	$comment .= "\nLa commande \\titre doit être utilisée exactement " . 
+		"une fois.\n\n";
+}
+
+unless ($must{"\\\\question"}) {
+	$comment .= "\n\\question doit être utilisé pour introduire les " .
+		"questions.\n\n";
+}
+
+if (!$copies) {
+	unless ($must{"\\\\begin\\{remarque\\}"}) {
+		$comment .= "\nL'environnement {remarque} doit être utilisé pour les" .	
+			" commentaires.\n\n";
+	}
+
+	unless ($must{"\\\\begin\\{indications\\}"}) {
+		$comment .= "\nL'environnement {indications} doit être utilisé pour" .
+			" les indications.\n\n";
+	}
+}
+
+## Les macros interdites.
+
+if (keys %must_not) {
+	foreach $clef (keys %must_not) {
+		$Clef = $clef;
+		if ($Clef eq "\\\$\\\$") {$Clef = "\$\$"}
+		if ($Clef eq "\\\\\\[") {$Clef = "\\["}
+		if ($Clef eq "<\\s*<") {$Clef = "<<"}
+		if ($Clef eq ">\\s*>") {$Clef = ">>"}
+		$Clef =~ s#\\\*#\*#g;
+		$Clef =~ s#\\\\#\\#g;
+		$comment .= "\nLa commande interdite $Clef a été trouvée " .
+			"aux lignes suivantes : ";
+		foreach (@{ $must_not{$clef} }) {$comment .= $_ . ", "}
+		chop $comment; chop $comment;
+		$comment .= "\n\n";
+	}
+}
+
+if (@lim) {
+	$comment .= "\nLa commande \\lim (trouvée ligne: ";
+	foreach $line (@lim) {$comment .= $line . ", ";}
+	chop $comment; chop $comment;
+	$comment .= ") doit être remplacée par \\limt.\n\n";
+}
+
+if (@int) {
+	$comment .= "\nLa commande \\int (trouvée ligne : ";
+	for $line (@int) {$comment .= $line . ", ";}
+	chop $comment; chop $comment;
+	$comment .= ") doit être remplacée par \\Int.\n\n";
+}
+
+if (@sum) {
+	$comment .= "\nLa commande \\sum (trouvée ligne : ";
+	for $line (@sum) {$comment .= $line . ", ";}
+	chop $comment; chop $comment;
+	$comment .= ") doit être remplacée par \\Sum.\n\n";
+}
+
+if (@frac) {
+	$comment .= "\nLa commande \\frac (trouvée ligne : ";
+	for $line (@frac) {$comment .= $line . ", ";}
+	chop $comment; chop $comment;
+	$comment .= ") doit être remplacée par \\f.\n\n";
+}
+
+if (@dfrac) {
+	$comment .= "\nLa commande \\dfrac (trouvée ligne : ";
+	for $line (@dfrac) {$comment .= $line . ", ";}
+	chop $comment; chop $comment;
+	$comment .= ") doit être remplacée par \\f.\n\n";
+}
+
+if (@maths) {
+	$comment .= "\nLa commande \\\[ (trouvée ligne : ";
+	for $line (@maths) {$comment .= $line . ", ";}
+	chop $comment; chop $comment;
+	$comment .= ") doit être remplacée par \\centers.\n\n";
+}
+
+if (@def) {
+	$comment .= "\nLa commande \\def (trouvée ligne : ";
+	for $line (@def) {$comment .= $line . ", ";}
+	chop $comment; chop $comment;
+	$comment .= ") est interdite.\n\n";
+}
+
+if (@center) {
+	$comment .= "\n\t[Faute de frappe] "
+		. "Il manque un 's' à \"\\center{\" (ligne : ";
+	for $line (@center) {$comment .= $line . ", ";}
+	chop $comment; chop $comment;
+	$comment .= ") . \n\n";
+}
+
+if ($comment) {Print("Pas bon !\n")} else {print "OK\n"}
+$tex_comments = $comment or $tex_comments = "";
+
+##
+## On vérifie les dessins.
+##
+
+print rc("Vérification du répertoire PS/ :\n",0);
+
+opendir DIR, "PS";
+@ls_complet = readdir DIR;
+closedir DIR;
+opendir DIR, "PS";
+@ls = 	
+	grep !/^(eepic|fig)2ps$/, 
+	grep !/^BBcut$/,
+	grep !/^tikz2eps$/,
+	grep !/^frenchb.ldf$/,
+	grep !/^$bare.*\.(ml|mpl|mpx|log|table|gnuplot|save|mws?|ipe|py|sql|ods|xls|xlsx)(\~)?$/,
+	grep !/^$bare.*\.mp\~$/,	# Mais garder \.mp, cf plus bas.
+	grep !/^\.\.?$/, 
+	grep !/^$bare\.README\~?$/i, 
+	grep !/^annales\.sty$/i, 
+	grep !/^refig2ps\.log$/i,
+	grep !/^fig2ps\.annales$/i,
+	grep !/^easychem\.fix-eps$/i,
+	grep !/^\..*DS\_?Store$/,
+	grep !/^makefile$/i,
+	readdir DIR;
+closedir DIR;
+
+##
+## Tous les dessins, y compris les sauvegardes en .gnu, .fig, etc., doivent
+## avoir un nom qui commence comme le fichier .tex.
+##
+
+print rc(" " x 8 . "* vérification des noms",66);
+push @last, $comment;
+
+foreach (@ls) {push @names, $_ unless (/$bare/)}
+
+if (@names) {
+	if ($#names) 	{$comment .= "\nLes fichiers:\n"}
+	else 		{$comment .= "\nLe fichier:\n"}
+	foreach (@names){$comment .= "\tPS/$_\n"}
+	if ($#names)	{$comment .= "devraient commencer par PS/$bare\n\n"}
+	else		{$comment .= "devrait commencer par PS/$bare\n\n"}
+}
+
+if (!$comment || $comment eq $last[-1]) {print "OK\n"} 
+else {Print("Pas bon !\n")}
+
+##
+## Aucun dessin .tex ne doit contenir d'appel postscript (\special).
+##
+
+print rc(" " x 8 . "* vérification des \\special (interdits)", 66);
+push @last, $comment;
+
+@tex = ();
+foreach (@ls) {push @tex, $_ if (/\.tex$/)}
+
+foreach my $tex (@tex) {
+	my $special;
+	local *TEX;
+	open TEX, "PS/$tex";
+	while (my $line = <TEX>) {
+		if ($line =~ /\\\\special/) {
+			++$special;
+		}
+	}
+	close TEX;
+	#$special = `grep \'\\\\special\' PS/$_`; # Pas Windows-compatible.
+	if ($special) {
+		$comment .= "\nLe fichier PS/$_ contient un appel postscript " .
+		"(\\special), ce qui est\ninterdit.\n\n"
+	}
+}
+
+if (!$comment || $comment eq $last[-1]) {print "OK\n"} 
+else {print "Pas bon !\n"}
+
+##
+## Aucun dessin .tex ne doit utiliser le package xypic (conversion en PDF
+## catastrophique).
+##
+
+print rc(" " x 8 . "* vérification des appels à xypic.sty (interdits)", 66);
+push @last, $comment;
+
+@tex = ();
+foreach (@ls) {push @tex, $_ if (/\.tex$/)}
+
+foreach my $tex (@tex) {
+	my $xypic;
+	local *TEX;
+	open TEX, "PS/$tex";
+	while (my $line = <TEX>) {
+		if ($line =~ /\\usepackage\{xypic\}/) {
+			++$xypic;
+		}
+	}
+	close TEX;
+	#$xypic = `grep \'\\usepackage\{xypic\}\' PS/$_`; # Pas Windows-compatible.
+	if ($xypic) {
+		$comment .= "\nLe fichier PS/$_ utilise le package xypic,\n" .
+		"ce qui est interdit.\n\n"
+	}
+}
+
+if (!$comment || $comment eq $last[-1]) {print "OK\n"} 
+else {print "Pas bon !\n"}
+
+##
+## À tout fichier dans PS/ doit correspondre un dessin .ps ou .eps ou .tex.
+##
+
+print rc(" " x 8 . "* vérification des exports en postscript",66);
+push @last, $comment;
+
+foreach (@ls) {
+	next if (/(\.ps|\.eps|\.tex|\.bak|\.gz)$/);
+	$file = $_;
+	$nu = $_; 
+	$nu =~ s/\.[^\.]+$//;
+	next if ( ($file =~ /\.\d+$/) && member($nu . ".mp", @ls) );
+	push @exports, $file unless (
+			member ("$nu" . "\.ps", @ls)  ||
+			member ("$nu" . "\.eps", @ls) ||
+			($file =~ /\.mp$/i && member ("$nu" . "\.1", @ls) ) ||
+			member ("$nu" . "\.tex", @ls))
+}
+
+if (@exports) {
+	if ($#exports) 	{$comment .= "\nLes fichiers:\n"}
+	else		{$comment .= "\nLe fichier:\n"}
+	for (@exports) 	{$comment .= "\tPS/$_\n"}
+	if ($#exports)	{$comment .= "devraient être également exportés " .
+				"en eps.\n\n"}
+	else		{$comment .= "devrait être également exporté " .
+				"en eps.\n\n"}
+}
+
+if (!$comment || $comment eq $last[-1]) {print "OK\n"} 
+else {print "Pas bon !\n"}
+
+##
+## À tout fichier .ps ou .eps dans PS/ doit correspondre une sauvegarde.
+##
+
+print rc(" " x 8 . "* vérification des sauvegardes",66);
+push @last, $comment;
+
+foreach (@ls_complet) {
+	next unless (/(\.ps|\.eps)$/);
+	next if (/^(eepic|fig)2ps$/);
+	$psfile = $_;
+	($radical = $_) =~ s/(\.ps|\.eps)$//;
+	$sauvegarde = 0;
+	foreach (@ls_complet) {
+		my $file = $_;
+		if (/$radical\.[^\.]+\s*$/ && !/\.(ps|eps|bak)$/) {
+			++$sauvegarde unless (-z "PS/$file");
+		}
+	}
+	push @save, $psfile unless ($sauvegarde);
+}
+
+if (@save) {
+	if ($#save) 	{$comment .= "\nLes dessins:\n"}
+	else		{$comment .= "\nLe dessin:\n"}
+	for (@save) 	{$comment .= "\tPS/$_\n"}
+	if ($#save) 	{$comment .= "devraient avoir une sauvegarde (fichier source).\n\n"}
+	else	 	{$comment .= "devrait avoir une sauvegarde (fichiers sources).\n\n"}
+}
+
+if (!$comment || $comment eq $last[-1]) {print "OK\n"} 
+else {print "Pas bon !\n"}
+
+#if (!$comment || $comment eq $tex_comments) {print "\tOK.\n"} 
+#else {print "\tPas bon !\n"}
+$PS_comments = $comment || "";
+
+##
+## Les .(e)ps ou .pdf associés à un .fig doivent être plus récents que
+## ce dernier.
+##
+
+print rc(" " x 8 . "* vérification des dates",66);
+push @last, $comment;
+
+foreach (@ls) {
+	next unless (/\.fig$/);
+	$fig = $_;
+
+	# La date de création du .fig.
+	my $date_creation_fig = (stat("PS/$fig"))[9];
+
+	# Les fichiers candidats.
+	(my $fig_ps  = $fig) =~ s#\.fig#.ps#i;
+	(my $fig_eps = $fig) =~ s#\.fig#.eps#i;
+	(my $fig_pdf = $fig) =~ s#\.fig#.pdf#i;
+
+	# Les dates de création des candidats.
+	$date_creation_fig_ps  = (stat("PS/$fig_ps"))[9];
+	$date_creation_fig_eps = (stat("PS/$fig_eps"))[9];
+	$date_creation_fig_pdf = (stat("PS/$fig_pdf"))[9];
+
+	# Si aucune date des candidats n'est postérieure à la date du $fig,
+	# on a un problème.
+	if (   $date_creation_fig > $date_creation_fig_ps
+		&& $date_creation_fig > $date_creation_fig_eps
+		&& $date_creation_fig > $date_creation_fig_pdf ) {
+		push @dates, $fig;
+	}
+}
+
+if (@dates) {
+	if ($#dates) 	{$comment .= "\nLes dessins:\n"}
+	else			{$comment .= "\nLe dessin:\n"}
+	for (@dates) 	{$comment .= "\tPS/$_\n"}
+	if ($#dates) 	{$comment .= "sont plus récents que leurs versions PostScript ou PDF.\n\n"}
+	else	 		{$comment .= "est plus récent que sa version PostScript ou PDF.\n\n"}
+}
+
+if (!$comment || $comment eq $last[-1]) {print "OK\n"} 
+else {print "Pas bon !\n"}
+
+$PS_comments .= $comment;
+
+##
+## Pour 'pdflatex', les noms de fichiers doivent contenir exactement un
+## point (.) .
+##
+
+print rc(" " x 8 . "* vérification des noms des PS",66);
+push @last, $comment;
+
+foreach (@ls) {
+	next unless (/(\.ps|\.eps)$/i);
+	next if (/^(eepic|fig)2ps$/);
+	$psfile = $_;
+	my @temp_dots = split('\.', $psfile);
+	push @dots, $psfile if (scalar(@temp_dots) > 2);
+}
+
+if (@dots) {
+	if ($#dots) 	{$comment .= "\nLes noms des fichiers:\n"}
+	else			{$comment .= "\nLe nom du fichier:\n"}
+	for (@dots) 	{$comment .= "\tPS/$_\n"}
+	if ($#dots) 	{$comment .= "ne devraient contenir qu'un seul point.\n\n"}
+	else	 		{$comment .= "ne devrait contenir qu'un seul point.\n\n"}
+}
+
+if (!$comment || $comment eq $last[-1]) {print "OK\n"} 
+else {print "Pas bon !\n"}
+
+if (!$comment || $comment eq $tex_comments) {print "\tOK.\n"} 
+else {print "\tPas bon !\n"}
+$PS_comments .= $comment;
+
+##
+## On vérifie que main.log ne contient ni Underfull, ni Overfull,
+## ni message d'erreur. (2005: on accepte les avertissements sur les
+## vbox.) (2011: on traque les "ERREUR" introduits dans annales.sty.)
+##
+
+print rc("Vérification de main.log...",66);
+
+if ( 		((! -e "main.log") && (-e "main.tex")) 
+		||  (stat "main.log")[7] < 1000 
+		||	$compiler
+	) {
+	system "latex --interaction=batchmode main.tex";
+}
+
+open IN, "main.log";
+while (<IN>) {
+
+	## On repère les erreurs de compilation.
+	++$erreurs_compil if (/^\!/);
+
+	## Ajout de 2005: sur proposition de Teteph, on ne s'arrête plus
+	## sur les \vbox puisque de toute façon elles sont chopées lors de
+	## la compil finale.
+	next if (/\\vbox/ && !$coordinateur);
+
+	++$UnderfullVbox if (/Underfull/ && /\\vbox/);
+	++$UnderfullHbox if (/Underfull/ && /\\hbox/);
+	++$Overfull  if (/Overfull/);
+
+	## Ajout de 2006 (Teteph): on repère les commandes "invalid in math
+	## mode".
+	++$invalid_math if (/invalid/);
+
+	## Ajout de 2011 (Teteph, JB): annales.sty produit un message "ERREUR"
+	## si \f est appelé hors du mode maths.
+	if (/^ERREUR/) {
+		chomp;
+		++$erreurs_rapportees{$_};
+	}
+
+	## Ajout de 2012 (Seb).
+	if (/\\end occurred inside a group/) {
+		chomp;
+		my $msg = qq{Un environnement a été mal fermé:\n\t"$_"};
+		++$erreurs_rapportees{$msg};
+	}
+}
+close IN;
+if ($PremiereRemise) {$UnderfullVbox = 0}
+$Underfull = $UnderfullHbox + $UnderfullVbox;
+if ($Underfull) {
+	$comment .= "\n\nIl y a $Underfull Underfull.\n";
+}
+if ($Overfull) {
+	$comment .= "\n\nIl y a $Overfull Overfull.\n";
+}
+if ($invalid_math) {
+	$comment .= qq{\nIl y a des commandes marquées "invalid".\n};
+}
+if ($erreurs_compil) {
+	$comment .= "\nLe fichier ne compile pas !\n";
+}
+if (scalar keys %erreurs_rapportees) {
+	$comment .= "\nLes erreurs suivantes ont été trouvées:\n";
+	foreach my $err (sort keys %erreurs_rapportees) {
+		$comment .= "    $err\n";
+	}
+}
+
+if (!$comment || $comment eq $tex_comments) {print "OK\n"} 
+else {print "Pas bon !\n"}
+
+
+#
+# Conclusion
+#
+
+if ($comment) {
+	Print($comment);
+}
+else {
+	Print("\nTout va bien !\n\n");
+}
+
+#
+# Des stats sur la rédaction, pour préparer l'appel à Océane lors de la
+# première remise.
+#
+
+my %count = &stats_de_redaction("$bare.tex");
+my $seuil_frequence = 3;
+my %fq;
+
+my $warning_redaction = 0;
+my @words = ("donc", "alors", "on a");
+if ($copies) {
+	@words = ();
+}
+foreach my $word (@words) {
+	$fq{$word}  = $count{$word}  / $count{'pages'};
+	if ($fq{$word} >= $seuil_frequence) {
+		++$warning_redaction;
+	}
+}
+
+if ($warning_redaction) {
+	Print("Attention toutefois, Océane râlera lors de votre remise car la "
+		, "rédaction\nn'est pas assez variée. ")
+		;
+}
+if ($warning_redaction || $redaction) {
+	Print("Quelques stats (sur $count{'pages'} pages significatives):\n");
+
+	foreach my $mot (@words) {
+		Print("\t"
+		, &left_complete("« $mot » ",12)
+		, "apparaît"
+		, &left_complete("$count{$mot} fois,",10)
+		, " soit "
+		, &approx($fq{$mot})
+		, " fois/page ")
+		;
+		if ($fq{$mot} >= $seuil_frequence) {
+			Print("[Pas bon]\n");
+		}
+		else {
+			Print("[OK]\n");
+		}
+	}
+	print "\n";
+}
+if ($warning_redaction) {
+	Print(
+		  "Pour plus d'informations, veuillez consulter la Doc,\n"
+		. "\tlivret "
+ 		. "  Informations générales et indispensables\n\tchapitre "
+		. "Typographie générale et locale\n\tsection "
+		. " Variez la rédaction\nEn voici un extrait:\n"
+		);
+}
+if ($warning_redaction || $redaction) {
+	my @mots = (
+		"d'où", 
+		"par suite", 
+		"par conséquent", 
+		"il vient", 
+		"mais", 
+		"ou encore", 
+		"dès lors", 
+		"en particulier", 
+		"c'est-à-dire", 
+		"en d'autres termes", 
+		"ainsi", 
+		"en conclusion", 
+		"de surcroît", 
+		"finalement", 
+		"car", 
+		"puis", 
+		"parce que", 
+		"comme", 
+		"de sorte que", 
+		"si bien que", 
+		"puisque", 
+		"or", 
+		"toutefois", 
+		"en revanche", 
+		"néanmoins", 
+	);
+	# On trie cette liste dans un ordre aléatoire pour éviter que ce soient
+	# toujours les mêmes mots qui sortent en premier. Il n'y a pas d'ordre
+	# particulier à privilégier.
+	my @smots;
+	while (@mots) {
+		my $j = int(rand(scalar @mots));
+		my $i = $j - 1;
+		my $k = $j + 1;
+		my @debut = @mots[0..$i];
+		my @fin   = @mots[$k..$#mots];
+		my $elem  = $mots[$j];
+		@mots = (@debut, @fin);
+		push @smots, $elem;
+	}
+
+	Wrap(join(', ', @smots) . ", ...");
+	Print(""
+		. "\tLes participes présents sont également utiles:\n\t« La fonction "
+		. "\$f\$ étant dérivable, elle est en particulier continue. »"
+		. "\n\n"
+		);
+}
+
+# Windows.
+
+######################################################################
+######################################################################
+##########################                  ##########################
+##########################   Les routines   ##########################
+##########################                  ##########################
+######################################################################
+######################################################################
+
+## La routine 'member' détermine si son premier argument appartient à la
+## liste passée en deuxième argument.
+## Syntaxe: (string,list) -> integer
+## Exemple: member("toto", @liste);
+
+sub member {
+	foreach $i (1 .. $#_) {return 1 if ($_[$i] eq $_[0])}
+	return 0;
+}
+
+## Cette routine ajoute des blancs à droite ("right complete").
+## Syntaxe: (string, int) -> string
+## Exemple: rc("toto", 7);
+
+sub rc {
+	my $string = $_[0];
+	my $full = $_[1];
+	$string .= "." x ($full - length($string));
+	return &encode($string);
+}
+
+#
+# 'stats_de_redaction' compte le nombre d'occurrences de 'donc', 'alors' et
+# 'on a' dans le corrigé, ainsi que le nombre de pages (-2).
+#
+
+sub stats_de_redaction {
+
+	my $tex  = shift();
+	my $path = shift() || './';
+	my %count;
+
+	#
+	# Lecture du fichier $tex, qui est placé dans la variable $txt.
+	#
+
+	open TEX, "$path/$tex"
+		or Die("Impossible de lire $path/$tex: $!\n");
+	my $txt = join('', <TEX>);
+	$txt =~ s{%.*$}{}mg; # On enlève ce qui suit un commentaire (même ligne)
+	$txt =~ s{\n}{ }g;
+	close TEX
+		or Die("Impossible de fermer $path/$tex: $!\n");
+#	print $txt, "\n";
+
+	#
+	# On compte les mots.
+	#
+
+	my @donc  = ($txt =~ /\s+donc(\b|centers|encadre)/gi);
+	my @alors = ($txt =~ /\s+alors(\b|centers|encadre)/gi);
+	my @on_a  = ($txt =~ /\s+on\s+a\b/gi);
+
+	$count{'donc'}  = scalar @donc;
+	$count{'alors'} = scalar @alors;
+	$count{'on a'}  = scalar @on_a;
+
+	#
+	# On compte les pages.
+	#
+
+	my $log = "$path/main.log";
+	if (! -f $log) {
+		system "cd $path && latex --interaction=batchmode main.tex";
+	}
+	my $pages;
+	local *LOG;
+	open LOG, $log;
+	while (<LOG>) {
+		next unless (/Output written on main\./);
+		chomp;
+		$pages = $_;
+	}
+	close LOG;
+	$pages =~ s{^.*\((\d+).*$}{$1};
+
+	$count{'pages'} = $pages;
+	if (! $copies) { # Annales: page de présentation + indications
+		$count{'pages'} = $pages - 2;
+	}
+	if ($count{'pages'} <= 0) {
+		$count{'pages'} = 1;
+	}
+
+	return %count;
+}
+
+sub approx {
+	my $res = int($_[0]*10)/10;
+	if ($res !~ /\./) {$res .= ".0"}
+	return $res;
+}
+
+sub left_complete {
+	my $string = $_[0];
+	my $full = $_[1];
+	substr($string,0,0) = " " x ($full - length($string));
+	return $string;
+}
+
+sub right_complete {
+	my $string = $_[0];
+	my $full = $_[1];
+	$string .= " " x ($full - length($string));
+	return $string;
+}
+
+# Principe: les auteurs travaillent dans des environnements variés, notamment 
+# Linux, Mac OS et Windows. Leurs terminaux peuvent utiliser l'UTF8, le Latin1 
+# ou encore autre chose. Pour s'adapter à cette diversité, on peut afficher 
+# dans trois modes: latin1 (c'est le codage d'origine des messages), utf8 ou
+# ascii. La routine 'codage' renvoie le codage à utiliser.
+
+sub codage {
+	my $config_file = "../data/config";
+	(! -f $config_file) and return "ascii";
+
+	my $codage;
+	open CFG, $config_file;
+	while (<CFG>) {
+		if (/^\s*codage\s*=\s*(.*)\s*$/) {
+			$codage = $1;
+		}
+	}
+	close CFG;
+
+	$codage ||= "ascii";
+	return $codage;
+}
+
+# Principe: au lieu de tester dans chaque routine quel est le codage, on 
+# renvoie vers cette routine qui se charge de convertir comme il faut.
+
+sub encode {
+	my $texte = shift();
+	my $codage = &codage();
+
+	if ($codage =~ /utf8/) {
+		$texte = &latin2utf8($texte);
+	}
+	elsif ($codage =~ /ascii/) {
+		$texte = &latin2ascii($texte);
+	}
+
+	return $texte;
+}
+
+sub Print {
+	my $texte = join('', @_);
+	print &encode($texte);
+}
+
+sub Die {
+	my $message = shift();
+	my (undef, $progname, $line, $functionname)  = (caller 1);
+
+	# 1er cas: on est appelé depuis le corps d'un programme.
+	# Il faut diminuer de 1 la profondeur.
+	if ($progname . $line . $functionname eq '') {
+		(undef, $progname, $line)  = (caller 0);
+		#die(&encode("[$progname, line $line]\n$message\n"));
+		die(&encode("$message\n"));
+	}
+
+	# 2e cas: on est appelé depuis une (sous-)*routine.
+	else {
+		$functionname =~ s#^main\:\:##;
+		die(&encode("[$progname -> $functionname, line $line] -> \n$message\n"));
+	}
+}
+
+sub Wrap {
+	my $texte = shift();
+	print wrap("\t","\t",&encode($texte)), "\n";
+}
+
+
+sub latin2ascii {
+	my $ascii = $_[0];
+	$ascii =~ tr/ àâäéêëèîíïôöòóûüùÿç/ aaaeeeeiiioooouuuyc/;
+	$ascii =~ tr/ÀÂÄÉÊËÈÎÍÏÔÖÒÓÛÙÇ/AAAEEEEIIIOOOOUUC/;
+	$ascii =~ tr/°¹²³/o123/;
+	return $ascii;
+}
+
+sub latin2utf8 {
+	my $latin = shift();
+	my @letters = split('', $latin);
+	my @utf8;
+
+	my %L2U = &L2U();
+	foreach my $L (@letters) {
+		my $U = (defined $L2U{$L}) ? $L2U{$L} : $L;
+		push @utf8, $U;			
+	}
+
+	return join('', @utf8);
+}
+
+# Le hachage %L2U peut être construit automatiquement, si on a besoin de le 
+# mettre à jour ou de le passer en utf16 ou utf32: il suffit de mettre les
+# lettres en latin1 chacune sur une ligne dans un fichier lettres.latin1, 
+# de le copier en lettres.utf et d'appeler « recode l1..utf8 lettres.utf ».
+# Un script peut alors recoller les morceaux et produire automatiquement
+# le hachage.
+
+sub L2U {
+	my %L2U = (
+
+		' ' => 'Â ',
+
+		'à'	=> 'Ã ',
+		'á' => 'Ã¡',
+		'â' => 'Ã¢',
+		'ä' => 'Ã¤',
+		'ã' => 'Ã£',
+		'å' => 'Ã¥',
+		'À' => 'Ã€',
+		'Á' => 'Ã',
+		'Â' => 'Ã‚',
+		'Ä' => 'Ã„',
+		'Ã' => 'Ãƒ',
+		'Å' => 'Ã…',
+
+		'é' => 'Ã©',
+		'è' => 'Ã¨',
+		'ê' => 'Ãª',
+		'ë' => 'Ã«',
+		'É' => 'Ã‰',
+		'È' => 'Ãˆ',
+		'Ê' => 'ÃŠ',
+		'Ë' => 'Ã‹',
+
+		'î' => 'Ã®',
+		'ï' => 'Ã¯',
+		'í' => 'Ã­',
+		'ì' => 'Ã¬',
+		'Î' => 'ÃŽ',
+		'Ï' => 'Ã',
+		'Í' => 'Ã',
+		'Ì' => 'ÃŒ',
+
+		'ò' => 'Ã²',
+		'ó' => 'Ã³',
+		'ô' => 'Ã´',
+		'ö' => 'Ã¶',
+		'õ' => 'Ãµ',
+		'Ò' => 'Ã’',
+		'Ó' => 'Ã“',
+		'Ô' => 'Ã”',
+		'Ö' => 'Ã–',
+		'Õ' => 'Ã•',
+
+		'ù' => 'Ã¹',
+		'ú' => 'Ãº',
+		'û' => 'Ã»',
+		'ü' => 'Ã¼',
+		'Ù' => 'Ã™',
+		'Ú' => 'Ãš',
+		'Û' => 'Ã›',
+		'Ü' => 'Ãœ',
+
+		'ÿ' => 'Ã¿',
+		'ý' => 'Ã½',
+		'Ý' => 'Ã',
+
+		'ç' => 'Ã§',
+		'ñ' => 'Ã±',
+		'Ç' => 'Ã‡',
+		'Ñ' => 'Ã‘',
+
+		'¼' => 'Â¼',
+		'½' => 'Â½',
+		'¾' => 'Â¾',
+		'¹' => 'Â¹',
+		'²' => 'Â²',
+		'³' => 'Â³',
+		'·' => 'Â·',
+		'×' => 'Ã—',
+		'÷' => 'Ã·',
+		'±' => 'Â±',
+		'ø' => 'Ã¸',
+		'µ' => 'Âµ',
+		'ß' => 'ÃŸ',
+
+		'«' => 'Â«',
+		'»' => 'Â»',
+		'°' => 'Â°',
+		'º' => 'Âº',
+		'©' => 'Â©',
+		'®' => 'Â®',
+		'§' => 'Â§',
+		'þ' => 'Ã¾',
+
+	);
+
+	return %L2U;
+}
+

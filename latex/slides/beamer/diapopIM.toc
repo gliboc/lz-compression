@@ -1,0 +1,13 @@
+\beamer@endinputifotherversion {3.36pt}
+\select@language {english}
+\beamer@sectionintoc {1}{Initial problem: Sparse-split link stream editing}{3}{0}{1}
+\beamer@subsectionintoc {1}{1}{Link streams and edition}{3}{0}{1}
+\beamer@subsectionintoc {1}{2}{Sparse-split link stream editing problem}{6}{0}{1}
+\beamer@subsectionintoc {1}{3}{Parameterised complexity}{9}{0}{1}
+\beamer@sectionintoc {2}{Kernelization algorithm for SS-Dyn}{11}{0}{2}
+\beamer@subsectionintoc {2}{1}{Rule Graph}{12}{0}{2}
+\beamer@subsectionintoc {2}{2}{Rule Neighbourhood}{14}{0}{2}
+\beamer@subsectionintoc {2}{3}{Rule Reduce}{16}{0}{2}
+\beamer@sectionintoc {3}{Generalising our results}{18}{0}{3}
+\beamer@subsectionintoc {3}{1}{Analysis: Interesting link-stream properties}{18}{0}{3}
+\beamer@subsectionintoc {3}{2}{Synthesis: Similar problems}{22}{0}{3}
