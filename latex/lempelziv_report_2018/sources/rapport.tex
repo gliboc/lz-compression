@@ -48,44 +48,50 @@ process :
  by plotting their differences for a large range of values of $n$, and
  a constant number of experiments $n_{\text{exp}}$.
 \end{itemize}
+
+%TODO
+\subsection{ Implementation }
+
+	\subsubsection{ Code overview }
  
-%  \subsection{Example histogram}
-%  This histogram represents the counts of the different 
-%  values taken by $M_n$ for $n=10^6$. 
-%  Each tick on the x-axis is a data point.
+ \subsection{Example histogram}
+ This histogram represents the counts of the different 
+ values taken by $M_n$ for $n=10^6$. 
+ Each tick on the x-axis is a data point.
  
-%  \centers{
-%   \begin{minipage}{7cm}
+ \centers{
+  \begin{minipage}{7cm}
    
     		
-%         \includegraphics[width = 7cm,
-%         				    trim = 27cm 0 0 0,
-%         				    	clip=true]{M_n_raw_10e6_500.png}	
+        \includegraphics[width = 7cm,
+        				    trim = 27cm 0 0 0,
+        				    	clip=true]{M_n_raw_10e6_500.png}	
        
     
-% 	\end{minipage}
-% }
+	\end{minipage}
+}
 
 	\subsection{Empirical normalization}
- Using the empirical mean ($\mu$) and variance ($\sigma^2$) of the dataset to normalize $M_n$,
- this is a plot of the normalized distribution, compared to the normal distribution 
- in red :
- \centers{
-  \begin{minipage}{6cm}
-        \includegraphics[width = 6cm,
+\begin{minipage}{\textwidth-7cm}
+	Using the empirical mean ($\mu$) and variance ($\sigma^2$) of the dataset to normalize $M_n$,
+	this is a plot of the normalized distribution, compared to the normal distribution 
+	in red :
+\end{minipage}
+  \begin{minipage}[m]{7cm}
+        \includegraphics[width = 7cm,
         				    trim = 26.7cm 0 0 30,
         				    	clip=true]{./figs/empirical_normalization_10e6_500.png}	
 	\end{minipage} 
-}
+
 	\noindent
 	 and its cumulative distribution function in green, compared to the normal one in red:
- 	\centers{
- 	 \begin{minipage}{7cm}
+ 	
+ 	 \begin{minipage}[t]{7cm}
         \includegraphics[width = 7cm,
         				    trim = 27cm 0 0 32,
         				    	clip=true]{./figs/cdf_1e6_500.png}
 	\end{minipage} 
-	}
+	
 	
 	These simulations and figures strongly indicate that the general distribution
 	of $M_n$ respects the central limit theorem. We now experiment with

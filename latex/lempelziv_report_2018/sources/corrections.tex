@@ -1,0 +1,71 @@
+\question{Corrections}
+
+\begin{itemize}
+
+\item The formal definition of ${D_n}^{\text{LZ}}$ in $\numero{3}$ is 
+      misleading because it contradicts the previous verbal definition.
+      For $w$ a word of size $n$, the formula
+      \centers{$ \f{1}{M_n(w)} \Sum{j=0}{M_n(w)-1} |{u_j}^{\text{LZ}}|$}
+      would rather be the empirical average length of a phrase in the Lempel-Ziv
+      parsing of a word ${\barre D_n}^{\text{LZ}}$, whereas
+      ${D_n}^{\text{LZ}}$ is used in the rest of the paper as the length
+      of a randomly selected phrase. These two aren't equal :
+      if we build a Lempel-Ziv DST from a word, then 
+      ${D_n}^{\text{LZ}}$ can be seen as the depth of a random node, 
+      which is different from the average path length computed 
+      on all the nodes. 
+
+\item In \emph{Remark 2}, I think the definition of $v$ and 
+      $t$ should rather be 
+      $ v = a_{i'} \dots a_{i} $ and
+      $ t = a_{i+1} \dots a_n$. 
+
+\item The result $\numero{14}$ should be an equality, and it is one indeed
+      because of the flexible parsing algorithm. A proof by contradiction
+      can show this. However, since we upperbound $g(j)$ by $\pinf$ in 
+      $\numero{23}$ there might be no purpose to using $\numero{14}$ 
+      instead of just $\numero{13}$. 
+      % Furthermore, an equality is 
+      % needed to establish result $\numero{22}$.
+
+\item The proof around \emph{Theorem 1} has several flaws.
+      The notation $X$ for a sequence depending on $n$ and not a 
+      random variable is misleading. On the other hand, it should appear
+      that both $g$ and $j$ are random variables, as the randomness of 
+      $j$ is used in the end of the proof.
+      I wrote some possible definitions \hyperlink{definitions}{here},
+      and applied them to make some computations that seemed otherwise
+      incorrect because of their use of randomness outside of a probability
+      measure (\hyperlink{computations}{here}).
+
+\item As for the arguments that 
+      link $|L_{g(j)-k}|$ to ${D_n}^{\text{LZ}}$, I have
+      indicated how I think they could be developped in 
+      \hyperlink{critics}{this part.} These arguments
+      are the most controversial part right now I think.
+
+\item \emph{Theorem 2} is false as stated: we proved \emph{Theorem 1}
+      using a random $j$. The randomness remains, so the quantifier
+      'for any $j < M_n$' should be removed. This would be true for 
+      \emph{Theorem 1} too.
+
+\item The proof of \emph{Theorem 2} may stop at $\numero{26}$
+      since we can directly prove this upperbound goes to $0$.
+      This yields a tighter upperbound for \emph{Theorem 2}.
+      I detailed this analysis in the 
+      \hyperlink{upperbound}{last part of this report.}
+
+\item In that same proof, the step between $\numero{25}$ and 
+      $\numero{26}$ relies heavily on a result from $\pac{6}$.
+      A bit more context on this result (and why it does apply here)
+      would make things clearer.
+
+\item The conclusion claims to use \emph{Cramer's} theorem to link
+      \centers{$\underset{ 0 \leq k \leq g_{\scriptscriptstyle W}(J) }{ \max } 
+                    \left\{ { L_{g_{\scriptscriptstyle W}(J)-k} - k } \right\}$}
+      to ${D_n}^{\text{FLEX}}$, which is a sum of random variables.
+      Since \emph{Cramer} applies to independent random variables and the 
+      lengths of successive phrases are not independent, something must be missing 
+      there.
+      
+\end{itemize}

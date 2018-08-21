@@ -1,14 +1,13 @@
 """Functions to treat data from experiments"""
-import numpy as np
-from markov import markov_source2
-from lempelziv import compress2
-from progress.bar import Bar
 from glob import glob
+import numpy as np
 from tails import get_summary
 
 def show_single_sims(filename):
+    """Loads one simulation datafile, and outputs information about it.
+    """
 
-    exps, summ = np.load(filename)
+    exps, _ = np.load(filename)
 
     input("Data file {} contains {} experiments with chain {}".format(filename, len(exps), exps[0]["M"]))
     print("These are their lengths:")
@@ -16,6 +15,9 @@ def show_single_sims(filename):
 
 
 def show_all_sims(dirname):
+    """Loads all simulation files in a directory to output information
+    about them.
+    """
 
     names = glob(dirname + '*.npy')
     print(names)
@@ -49,6 +51,10 @@ def union(sims1, sims2):
 
 
 def add_all(filename, new=False):
+    """Add words to all experiments in a simulation that
+    was saved into <filename>, using the same Markov chain.
+    """
+
     from parallel_tails import parallel_simu
 
     sims1 = np.load(filename)
@@ -75,6 +81,10 @@ def add_all(filename, new=False):
 
 
 def recompute(filename):
+    """Compute again the different mean estimations
+    measured for a set of experiments, which are
+    saved in the 'summary' structure."""
+
     sims = np.load(filename)
 
     new_sims = []
@@ -82,6 +92,7 @@ def recompute(filename):
         new_sims.append(get_summary(exps))
 
     np.save(filename, new_sims)
+
 
 if __name__ == "__main__":
 

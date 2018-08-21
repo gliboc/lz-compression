@@ -1,0 +1,140 @@
+\section{ Introduction }
+
+\emph{Data compression}, also called \emph{source coding}, or \emph{bit-rate reduction} involves encoding information using fewer bits than the original representation.
+
+\subsection{ Introduction to the problem }
+
+Data compression is achieved by different types of algorithms, and it can either
+be lossy or lossless. In order to study it precisely, we define a data compression
+scheme. First, we define an algorithm which operates on words. Then, we introduce
+a probabilitic model for the data to be compressed, which allows us to quantify
+the efficiency of our algorithm.
+
+\subsubsection{ Probabilistic models }
+
+\begin{df}
+    \label{def:source}
+    Let $\mathcal{A}$ be an alphabet.
+    An \emph{information source} is a one-sided infinite sequence of random
+    variables $(X_k)_{k=1}^{\pinf}$ with each $X_k$ 
+    having values in $\mathcal{A}$.
+\end{df}
+
+\begin{rmk}
+    \label{rmk:sequence}
+    Each realization of an information source is called a 
+    \emph{sequence} or \emph{word}.
+\end{rmk}
+
+\begin{rmk}
+    \label{rmk:source}
+    \emph{Defining} the law of the $X_k$ produces out different
+    models for data generation which can be studied mathematically
+    and \emph{simulated}.
+\end{rmk}
+
+\begin{df}
+    \label{def:memoryless}
+    A \emph{memoryless source} is an \emph{information source}
+    for which the $X_k$ are mutually independent, following
+    the uniform law on $\mathcal{A} = \{ a_1, \dots, a_V \}$ :
+    \centers{$
+        \proba{} \left( X_k = a_k \right) = p_k 
+        \qquad \textmd{with } \,\Sum{i=1}{V} \,p_i = 1
+    $}
+\end{df}
+
+\begin{rmk}
+    \label{rmk:memoryless}
+    This is the simplest information source and it has been 
+    studied successfully in the past, but it is not a realistic 
+    model. We replace it with the following Markov model whenever 
+    possible.
+\end{rmk}
+
+\begin{df}
+    \label{def:markov}
+    A \emph{Markov source} is an \emph{information source}
+    with a Markov dependency between successive symbols.
+\end{df}
+
+\begin{df}
+    \label{def:markovorder}
+    A \emph{Markov source of order $r$} is a Markov source
+    for which each symbol apparition depends on the previous 
+    $r$ symbols.
+\end{df}
+
+\begin{rmk}
+    \label{rmk:markov2}
+    We will study Markov sources of order 1 - where each
+    symbol simply depends on the previous one. This is 
+    general enough, as Markov sources of superior order
+    can be simulated by expanding the alphabet and 
+    using a Markov source of order 1.
+\end{rmk}
+
+
+\subsubsection{ Lempel-Ziv 78 }
+
+In general, Lempel-Ziv algorithms exploit previously seen 
+redundancy to save off coding space. The Lempel-Ziv 78 does
+so by constructing a prefix tree which allows to describe 
+parts of a word by referring to previously seen phrases.
+
+%TODO write algorithm
+
+
+
+\subsubsection{ Probabilistic analysis }
+
+Under this context, we can define and conduct a thorough
+analysis of several random variables with different meanings
+regarding the effectiveness of compression.
+
+\begin{nota}
+    \label{nota:universe}
+    Let $n$ be an integer - the size of the considered words.
+    Defining $\Omega_n$ the set of words of size $n$ on alphabet
+    $\mathcal{A}$. Each word being an event, a natural probability
+    space is given by considering the output of size $n$ of a Markov
+    source.
+\end{nota}
+
+\begin{rmk}
+    \label{rmk:probaspace}
+    We will now study random variables defined 
+    on this probability space. 
+\end{rmk}
+
+\begin{nota}
+    \label{nota:output}
+    The output of a Markov process is denoted by 
+    the random variable $W$.
+\end{nota}
+
+\begin{nota}
+    \label{nota:numberphrases}
+    The \emph{number of phrases} used to compress a word $W$ with
+    LZ78 is given by $M_n(W)$ or simply $M_n$.
+\end{nota}
+
+\begin{rmk}
+    \label{rmk:numberphrases}
+    This is one of the most important variables to consider because,
+    as it will appear shortly, it is closely tied to the \emph{compression 
+    ratio} of LZ78.
+\end{rmk}
+
+\begin{df}
+    \label{df:codelength}
+    The \emph{codelength} is the \emph{number of bits} required 
+    to encode the LZ78-compressed version of a word, denoted by $C(W)$.
+\end{df}
+
+\begin{df}
+    \label{df:compratio}
+    The \emph{compression ratio} is the ratio between the 
+    codelength and initial size of a word, $\f{C(W)}{|W|}$.
+\end{df}
+

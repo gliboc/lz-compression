@@ -5,7 +5,7 @@ Having a Markov source m_iter()
 
     - Receive integer n
     - Initialize DST T
-    - Do n times:  
+    - Do n times:
         - Generate a sequence from m_iter(). Our source therefore needs to be a callable iterator.
         - Stop when this sequence has not been seen previously in the DST
         - Add this new phrase to T
@@ -262,7 +262,6 @@ if __name__ == "__main__":
     if sys.argv[1] == "-s":
         ns = list(range(10, 10000 + 10, 10))
         n_exp = 700
-
         sims = run_range_simulation(n_exp, ns, "0")
 
         np.save(sys.argv[2], (sims, ns))
@@ -281,16 +280,18 @@ if __name__ == "__main__":
 
     ns = list(ns)
     print(ns)
-    n_exp = sims[0][1]["n_exp"]
+    
 
     print_summary(sims[0][1])
 
     import matplotlib.pyplot as plt
     import seaborn as sns
 
+    n_exp = sims[0][1]["n_exp"]
     double_plot(
         1, sims, ns, n_exp, "var_tnc", "var_lnc", r"$Var({T_n}^c)$", r"$Var({L_n}^c)$"
     )
+
     simple_plot_fit(3, sims, ns, n_exp, "cov_tnclnc", r"$Cov({T_n}^c, {L_n}^c)$")
     simple_plot_fit(4, sims, ns, n_exp, "cov_estimator", r"$Cov({T_n}^c, {L_n}^c)$")
     double_plot(2, sims, ns, n_exp, "mean_tnc", "mean_lnc", r"${T_n}^c$", r"${L_n}^c$")

@@ -1,0 +1,57 @@
+\hypertarget{computations}{\centers{\question{Computations}}} With these definitions, 
+we can do the formal computations at the beginning 
+of the proof of \emph{Theorem 1}.
+By conditionning on $W$ and $J$, we obtain
+
+\begin{calculs}
+        & \proba{ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
+        \left\{ { B_{J, W}^k - k } \right\} > {b_n}^{\delta} }
+            &=& \Sum{w \in \Omega_n}{} \Sum{j \in \mathbb{N}^{\star}}{} \,
+                \proba{ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
+        \left\{ { B_{J, W}^k - k } \right\} > {b_n}^{\delta}, W=w, J=j } \\[5mm]
+            
+            &&=& \Sum{w \in \Omega_n}{} \Sum{j \in \mathbb{N}^{\star}}{} \,
+                \proba{ \union{k=0}{g_w(j)} \left\{ B_{w, j}^k > k + {b_n}^{\delta} \right\} 
+                            ,W=w, J=j }\\[5mm]
+            
+            &&\leq&
+                \Sum{w \in \Omega_n}{} \Sum{j \in \mathbb{N}^{\star}}{}
+                \Sum{k=0}{g_w(j)} 
+                \proba{ B_{w, j}^k > k + {b_n}^{\delta}, W=w, J=j } \\[5mm]
+            
+            &&\leq&
+                \Sum{w \in \Omega_n}{} \Sum{j \in \mathbb{N}^{\star}}{}
+                \Sum{k=0}{\pinf} \,
+                \proba{ B_{w, j}^k > k + {b_n}^{\delta}, W=w, J=j }
+                 \\[5mm]
+
+            &&=&
+                \Sum{k=0}{\pinf}
+                \Sum{w \in \Omega_n}{} \Sum{j \in \mathbb{N}^{\star}}{} \,
+                \proba{ B_{w, j}^k > k + {b_n}^{\delta}, W=w, J=j }
+                 \\[5mm]
+
+            &&=&
+                \Sum{k=0}{\pinf} \,
+                \proba{ B_{W, J}^k > k + {b_n}^{\delta} } \\
+\end{calculs}
+
+
+
+
+\noindent
+For all $k\in\mathbb{N}$, we may now prove that
+    \centers{
+        $ \proba{ B_{J, W}^k > k + {b_n}^{\delta} } 
+            \leq \proba{ {D_n}^{\text{LZ}} > k + {b_n}^{\delta} } $
+    }
+
+
+
+
+
+
+
+
+
+

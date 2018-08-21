@@ -1,0 +1,96 @@
+Now, I'm trying to compute the variance using the formula from	Jacquet and Szpankowski, 
+	\textit{Average profile of the Lempel-Ziv parsing scheme for a markovian source},
+	using the formula for the variance $V_n$ :
+	
+	\centers{$V_n = \f{1}{h^3} \pa{
+                -\f{\beta}{\omega} 
+                -\f2{\omega} \pi \dot{Q}^{\star} \psi 
+                -h^2 } \log(m) $}
+	
+This formula is obtained in the Markov independent model, so
+$m$ is the number of sequences with which
+we build a DST. Therefore, in my case, I would take
+
+\centers{$ m \sim \f{n h}{\log(n)} $}
+
+I computed the other terms from the general case as follows : 
+
+	\begin{egalites}
+	Since 
+		& Q(s) & \begin{matrice}
+							1 - {p_{0 0}}^{-s} & -{p_{0 1}}^{-s}  \\
+							-{p_{1 1}}^{-s} & 1 - {p_{1 1}}^{-s}  \\
+						  \end{matrice} \\[5mm]
+	then
+		& Q'(s) & \begin{matrice}
+							\ln(p_{0 0}) {p_{0 0}}^{-s} & \ln(p_{0 1}) {p_{0 1}}^{-s}  \\
+							\ln(p_{1 0}) {p_{1 1}}^{-s} & \ln(p_{1 1}) {p_{1 1}}^{-s}  \\
+						  \end{matrice} \\[5mm]
+	and
+		& Q''(s) & \begin{matrice}
+							-\ln^2(p_{0 0}) {p_{0 0}}^{-s} & -\ln^2(p_{0 1}) {p_{0 1}}^{-s}  \\
+							-\ln^2(p_{1 0}) {p_{1 1}}^{-s} & -\ln^2(p_{1 1}) {p_{1 1}}^{-s}  \\
+						  \end{matrice} \\[5mm]
+	hence 
+		& \det Q''(s)
+			&  {(p_{0 0}\, p_{1 1})}^{-s} \ln^2 p_{0 0} \cdot \ln^2 p_{1 1}
+				- {(p_{0 1}\, p_{1 0})}^{-s} \ln^2 p_{0 1} \cdot \ln^2 p_{1 0} \\
+	\end{egalites}
+
+	\leftencadre
+		{therefore}
+		{$ \beta = \rest{\pac{\det Q''(s)}}{s=-1} = p_{0 0}\, p_{1 1} \ln^2 p_{0 0} \cdot \ln^2 p_{1 1}
+				- p_{0 1}\, p_{1 0} \ln^2 p_{0 1} \cdot \ln^2 p_{1 0} $}
+
+	\begin{egalites}
+	After that, with
+		& {Q^\star}(s) & \begin{matrice}
+							1 - {p_{1 1}}^{-s} & {p_{0 1}}^{-s}  \\
+							{p_{1 0}}^{-s} & 1 - {p_{0 0}}^{-s}  \\
+						  \end{matrice} \\[5mm]
+	which gives
+		& {\dot{Q}^\star}(s) & \begin{matrice}
+							\ln(p_{1 1}) {p_{1 1}}^{-s} & - \ln(p_{0 1}) {p_{0 1}}^{-s}  \\
+							- \ln(p_{1 0}) {p_{1 0}}^{-s} & \ln(p_{0 0}) {p_{0 0}}^{-s}  \\
+						  \end{matrice}
+	\end{egalites}
+
+	\leftencadre
+		{then}
+		{$ \pi \dot{Q}^{\star} \psi =
+			\pi_0 \, p_{1 1} \, \ln (p_{1 1}) 
+			- \pi_1 \, p_{1 0} \ln (p_{1 0})
+			- \pi_0\, p_{0 1} \ln (p_{0 1}) \\
+			 	  + \pi_1 \, p_{0 0} \ln (p_{0 0})$}
+
+	Finally since $Q^\star = \omega \Pi$
+with $\Pi = \begin{matrice} \pi_0 & \pi_1 \\
+							\pi_0 & \pi_1 
+			\end{matrice}$, then in particular 
+			
+	\centers{$1 - p_{0 0} = q_{0 0}^\star = \omega \pi_0 = \omega \f{ p_{1 0}}{p_{1 0} + p_{0 1}}$}
+
+    \leftencadre
+		{so}
+		{$ \omega = \f{ (p_{0 1} + p_{1 0}) \, (1 - p_{1 1})}
+						  { p_{1 0} } = p_{0 1} + p_{1 0} $}
+
+
+\begin{tabular}{lrrrrrrrr}
+\toprule
+{} &  2o/pqpsi &         V\_n &  beta/omega &       h\textasciicircum2 &  h\textasciicircum3 values &      logs &    omegas &        unhs \\
+\midrule
+0 &           -0.096184 &   17.562029 &   -0.623749 &  0.220193 &    0.103325 &  3.631080 &  0.802159 &    9.678203 \\
+1 &            0.489107 &    4.683284 &   -0.868024 &  0.234073 &    0.113247 &  3.661644 &  0.434225 &    8.830250 \\
+2 &           -0.496605 &  747.846171 &   -0.388158 &  0.019911 &    0.002810 &  2.429464 &  0.831697 &  355.926183 \\
+3 &            0.001069 &    0.926064 &   -0.501488 &  0.433778 &    0.285694 &  3.970094 &  0.997360 &    3.500248 \\
+4 &            0.934518 &   -6.943693 &   -0.965841 &  0.167062 &    0.068283 &  3.493010 &  0.294606 &   14.644827 \\
+5 &           -0.039947 &    3.287372 &   -0.434456 &  0.319125 &    0.180277 &  3.816619 &  1.407304 &    5.547010 \\
+6 &            0.044734 &   -0.079016 &   -0.513799 &  0.475516 &    0.327905 &  4.016028 &  0.931207 &    3.049666 \\
+7 &            0.088811 &   -0.104380 &   -0.547647 &  0.467153 &    0.319292 &  4.007156 &  0.871306 &    3.131927 \\
+8 &            0.169804 &    1.038286 &   -0.474413 &  0.266313 &    0.137432 &  3.726165 &  1.250839 &    7.276301 \\
+9 &           -0.253274 &   68.726370 &   -0.569139 &  0.105030 &    0.034039 &  3.260952 &  0.837022 &   29.378420 \\
+\bottomrule
+\end{tabular}
+
+
