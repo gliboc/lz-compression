@@ -1,0 +1,90 @@
+\titre{ Multiple approaches to Lempel-Ziv compression algorithm }
+% Veuillez ne pas modifier ce titre SVP.
+% En cas de doute, pr�venez votre coordinateur.
+% Compilez par: "latex main.tex".
+
+\tableofcontents
+
+\newpage
+
+\Indications
+\medskip
+
+	\centers{\textbf{Partie III}}
+
+\begin{indications}{III.1} % Remplacer IV.A.2 par la cha�ne de caract�res
+                            % la plus longue dans les \item
+
+\item[III.1] For a curated list, and some visualizations, see my blog
+             article \url{blog.lol}{here}.
+
+\item[III.2] The code used to do these simulations is available 
+    in this github repository \url{github.com/gliboc/markus}{here}.
+
+
+\end{indications}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+
+% Un aide-m�moire des symboles math�matiques est disponible en ligne:
+% http://auteurs.h-k.fr/annales/Doc/aide-memoire/symboles-mathematiques.pdf
+
+\section*{Introduction to Lempel-Ziv}
+    \subsection*{The algorithm}
+
+\section{On the quest for optimal compression : algorithmic improvements}
+    \subsection{What can be done according to information theory}
+    \subsection{Information sources}
+        Memoryless (M), Markov (MS), Dynamic (DS)
+        Maybe even bounded sth ?
+    \subsection{Why Markov sources are good for real world case}
+        Language
+        Programs as finite state automata. Human usage determines
+        which branches are taken, at which frequency.
+    \subsection{Flexible Parsing}
+
+\section{Combinatorial analysis applied to algorithms}
+    \subsection{Mathematical tools}
+        Depoissonization, Mellin transform, the matrix P(s)
+        and its Frobenius eigenvalue
+    \subsection{Their limits}
+        The open conjecture (for 50 years) that Lempel-Ziv
+        obeys CLT, although my simulations show that it is
+        true with little doubt.
+
+\section{Lempel-Ziv 78 in practice}
+    \subsection{Philosophical problematics}
+        Compression = knowledge contained
+        This is why compression is tied to entropy etc.
+    \subsection{Business problematics}
+        Counterpart
+        Tradeoff speed / efficiency
+    \subsection{Most important implementations and use cases}
+        DIVANS at Dropbox
+        Brotli
+        etc.
+        Write a blog article comparing these algorithms,
+        or find one. Use your own data generated with 
+        Markov sources.
+        The "modular" approach by DIVANS => write a module 
+        for them with vanilla LZ78 or sth ?
+        
+\section{Markov sources simulation}
+    \subsection{Input simulation : Markov sources}
+        Difficulties, solutions
+    \subsection{Related asymptotics}
+    \subsection{Future results}
+        Jacquet's paper 
+
+
+
+\begin{remarque}
+
+\noindent C'est ainsi que l'on fait une remarque hors corrig�.
+
+\end{remarque}
+
+
+% Pas de \end{document} ici: voir 'main.tex'

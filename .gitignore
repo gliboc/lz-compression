@@ -6,6 +6,8 @@
 .vscode
 *.ps
 *.png
+*.sty
+latex/*
 test.py
 __pycache__/*
 papier_flexible/*

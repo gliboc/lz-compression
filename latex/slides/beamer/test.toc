@@ -1,5 +1,0 @@
-\beamer@endinputifotherversion {3.36pt}
-\select@language {english}
-\beamer@sectionintoc {1}{Generalising our results}{3}{0}{1}
-\beamer@subsectionintoc {1}{1}{Analysis: Interesting link-stream properties}{3}{0}{1}
-\beamer@subsectionintoc {1}{2}{Synthesis: Similar problems}{7}{0}{1}

@@ -1,8 +1,12 @@
+
 all:
-	if [ ! -d "target" ]; then
-		mkdir target
-	fi
+	# if [ ! -d "target" ]; then
+	# 	mkdir target
+	# fi
 	latexmk -outdir=target -pdf -bibtex report.tex
+	# if [ ! -L "rapport.pdf" ]; then
+	# 	ln -s target/report.pdf rapport.pdf
+	# fi
 	mupdf rapport.pdf
 
 plan:
