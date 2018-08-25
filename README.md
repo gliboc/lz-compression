@@ -21,20 +21,22 @@ The repository contains:
 
 - Jupyter notebooks which were used to compute some expressions
   or experiment with the subject
-    - `computing_lambda.ipynb`
+    <!-- - `computing_lambda.ipynb`
     - `datastructure_experiment.ipynb`
     - `markov_julia.ipynb`
     - `parallel_tails.ipynb`
     - `pi_computation.ipynb`
     - `tail_symbols.ipynb`
-    - `variance_expression.ipynb`
+    - `variance_expression.ipynb` -->
 
-- Two LaTeX source repositories without the style file needed
-  for compilation, though they both contain a compiled version :
+- Three LaTeX source repositories _without the style file needed
+  for compilation_, though they might contain a compiled version :
     - `rapport_jacquet` is a report on my numerical
       simulations
     - `flexible_paper` is a report on a paper doing an analysis of
       the Flexible Parsing algorithm
+    - `tails_report_2018` is a report on tail symbols analysis
+    - `lempelziv_report_2018` is my internship report
 
 
 ## Requirements 
@@ -45,12 +47,12 @@ in Julia might be encountered too.
 ## Install
 
 - Recommended, using [pipenv](https://docs.pipenv.org/)
-    
+  
         pipenv shell
         pip install -r requirements.txt
 
 - else, using pip
-    
+  
         pip install -r requirements.txt --user
 
 ## Usage
