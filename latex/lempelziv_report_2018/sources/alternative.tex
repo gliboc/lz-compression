@@ -1,6 +1,7 @@
 
 \subsection{Using the Frobenius eigenvalue of $P(s)$}
 
+
 In walking towards the end-goal of proving the Central Limit
 Theorem for $M_n$ and Markov sources, a major step is finding
 an expression that fits $V_n$ well enough. The candidate we
@@ -30,6 +31,7 @@ compute the exact expressions needed for simulation:
     \label{def:frob}
 \end{df}
 
+\noindent
 Ignoring the difficult steps it took to obtain it in~\cite{jacquet_average_2001},
 this is the variance expression:
 
@@ -41,7 +43,11 @@ In~\cite{jacquet_average_2001},
     {$ \ddot{\lambda}(-1) = \pi \ddot{P}(-1)\psi
                         + 2 \dot{\pi}(-1) \dot{P}(-1) \psi
                         - 2 \dot{\lambda}(-1) \dot{\pi}(-1) \psi $}
-\noindent However, the relations defining $\pi(s)$ : 
+
+\noindent The vector $\pi(s)$, which coincides with the stationary
+distribution $\pi$ for $s=-1$, is defined as the left-eigenvector of 
+$\lambda(s)$ whose product with the right-eigenvector of $\lambda(s)$
+makes $\lambda(s)$, which is written:
    
         \centers{ $ \left\{
             \begin{array}{rl} \pi(s) P(s)  &= \lambda(s) \pi(s) \\
@@ -49,20 +55,21 @@ In~\cite{jacquet_average_2001},
                           \pi(s) \psi(s) &= \lambda(s) 
             \end{array}
                     \right. $}
-         
-did not seem to allow me to directly compute $\dot{\pi}(s)$ (it seemed like I need
-one more).
-Therefore, I computed $\lambda(s)$ as the greatest 
-eigenvalue of $P(s)$. Let $\chi$ the characteristic polynomial of $P(s)$,
-and $\Delta$ its discrimant
+
+\noindent
+However, I failed at computing $\pi(s)$ using these expressions - they did not seem to allow me to 
+directly compute $\dot{\pi}(s)$ as it seemed I needed one more to get rid of all the 
+unknowns. So I took another approach and directly computed $\lambda(s)$ as the greatest 
+eigenvalue of $P(s)$. Let $\chi$ be the characteristic polynomial of $P(s)$,
+and $\Delta(s)$ its discrimant:
 
 \centers{$ \chi = (X - {p_{0 0}}^{-s}) 
                   (X - {p_{1 1}}^{-s}) 
                     - (p_{0 1} \, p_{1 0})^{-s} $}
 
 \begin{egalites}
- and   & \Delta 
-        & (\poo + \pii)^2 - 4[\pooii - \poiio] \\[2mm]
+& \Delta(s)
+        & (\poo + \pii)^2 - 4[\pooii - \poiio] \\[1mm]
         && {p_{0 0}}^{-2s} 
                 + {p_{1 1}}^{-s} - 2\pooii + 4\poiio
 \end{egalites}
@@ -72,30 +79,30 @@ and $\Delta$ its discrimant
 where we need to decide which sign is the correct one :
 \encadre{$ \lambda(s) = \f{ \poo + \pii \pm \sqrt{\Delta(s)}}{2} $}
 
-Since
-\centers
-    {$\Delta(-1) 
+\noindent
+Since $\Delta(-1) 
         = (p_{0 0} + p_{1 1})^2 
                         - 2 p_{0 0} p_{1 1} 
                         + 4 p_{0 1} p_{1 0}
-        = (p_{0 0} + p_{1 1} - 2)^2 $}
-then $ \sqrt{ \Delta(-1) } = 2 - p_{0 0} - p_{1 1} = p_{0 1} + p_{1 0}$. 
+        = (p_{0 0} + p_{1 1} - 2)^2 $, then $ \sqrt{ \Delta(-1) } = 2 - p_{0 0} - p_{1 1} = p_{0 1} + p_{1 0}$. 
 Thus, picking the $+$ sign in the former expression, we verify that  
 \centers{$ \lambda(-1) =  \f{ p_{0 0} + p_{1 1} + \sqrt{ \Delta(-1) } }
                                                {2} = 1 $}
 
-Derivating
+\noindent Derivating
 \centers
     {$ \dot{\lambda}(s) = \f12 \left( -\ln p_{0 0}\, \poo - \ln p_{1 1}\, \pii + \f{ \Delta'(s) }{ 2 \sqrt{\Delta(s)} } \right) $}
 
-and the expression for $\Delta'(s)$
+with
+
 \begin{calculs}
     &\Delta'(s) 
         &=& - 2 \ln p_{0 0}\, \poodeux - 2 \ln p_{1 1}\, \piideux \\
         &&&                + 2 \ln (p_{0 0} p_{1 1})\, \pooii 
                         - 4 \ln (p_{0 1} p_{1 0})\, \poiio
 \end{calculs}
-gives
+
+\noindent gives
 
 \begin{calculs}
     &\Delta'(-1) 
@@ -105,18 +112,18 @@ gives
 \end{calculs}
 
 \noindent
-allowing to compute $\dot{\lambda}(-1)$. 
 Numerically, we verified that $ \dot{\lambda}(-1) = h $. Derivating again yields
 
 \begin{calculs}
     &\ddot{\lambda}(s) 
         &=& \f12 \Bigg( \ln^2 p_{0 0} \poo + \ln^2 p_{1 1} \pii \\
-        &&&  \qquad          + \f{ \Delta''(s) \sqrt{\Delta(s)} - \Delta'(s) \cdot \tf{\Delta'(s)}
+        &&&  \qquad \quad         + \f{ \Delta''(s) \sqrt{\Delta(s)} - \Delta'(s) \cdot \tf{\Delta'(s)}
                                                                             {2\sqrt{\Delta(s)}} }
                         {2\Delta(s)} \Bigg)
 \end{calculs}
 
 \noindent with
+
 \begin{calculs}
     &\Delta''(s) 
             &=& 4 \ln^2 p_{0 0}\, \poodeux + 4 \ln^2 p_{1 1}\, \piideux \\
@@ -124,12 +131,13 @@ Numerically, we verified that $ \dot{\lambda}(-1) = h $. Derivating again yields
                      + 4 \ln^2 (p_{0 1} p_{1 0})\, \poiio
 \end{calculs}
 
+\noindent
 Finally,
 
 \begin{calculs}
     &\ddot{\lambda}(-1) 
         &=& \f12 \Bigg( \ln^2 p_{0 0}\, p_{0 0} + \ln^2 p_{1 1}\, p_{1 1} \\
-        &&& \qquad + \f{ \Delta''(-1) \sqrt{\Delta(-1)} - \tf { {\Delta'(-1)}^2 }
+        &&& \qquad\quad + \f{ \Delta''(-1) \sqrt{\Delta(-1)} - \tf { {\Delta'(-1)}^2 }
                 {2\sqrt{\Delta(-1)}} } {2\Delta(-1)} \Bigg)
 \end{calculs}
 
@@ -141,19 +149,25 @@ might account for the tiny differences found for high $n$ values ($10^7$), altho
 this hasn't been verified. 
 
 \centers{
- 	 \begin{minipage}{11cm}
-        \includegraphics[width = 5cm,
+      \begin{figure}
+        \centering
+        \includegraphics[width = 7cm,
         				    trim = 0 0 16.5cm 0,
-        				    	clip=true]{./figs/eig_fig1.png}	
-	\end{minipage} 
+                                clip=true]{./figs/eig_fig1.png}	
+        \caption{Behavior of theoretical and standard deviations\\
+                    $n_{\text{exp}} = 400$}
+      \end{figure}
 	}
 
 \centers{
- 	 \begin{minipage}{11cm}
-        \includegraphics[width = 5cm,
+      \begin{figure}
+        \centering
+        \includegraphics[width = 7cm,
         				    trim = 18.5cm 0 0 0,
-        				    	clip=true]{./figs/eig_fig1.png}	
-	\end{minipage} 
+                                clip=true]{./figs/eig_fig1.png}
+        \caption{Difference between empirical and theoretical stds\\
+                    $n_{\text{exp}} = 400$}
+	\end{figure} 
 	}
 
 \pagebreak
@@ -162,19 +176,23 @@ our theoretical standard deviations, and empirical means. The blue plot is
 a gaussian fit for the simulation results, which also appear as a blue histogram.
 The two sets of figures are identical but obtained using different expressions.
 
-\noindent
- 	 \begin{minipage}{\textwidth}
-        \includegraphics[width = \textwidth,
+\centers{
+      \begin{figure}
+        \centering
+        \includegraphics[width = \linewidth,
         				    trim = 0 0.5cm 0 0,
         				    	clip=true]{./figs/eig_fig2.png}	
-	\end{minipage} 
+      \end{figure}
+} 
 
-\noindent
- 	 \begin{minipage}{\textwidth}
-        \includegraphics[width = \textwidth,
+\centers{
+      \begin{figure}
+        \centering
+        \includegraphics[width = \linewidth,
         				    trim = 0 0.5cm 0 0,
         				    	clip=true]{./figs/eig_fig3.png}	
-	\end{minipage} 
+     \end{figure}
+}
 
 
 \section{Conclusion}
@@ -205,16 +223,16 @@ very slowly with $n$. This might be a term that is negligible (\textit{i.e.} of
 order lower than $\tf{n}{\log_2^2(n)}$), or a small detail in the formula of $V_n$. 
 For example, the natural base logarithm (in $\tf{n}{\ln^2(n)}$) in the eigenvalue expression works slightly
 better than the one in base 2 (in $\tf{n}{\log_2^2(n)}$), with the inverse situation happening for the first 
-expression ($\sigma_{\text{Neininger}}$). Anyway, the figures obtained seem to 
+expression (${V_n}^{(1)}$). Anyway, the figures obtained seem to 
 indicate that we are close to the exact solution.
 
 \end{remarque}
 
 
 The code for these experiments, with detailed procedures for reproducibility,
-is hosted on GitHub in one of my private repositories (which I plan to make public
-eventually).
-Another (probably bad) way of computing $\lambda(s)$ is in appendix \ref{app:comp_lam1}. 
+is hosted on GitHub in one of my \href{github.com/gliboc/lz-compression}{public repositories}.
+Finally, another (probably bad) way of computing $\lambda(s)$ is in appendix \ref{app:comp_lam1}
+for curiosity.
 
 
 

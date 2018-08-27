@@ -3,18 +3,17 @@ all:
 	# if [ ! -d "target" ]; then
 	# 	mkdir target
 	# fi
-	latexmk -outdir=target -bibtex -pdf report.tex && mupdf rapport.pdf
+	latexmk -outdir=target -bibtex -pdf main.tex && mupdf rapport.pdf
 	# if [ ! -L "rapport.pdf" ]; then
-	# 	ln -s target/report.pdf rapport.pdf
+	# 	ln -s target/main.pdf rapport.pdf
 	# fi
 
-plan:
-	latexmk -outdir=target -pdf -bibtex main.tex
-	mupdf target/main.pdf
+debug:
+	latexmk -Werror -diagnostics -outdir=target -bibtex -pdf main.tex && mupdf rapport.pdf
 
 clean:
-	latexmk -c report.tex
-	cd target && latexmk -c -f report.tex
+	latexmk -c main.tex
+	cd target && latexmk -c -f main.tex
 
 cleanall:
 	latexmk -c

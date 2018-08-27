@@ -107,7 +107,7 @@ encoded in the following digital search tree:
     for which the $X_k$ are mutually independent, following
     the uniform law on $\mathcal{A} = \{ a_1, \dots, a_V \}$ :
     \centers{$
-        \proba{} \left( X_k = a_k \right) = p_k 
+        \proba{  X_k = a_k  } = p_k 
         \qquad \textmd{with } \,\Sum{i=1}{V} \,p_i = 1
     $}
 \end{df}
@@ -160,7 +160,7 @@ encoded in the following digital search tree:
         \label{prop:memorylessentropy}
         The entropy of a \emph{memoryless source} on 
         alphabet $\mathcal{A} = \{ a_1,\dots,a_V \}$ is:
-        \centers{$ \Sum{i=1} p_i \log p_i$}
+        \centers{$ \Sum{i=1}{} p_i \log p_i$}
     \end{prop}
 
     \begin{prop}
@@ -168,7 +168,7 @@ encoded in the following digital search tree:
         The entropy of a \emph{Markov source} with probability
         $(p_{i j})_{(i, j) \in { \{1,\dots,V\} }^2} $ and a 
         stationary distribution $(\pi_1, \dots, \pi_V)$ is:
-        \centers{$ h = \Sum{i=1} \pi_i \Sum{j=1} p_{i j} \log p_{i j} $}
+        \centers{$ h = \Sum{i=1}{} \pi_i \Sum{j=1}{} p_{i j} \log p_{i j} $}
     \end{prop}
 
     
@@ -180,7 +180,7 @@ encoded in the following digital search tree:
 
     \begin{prop}
         \label{prop:lowerbound}
-        \centers{$\underset{\limt}{n\rightarrow\pinf}\f{C_n}{n} = h$}
+        \centers{$\underset{n\rightarrow\pinf}{\limt}\f{C_n}{n} = h$}
     \end{prop}
 
 
