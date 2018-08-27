@@ -1,15 +1,43 @@
 
 \subsection{Using the Frobenius eigenvalue of $P(s)$}
 
-\noindent
-An expression which seems to be succesful for the variance is :
+In walking towards the end-goal of proving the Central Limit
+Theorem for $M_n$ and Markov sources, a major step is finding
+an expression that fits $V_n$ well enough. The candidate we
+saw previously which came from~\cite{leckey_limit_2015} was 
+only defined for Markov sources of order 1 and was not proved
+to be a fitting candidate. Therefore, I was tasked to investigate
+another expression, which appeared in the analysis of 
+P. Jacquet and my supervisor's old paper~\cite{jacquet_average_2001}.
+What I achieved here is to find several expressions of 
+this variance candidate and run them against my simulations - eventually
+finding out what seems to be the right candidate for the variance.
 
-\centers{$ V_n =  \left( \ddot{\lambda}(-1) - { \dot{\lambda}(-1) }^2 \right) \f{n}{\ln^2 n} $}
+First, some definitions in order to introduce this candidate, and 
+compute the exact expressions needed for simulation:
+
+\begin{df}
+    We define the matrix $P(s)$ from the probability matrix $P$ of a 
+    Markov source as:
+    \centers{$\forall s\in\mathbb{C} 
+             \qquad P(s) = ({p_{i j}}^{-s})_{(i,j)\in{\{1,\dots,V\}}^2} $}
+    \label{def:ps}
+\end{df}
+
+\begin{df}
+    For $s\in\mathbb{C}$, the \emph{Frobenius eigenvalue} of $P(s)$ is the highest 
+    eigenvalue of $P(s)$ in absolute value. It is denoted $\lambda(s)$.
+    \label{def:frob}
+\end{df}
+
+Ignoring the difficult steps it took to obtain it in~\cite{jacquet_average_2001},
+this is the variance expression:
+
+\encadre{$ V_n =  \left( \ddot{\lambda}(-1) - { \dot{\lambda}(-1) }^2 \right) \f{n}{\ln^2 n} $}
 
 \noindent Let's compute $\ddot{\lambda}(-1)$ with a Markov chain of order 1.
-
-\leftcenters
-    {In the paper,}
+In~\cite{jacquet_average_2001},
+\centers
     {$ \ddot{\lambda}(-1) = \pi \ddot{P}(-1)\psi
                         + 2 \dot{\pi}(-1) \dot{P}(-1) \psi
                         - 2 \dot{\lambda}(-1) \dot{\pi}(-1) \psi $}
@@ -39,12 +67,13 @@ and $\Delta$ its discrimant
                 + {p_{1 1}}^{-s} - 2\pooii + 4\poiio
 \end{egalites}
 
+\noindent
  Informally, we have this expression for $\lambda(s)$ 
 where we need to decide which sign is the correct one :
 \encadre{$ \lambda(s) = \f{ \poo + \pii \pm \sqrt{\Delta(s)}}{2} $}
 
-\leftcenters
-    {Since}
+Since
+\centers
     {$\Delta(-1) 
         = (p_{0 0} + p_{1 1})^2 
                         - 2 p_{0 0} p_{1 1} 
@@ -55,42 +84,54 @@ Thus, picking the $+$ sign in the former expression, we verify that
 \centers{$ \lambda(-1) =  \f{ p_{0 0} + p_{1 1} + \sqrt{ \Delta(-1) } }
                                                {2} = 1 $}
 
-\leftcenters
-    {Derivating}
+Derivating
+\centers
     {$ \dot{\lambda}(s) = \f12 \left( -\ln p_{0 0}\, \poo - \ln p_{1 1}\, \pii + \f{ \Delta'(s) }{ 2 \sqrt{\Delta(s)} } \right) $}
 
 and the expression for $\Delta'(s)$
-\centers{$ \Delta'(s) = - 2 \ln p_{0 0}\, \poodeux - 2 \ln p_{1 1}\, \piideux
-                        + 2 \ln (p_{0 0} p_{1 1})\, \pooii 
-                        - 4 \ln (p_{0 1} p_{1 0})\, \poiio $}
+\begin{calculs}
+    &\Delta'(s) 
+        &=& - 2 \ln p_{0 0}\, \poodeux - 2 \ln p_{1 1}\, \piideux \\
+        &&&                + 2 \ln (p_{0 0} p_{1 1})\, \pooii 
+                        - 4 \ln (p_{0 1} p_{1 0})\, \poiio
+\end{calculs}
 gives
-\centers{$ \Delta'(-1) = - 2 \ln p_{0 0}\, {p_{0 0}}^2 - 2 \ln p_{1 1}\, {p_{1 1}}^2
-                        + 2 \ln (p_{0 0} p_{1 1})\, (p_{0 0} p_{1 1})
-                        - 4 \ln (p_{0 1} p_{1 0})\, (p_{0 1} p_{1 0})  $}
 
+\begin{calculs}
+    &\Delta'(-1) 
+        &=& - 2 \ln p_{0 0}\, {p_{0 0}}^2 - 2 \ln p_{1 1}\, {p_{1 1}}^2 \\
+        &&& + 2 \ln (p_{0 0} p_{1 1})\, (p_{0 0} p_{1 1})
+                        - 4 \ln (p_{0 1} p_{1 0})\, (p_{0 1} p_{1 0})
+\end{calculs}
+
+\noindent
 allowing to compute $\dot{\lambda}(-1)$. 
 Numerically, we verified that $ \dot{\lambda}(-1) = h $. Derivating again yields
 
-\centers{$ \ddot{\lambda}(s) =
-                \f12 \left( \ln^2 p_{0 0} \poo + \ln^2 p_{1 1} \pii
-                    + \f{ \Delta''(s) \sqrt{\Delta(s)} - \Delta'(s) \cdot \tf{\Delta'(s)}
+\begin{calculs}
+    &\ddot{\lambda}(s) 
+        &=& \f12 \Bigg( \ln^2 p_{0 0} \poo + \ln^2 p_{1 1} \pii \\
+        &&&  \qquad          + \f{ \Delta''(s) \sqrt{\Delta(s)} - \Delta'(s) \cdot \tf{\Delta'(s)}
                                                                             {2\sqrt{\Delta(s)}} }
-                        {2\Delta(s)} \right)
-                   $}
+                        {2\Delta(s)} \Bigg)
+\end{calculs}
 
-\leftcenters
-    {with}
-    {$ \Delta''(s) = 4 \ln^2 p_{0 0}\, \poodeux + 4 \ln^2 p_{1 1}\, \piideux
-                     - 2 \ln^2 (p_{0 0} p_{1 1})\, \pooii
-                     + 4 \ln^2 (p_{0 1} p_{1 0})\, \poiio $}
+\noindent with
+\begin{calculs}
+    &\Delta''(s) 
+            &=& 4 \ln^2 p_{0 0}\, \poodeux + 4 \ln^2 p_{1 1}\, \piideux \\
+            &&&         - 2 \ln^2 (p_{0 0} p_{1 1})\, \pooii
+                     + 4 \ln^2 (p_{0 1} p_{1 0})\, \poiio
+\end{calculs}
 
-\leftencadre
-    {Finally}
-    {$\ddot{\lambda}(-1) = \f12 \left( \ln^2 p_{0 0}\, p_{0 0} + \ln^2 p_{1 1}\, p_{1 1}
-                                + \f{ \Delta''(-1) \sqrt{\Delta(-1)} - \tf { {\Delta'(-1)}^2 }
-                                                                              {2\sqrt{\Delta(-1)}} }
-                                        {2\Delta(-1)} \right)
-                         $}
+Finally,
+
+\begin{calculs}
+    &\ddot{\lambda}(-1) 
+        &=& \f12 \Bigg( \ln^2 p_{0 0}\, p_{0 0} + \ln^2 p_{1 1}\, p_{1 1} \\
+        &&& \qquad + \f{ \Delta''(-1) \sqrt{\Delta(-1)} - \tf { {\Delta'(-1)}^2 }
+                {2\sqrt{\Delta(-1)}} } {2\Delta(-1)} \Bigg)
+\end{calculs}
 
 The simulations using this coefficient for the variance are quite good. It also seems that 
 this formula for the variance is equivalent to the one used in the unpublished paper 
@@ -101,7 +142,7 @@ this hasn't been verified.
 
 \centers{
  	 \begin{minipage}{11cm}
-        \includegraphics[width = 11cm,
+        \includegraphics[width = 5cm,
         				    trim = 0 0 16.5cm 0,
         				    	clip=true]{./figs/eig_fig1.png}	
 	\end{minipage} 
@@ -109,7 +150,7 @@ this hasn't been verified.
 
 \centers{
  	 \begin{minipage}{11cm}
-        \includegraphics[width = 11cm,
+        \includegraphics[width = 5cm,
         				    trim = 18.5cm 0 0 0,
         				    	clip=true]{./figs/eig_fig1.png}	
 	\end{minipage} 

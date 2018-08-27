@@ -1,20 +1,31 @@
 \begin{appendices}
 
+\section{Asymptotics of the mean $E[M_n]$}
+\input{./sources/mean_analysis.tex}
+
 \section{Much longer words}
 \label{app:much_longer}
 
-\begin{minipage}{\textwidth}
+\begin{figure}
+    \centering
         \includegraphics[width = \textwidth,
         				    trim = 0 0 0 0,
-        				    	clip=true]{./figs/eig_fig5.png}	
-	\end{minipage} 
+                                clip=true]{./figs/eig_fig5.png}	
+    \captionsetup{justification=centering}
+    \caption{Standard deviations behaviors and difference with empirical\\
+            $10^6 \leq n_{\text{word}} \leq 5\cdot10^6, n_{\text{exp}}=200$}
+\end{figure}
 
 \noindent
- 	 \begin{minipage}{\textwidth}
+\begin{figure}
+    \centering
         \includegraphics[width = \textwidth,
         				    trim = 0 0 0 0,
-        				    	clip=true]{./figs/eig_fig4.png}	
-	\end{minipage} 
+                                clip=true]{./figs/eig_fig4.png}	
+    \captionsetup{justification=centering}
+    \caption{Standard deviations behaviors and difference with empirical\\
+    $10^7 \leq n_{\text{word}} \leq 2\cdot10^7, n_{\text{exp}}=100$}
+\end{figure}
 
 \pagebreak
 \section{Another (more complicated) computation of $\ddot{\lambda}(-1)$}
@@ -93,8 +104,8 @@ and then computing $f(s)$ :
 
     \leftcenters{with}{$ \dot{\alpha} = \dot{a_0} + \dot{a_1} + \dot{a_2} + \dot{a_3} $}
 
-\leftcenters
-    {As for $f''(s)$, it is}
+{As for $f''(s)$, it is}
+\centers
     {$ f''(s) = \f12 \left[ 
                         \f{ \dot{\gamma}(s) \kappa(s) - \gamma(s) \dot{\kappa}(s) }
                           {\kappa^2(s)} 
@@ -116,8 +127,8 @@ Derivating according to $s$ amounts to derivating according to $\Re(s)$, so in $
                               -2\ln p_{1 1} a_1(-1)
                               -\ln q_0 a_2(-1)
                               -\ln q_1 a_3(-1) $}
-\leftcenters
-    {and}
+and
+\centers
     {$ \ddot{\alpha}(-1) = 4\ln^2 p_{0 0} a_0(-1)
                              + 4\ln^2 p_{1 1} a_1(-1)
                               +\ln^2 q_0 a_2(-1)

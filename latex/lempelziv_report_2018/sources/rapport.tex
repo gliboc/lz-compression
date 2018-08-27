@@ -10,10 +10,19 @@
 \medskip
 
 \section{Conditions of the experiment}
+
+The first step of my internship was to simulate the probabibilistic
+model of our data representation (\emph{i.e.} Markov sources) and 
+implement the Lempel-Ziv 78 algorithm in order to visualize its 
+behavior on the model. In particular, to see if our formulation of the
+Central Limit Theorem would hold for Markov sources, and begin to 
+identify the asymptotics of the mean and variance of the number 
+of phrases in particular.
+
 \subsection{Simulation details}
 
-Simulations in this report follow this experimental
-process :
+The process for doing this simulation is pretty straightforward, 
+as follows:
 	
 \begin{itemize}
 
@@ -49,48 +58,70 @@ process :
  a constant number of experiments $n_{\text{exp}}$.
 \end{itemize}
 
-%TODO
 \subsection{ Implementation }
 
-	\subsubsection{ Code overview }
- 
- \subsection{Example histogram}
- This histogram represents the counts of the different 
- values taken by $M_n$ for $n=10^6$. 
- Each tick on the x-axis is a data point.
- 
- \centers{
-  \begin{minipage}{7cm}
-   
-    		
-        \includegraphics[width = 7cm,
-        				    trim = 27cm 0 0 0,
-        				    	clip=true]{./figs/M_n_raw_10e6_500.png}	
-       
-    
-	\end{minipage}
-}
+	I took  great care to implement this process, in \emph{Python}, 
+	in a way that would be easy to use and easy to modify during my 
+	internship as well as for future research - for example, I 
+	could not find a Python library that would implement arbitrary Markov 
+	sources, and had to implement my own.
+	The whole code is available on a \emph{Github} repository:
+	{\color{gray} \url{https://github.com/gliboc/lz-compression}}.
+
+	\subsubsection{ Raw results }
+	
+After implementation, I could start visualizing the probability
+distribution of $M_n$ for different values of $n$. A probability 
+distribution visualization can be obtained by normalizing raw 
+histograms such as the one in Figure~\ref{fig:rawhisto}, which represents the counts of 
+the different values taken by $M_n$ for $n=10^6$. 
+
+
+ \begin{figure}[H]
+	\centering
+	   \includegraphics[width = 4.5cm,
+						   trim = 27cm 0 0 2cm,
+							   clip=true]{./figs/M_n_raw_10e6_500.png}	
+		\caption{Each tick on the x-axis is a data point.\\
+		$n_{\text{word}} = 500$, $n_{\text{exp}} = 10^6$}
+		\label{fig:rawhisto}
+   \end{figure}
+
+
+
+
+%TODO
+
 
 	\subsection{Empirical normalization}
-\begin{minipage}{\textwidth-7cm}
-	Using the empirical mean ($\mu$) and variance ($\sigma^2$) of the dataset to normalize $M_n$,
+
+
+	Using the empirical mean ($\mu$) and standard deviation ($\sigma$) of the dataset to normalize $M_n$,
 	this is a plot of the normalized distribution, compared to the normal distribution 
 	in red :
-\end{minipage}
-  \begin{minipage}[m]{7cm}
-        \includegraphics[width = 7cm,
-        				    trim = 26.7cm 0 0 30,
-        				    	clip=true]{./figs/empirical_normalization_10e6_500.png}	
-	\end{minipage} 
+
+  \begin{figure}[H]
+		\centering
+		\includegraphics[width = 5.5cm,
+		       				    trim = 26.7cm 0 0 2cm,
+								clip=true]{./figs/empirical_normalization_10e6_500.png}
+		\centering
+		\captionsetup{justification=centering,margin=2cm}
+		\caption{Standardized $M_n$ distribution \textit{v.s.} normal distribution\\
+					$n_{\text{word}} = 500$, $n_{\text{exp}} = 10^6$}
+	\end{figure} 
 
 	\noindent
 	 and its cumulative distribution function in green, compared to the normal one in red:
  	
- 	 \begin{minipage}[t]{7cm}
-        \includegraphics[width = 7cm,
-        				    trim = 27cm 0 0 32,
-        				    	clip=true]{./figs/cdf_1e6_500.png}
-	\end{minipage} 
+	  \begin{figure}[H]
+		\centering
+        \includegraphics[width = 5.5cm,
+        				    trim = 27cm 0 0 2cm,
+								clip=true]{./figs/cdf_1e6_500.png}
+		\caption{CDF of standardized $M_n$ vs. normal law\\
+				$n_{\text{word}} = 500$, $n_{\text{exp}} = 10^6$}
+	  \end{figure} 
 	
 	
 	These simulations and figures strongly indicate that the general distribution
@@ -98,83 +129,66 @@ process :
 	candidates for the variance of $M_n$ : $V_n$
 
 	% In comments, because not really interesting
-	% \centers{\question{Theoretical mean}}
-	% I also tried to normalize $M_n$ using theoretical expressions
-	% of the mean and variance. For the mean, the first order expression
+
 	
-	% \centers{$E_n \sim \f{nh}{\log_2(n)}$}
-	
-	% \noindent
-	% is, under $n\leq 10^6$, not sufficient to center the distribution. I conducted a numerical analysis
-	% of the difference between this expression and the empirical mean for growing 
-	% values of $n$. In particular, here is how their difference, in black, compares with
-	% different approximation functions 
-	
-	% \centers{
- 	%  \begin{minipage}{9cm}
-    %     \includegraphics[width = 9cm,
-    %     				    trim = 14cm 0 13cm 20,
-    %     				    	clip=true]{mean_analysis_2e4_500.png}	
-	% \end{minipage} 
-	% }
-	
-	% \noindent
-	% This is not troubling as it was already predicted in the formula:
-	
-	% \centers{$E_n = 	\f{nh}{\log_2(n)} + \mathcal{O} \pa{ \f{n}{\log_2(n)} }$}
 	
 	% \pagebreak
 	\section{Validating variance candidates}
 	\subsection{A first expression}
-	As it will be used in the next section, this is the detail of the expression
-	from \cite{nein} :
 
-		\centers{ $V_n = \f{H^3 \sigma^2 n}{\log_2^2 (n)}$ }
+	First, I was asked to review the draft of a paper (see \cite{leckey_probabilistic_2018}),
+	in particular to review their own candidate for the variance of $M_n$. 
+	For a Markov source of order 1, with probabilities 
+	$p_{0 0}, p_{0 1}, p_{1 0}$ and $p_{1 1}$:
+
+		\encadre{ ${V_n}^{(1)} = \f{H^3 \sigma^2 n}{\log_2^2 (n)}$ }
 		
-	\centers{$\sigma^2 = \sigma_0^2 + \sigma_1^2$}
-	\leftcenters{where}{$\sigma_i^2 = \f{\pi_i p_{i 0} p_{i 1}}{ H^3 } \pa { \log_2 \pa{ \f{ p_{i 0} }{ p_{i 1} } }
+	where $H = \pi_0 H_0 + \pi_1 H_1 $ and $\sigma^2 = \sigma_0^2 + \sigma_1^2$ with, for $i\in\{0,1\}$,
+	\centers{$\sigma_i^2 = \f{\pi_i p_{i 0} p_{i 1}}{ H^3 } \pa { \log_2 \pa{ \f{ p_{i 0} }{ p_{i 1} } }
 										+ \f{H_1 - H_0}{p_{0 1} + p_{1 0}} }^2$}
-	\leftcenters{with}{$\pi_0 = \f{p_{1 0}}{p_{1 0} + p_{0 1}} \qquad \pi_1 = \f{p_{0 1}}{p_{1 0} + p_{0 1}}$}
 	\leftcenters{and}{$H_i = -p_{i 0} \log_2(p_{i 0}) - p_{i 1} \log_2(p_{i 1}) \qquad H = \pi_0 H_0 + \pi_1 H_1 $}
 	
 	% \begin{remarque}
-	% \noindent 
-	% The first term in the squared part of $\sigma_i^2$ accounts for the expression of the variance for memoryless sources:
-	
-	% \begin{egalites}
-	% & \ p_{i 0}\,p_{i 1} \log_2^2 \pa{ \f{p_{i 0} }{ p_{i 1} }}
-	% 	& p_{i 0} \log_2^2(p_{i 0}) + p_{i 1} \log_2^2(p_{i 1}) 
-	% 		- (- p_{i 0} \log_2(p_{i 0})  - p_{i 1} \log_2(p_{i 1}))^2 \\
-	% 	&& h_2 - h^2
-	% \end{egalites}
-	
-	% \end{remarque}	
-	
 	% \noindent
-	% It seems, from simulations, that this variance is too small and doesn't
-	% catch up with the empirical variance. Here is how they compare when plotted
-	% together :
+	I could first prove that this expression rejoins the expression of 
+	the variance of $M_n$ for memoryless sources - which was encouraging -
+	% \begin{calculs}
+	% 	& \ p_{i 0}\,p_{i 1} \log_2^2 \pa{ \f{p_{i 0} }{ p_{i 1} }}
+	% 		&=& p_{i 0} \log_2^2(p_{i 0}) + p_{i 1} \log_2^2(p_{i 1}) \\
+	% 		&&&- (- p_{i 0} \log_2(p_{i 0})  - p_{i 1} \log_2(p_{i 1}))^2 \\
+	% 		&& h_2 - h^2
+	% \end{calculs}
+	and I could also see, from simulations, that this variance fitted the 
+	asymptotical behavior of the empirical variance. To be exact, 
+	their difference seemeds to be a sublinear function of $n$ growing
+	to $\pinf$ but which would be negligible compared to the first 
+	order of the variance. See Figure~\ref{std_nein} for comparison.
 	
-	% \centers{
- 	%  \begin{minipage}{11cm}
-    %     \includegraphics[width = 11cm,
-    %     				    trim = 15 0 20cm 0,
-    %     				    	clip=true]{std_analysis_2e4_500.png}	
-	% \end{minipage} 
-	% }
+	
+	  \begin{figure}
+		\centering
+        \includegraphics[width = 5cm,
+        				    trim = 15 0 20cm 1.2cm,
+								clip=true]{./figs/std_analysis_2e4_500.png}	
+		\caption{Variance ${V_n}^{(1)}$ compared to empirical variance\\
+				 $n_{\text{exp}} = 500$}
+		\label{std_nein}
+	  \end{figure} 
+	
 	
 	% \pagebreak
 	% \noindent
 	% It seems, at first glance, that the increase would asymptotically be 
 	% simply logarithmic
 	
-	% \centers{
- 	%  \begin{minipage}{12cm}
+	
+	%   \begin{figure}
+	% 	\centering
     %     \includegraphics[width = 12cm,
     %     				    trim = 20.5cm 0 0 0,
-    %     				    	clip=true]{std_analysis_approx_2e4_500.png}	
-	% \end{minipage} 
-	% }
+    %     				    	clip=true]{./figs/std_analysis_approx_2e4_500.png}	
+	%   \end{figure} 
+	
 	
 	% \noindent 
 	

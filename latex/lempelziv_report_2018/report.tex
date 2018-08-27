@@ -1,38 +1,21 @@
 \input{annales.sty}
 \versionCompil
 
-% \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
-% \let\endchangemargin=\endlist 
-
-\setlength{\parindent}{0pt}
-
-\usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    filecolor=magenta,      
-    urlcolor=cyan,
-}
-
-\newtheorem{df}{Definition}
-\newtheorem{nota}{Notation}
-\newtheorem{rmk}{Remark}
 
 \input{./sources/preamble.tex}
-
-% \usepackage{pgffor} % to do for loop
-\usepackage{tikz}
-
-\let\oldsection\section
-\let\oldsubsection\subsection
+\input{./sources/preamble2.tex}
 
 \begin{document}
 \input{./sources/titlepage}
 
 \raggedbottom
+\titre{Asymptotics on Lempel-Ziv 78 compression}
+\abstract{Diving into universal data compression through the analysis of the
+Lempel-Ziv78 algorithm - with the help of probabilistic models, computer simulation
+and complex analysis.}
 
 
-\titre{Asymptotics on Lempel-Ziv 78 compression}% Veuillez ne pas modifier ce titre SVP.
+% Veuillez ne pas modifier ce titre SVP.
 \tableofcontents
 
 \input{./sources/introduction}
@@ -78,6 +61,7 @@ Let us dive in on a few of the most recent ones :
 
 \subsubsection{ }
 
+
 \renewcommand{\subsection}{\subsubsection}
 \renewcommand{\section}{\oldsubsection}
 \section{Observations regarding the results and the proof}
@@ -99,23 +83,12 @@ Let us dive in on a few of the most recent ones :
 \renewcommand{\section}{\oldsection}
 
 \raggedbottom
-% \begin{thebibliography}{9}
-
-%     \bibitem{avg}
-%         \textsc{Jacquet}, \textsc{Szpankowski}, \textsc{Tang},
-%         \textit{Average profile of the Lempel-Ziv parsing scheme for a Markovian source}
-
-%     \bibitem{nein}
-%         \textsc{Lecket}, \textsc{Wormald}, \textsc{Neininger},
-%         \textit{Probabilistic Analysis of Lempel-Ziv Parsing for Markov Sources}
-
-        
-
-% \end{thebibliography}
+\subsection{ Research at Purdue }
+\input{./sources/purdue}
 
 \nocite{*}
 \bibliographystyle{plain}
-\bibliography{biblio}
+\bibliography{bibzot}
 
 
 \pagebreak
