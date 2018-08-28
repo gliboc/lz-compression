@@ -35,7 +35,7 @@ compute the exact expressions needed for simulation:
 Ignoring the difficult steps it took to obtain it in~\cite{jacquet_average_2001},
 this is the variance expression:
 
-\encadre{$ V_n =  \left( \ddot{\lambda}(-1) - { \dot{\lambda}(-1) }^2 \right) \f{n}{\ln^2 n} $}
+\encadre{$ {V_n}^{(2)} =  \left( \ddot{\lambda}(-1) - { \dot{\lambda}(-1) }^2 \right) \f{n}{\ln^2 n} $}
 
 \noindent Let's compute $\ddot{\lambda}(-1)$ with a Markov chain of order 1.
 In~\cite{jacquet_average_2001},
@@ -93,6 +93,7 @@ Thus, picking the $+$ sign in the former expression, we verify that
 \centers
     {$ \dot{\lambda}(s) = \f12 \left( -\ln p_{0 0}\, \poo - \ln p_{1 1}\, \pii + \f{ \Delta'(s) }{ 2 \sqrt{\Delta(s)} } \right) $}
 
+\noindent
 with
 
 \begin{calculs}
@@ -151,8 +152,8 @@ this hasn't been verified.
 \centers{
       \begin{figure}
         \centering
-        \includegraphics[width = 7cm,
-        				    trim = 0 0 16.5cm 0,
+        \includegraphics[width = 7.5cm,
+        				    trim = 0 0 16.5cm 1.0cm,
                                 clip=true]{./figs/eig_fig1.png}	
         \caption{Behavior of theoretical and standard deviations\\
                     $n_{\text{exp}} = 400$}
@@ -162,10 +163,11 @@ this hasn't been verified.
 \centers{
       \begin{figure}
         \centering
-        \includegraphics[width = 7cm,
-        				    trim = 18.5cm 0 0 0,
+        \includegraphics[width = 7.5cm,
+        				    trim = 18.5cm 0 0 1.0cm,
                                 clip=true]{./figs/eig_fig1.png}
-        \caption{Difference between empirical and theoretical stds\\
+        \captionsetup{justification=centering}
+        \caption{Difference between empirical and theoretical standard deviations ($\sqrt{V_n}$)\\
                     $n_{\text{exp}} = 400$}
 	\end{figure} 
 	}
@@ -177,22 +179,24 @@ a gaussian fit for the simulation results, which also appear as a blue histogram
 The two sets of figures are identical but obtained using different expressions.
 
 \centers{
-      \begin{figure}
+      \begin{figure}[H]
         \centering
         \includegraphics[width = \linewidth,
-        				    trim = 0 0.5cm 0 0,
-        				    	clip=true]{./figs/eig_fig2.png}	
-      \end{figure}
-} 
+        				    trim = 0 0.5cm 0 1cm,
+                                clip=true]{./figs/eig_fig3.png}	
+                                \caption{Distribution of $M_n$ normalized with empirical mean and ${V_n}^{(1)}$ variance}
+     \end{figure}
+}
 
 \centers{
       \begin{figure}
         \centering
         \includegraphics[width = \linewidth,
-        				    trim = 0 0.5cm 0 0,
-        				    	clip=true]{./figs/eig_fig3.png}	
-     \end{figure}
-}
+        				    trim = 0 0.5cm 0 1cm,
+                                clip=true]{./figs/eig_fig2.png}	
+        \caption{Distribution of $M_n$ normalized with empirical mean and ${V_n}^{(2)}$ variance}
+      \end{figure}
+} 
 
 
 \section{Conclusion}

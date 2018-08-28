@@ -11,8 +11,13 @@
 % \raggedbottom
 \titre{Asymptotics on Lempel-Ziv 78 compression}
 \abstract{Diving into universal data compression through the analysis of the
-Lempel-Ziv78 algorithm - with the help of probabilistic models, computer simulation
-and complex analysis.}
+Lempel-Ziv'78 algorithm and other related subjects - with the help of probabilistic models, 
+computer simulation,
+complex analysis, and information theory.}
+
+% \medskip
+% \noindent
+% \emph{Keywords:} Information theory - Data compression - LZ'78 - Complex analysis
 
 % Veuillez ne pas modifier ce titre SVP.
 \tableofcontents
@@ -37,52 +42,10 @@ and complex analysis.}
 \renewcommand{\subsection}{\oldsubsection}
 \renewcommand{\section}{\oldsection}
 
-
-\section{ Optimal parsing}
-
-\subsection{ LZ77 and LZ78 comparison }
-
-\subsubsection{ Practical uses of LZ77 }
-
-Although it is based on the same approach of identifying 
-previously seen phrases - but storing them in a fixed size 
-dictionary instead of an evergrowing parse tree like in LZ78 -
-the LZ77 algorithm is the most used in practical implementations
-of universal compression algorithms.
-
-Let us dive in on a few of the most recent ones :
-
-\begin{itemize}
-    \item DivANS
-    \item zStandard
-    \item 
-\end{itemize}
-
-\subsubsection{ }
+\input{./sources/flexible}
 
 
-\renewcommand{\subsection}{\subsubsection}
-\renewcommand{\section}{\oldsubsection}
-\section{Observations regarding the results and the proof}
-\input{./sources/corrections}
-
-\section{Definitions}
-\subsection{Definitions}
-\input{./sources/definitions}
-
-\subsection{Clues in proving the result}
-\input{./sources/critics}
-
-\subsection{Working with these probabilistic objects}
-\input{./sources/computations}
-
-\section{Proof of an upperbound for the paper}
-\input{./sources/upperbound}
-\renewcommand{\subsection}{\oldsubsection}
-\renewcommand{\section}{\oldsection}
-
-\raggedbottom
-\subsection{ Research at Purdue }
+\section{Research at Purdue}
 \input{./sources/purdue}
 
 \nocite{*}

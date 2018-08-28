@@ -1,11 +1,16 @@
-\section{ Introduction }
+\section{Introduction }
 
-\emph{Data compression}, \emph{source coding}, or \emph{bit-rate reduction} involve encoding information using fewer bits than the original representation.
 
-\subsection{ Introduction to the problem }
 
-Data compression is achieved by different types of algorithms, but in order
-to study it formally we use a formal definition of a data compression scheme. 
+\subsection{Introduction to the problem }
+
+
+\emph{Data compression}, \emph{source coding}, or 
+\emph{bit-rate reduction} involve encoding 
+information using fewer bits than the original
+representation.
+In order to study it formally we use a formal 
+definition of a data compression scheme. 
 First, we describe an algorithm which operates on words - 
 in our case, Lempel-Ziv 78.
 Then, we introduce a probabilitic model representing
@@ -13,41 +18,44 @@ the data to be compressed, which allows us to quantify
 the efficiency of the algorithm.
 
 
-\subsubsection{ Compression algorithm : Lempel-Ziv 78 }
+\subsubsection{Compression algorithm : Lempel-Ziv 78 }
 
 \begin{definition}
-    A \emph{compression algorithm} is a pair of functions on
-    words $(\mathcal{C}, \mathcal{D})$ - compressor and 
-    decompressor.
+    A \emph{\bfseries compression scheme} is a pair of functions on
+    words $(\mathcal{C}, \mathcal{D})$ \textit{i.e.} a compression 
+    and decompression algorithm.
 \end{definition}
 
 \begin{definition}
     \label{def:lossless}
-    A \emph{lossless} compression algorithm decompresses 
+    A \emph{\bfseries lossless} compression algorithm decompresses 
     the exact same data that was compressed in the first place.
 \end{definition}
 
-\begin{rmk}
-    We will not describe the decompression part of 
-    our algorithms, considering that the possibility
-    of decompression is obvious in the case of LZ78.
-\end{rmk}
+% \begin{rmk}
+%     We will not describe the decompression part of 
+%     our algorithms, considering that the possibility
+%     of decompression is obvious in the case of LZ78.
+% \end{rmk}
 
-In general, Lempel-Ziv algorithms dictionary-based scheme
+\noindent
+In general, Lempel-Ziv algorithms are dictionary-based scheme
 which exploit previously seen patterns and redundancy to 
 save off coding space. 
-The Lempel-Ziv'78 (LZ'78) that partitions a sequence into 
+The Lempel-Ziv'78 (LZ'78) partitions a sequence into 
 phrases or blocks of variable size such that a new phrase
 is the shortest substring not seen in the past as a phrase. 
 Every such phrase is encoded by the index of its prefix 
 appended by a symbol; thus the LZ'78 code contains the 
 pairs \verb|(pointer, symbol)|.
 For example, the string 
-\centers{11001010001000100} of length 17 is parsed
+\centers{$w = 11001010001000100$}
+\noindent of length 17 is parsed
 as 
-\centers{(1)(10)(0)(101)(00)(01)(000)(100)}
+\centers{()(1)(10)(0)(101)(00)(01)(000)(100)}
+\noindent
 which can be be 
-encoded in the following digital search tree:
+encoded in the following associated digital search tree (DST) $\mathcal{T}(w)$:
 
 \centers{
 \begin{tikzpicture}[
@@ -75,15 +83,20 @@ encoded in the following digital search tree:
 \end{tikzpicture}
 }
 
+\begin{rmk}
+    \label{rmk:dst}
+    It should feel natural that, given a digital search tree $\mathcal{T}(w)$
+    (DST) and the order of arrival of its nodes, we can 
+    reconstruct the original sequence $w$.
+\end{rmk}
 
 
-
-\subsubsection{ Probabilistic models }
+\subsubsection{Probabilistic models }
 
 \begin{df}
     \label{def:source}
     Let $\mathcal{A}$ be an alphabet.
-    An \emph{information source} is a one-sided infinite sequence of random
+    An \emph{\bfseries information source} is a one-sided infinite sequence of random
     variables $(X_k)_{k=1}^{\pinf}$ with each $X_k$ 
     having values in $\mathcal{A}$.
 \end{df}
@@ -91,19 +104,19 @@ encoded in the following digital search tree:
 \begin{rmk}
     \label{rmk:sequence}
     Each realization of an information source is called a 
-    \emph{sequence} or \emph{word}.
+    \emph{\bfseries sequence} or \emph{\bfseries word}.
 \end{rmk}
 
 \begin{rmk}
     \label{rmk:source}
-    \emph{Defining} the law of the $X_k$ produces out different
+    Defining the law of the $X_k$ produces out different
     models for data generation which can be studied mathematically
-    and \emph{simulated}.
+    and simulated.
 \end{rmk}
 
 \begin{df}
     \label{def:memoryless}
-    A \emph{memoryless source} is an \emph{information source}
+    A \emph{\bfseries memoryless source} is an \emph{information source}
     for which the $X_k$ are mutually independent, following
     the uniform law on $\mathcal{A} = \{ a_1, \dots, a_V \}$ :
     \centers{$
@@ -122,36 +135,39 @@ encoded in the following digital search tree:
 
 \begin{df}
     \label{def:markov}
-    A \emph{Markov source} is an \emph{information source}
+    A \emph{\bfseries Markov source} is an \emph{information source}
     with a Markov dependency between successive symbols.
 \end{df}
 
 \begin{df}
     \label{def:markovorder}
-    A \emph{Markov source of order $r$} is a Markov source
+    A \emph{\bfseries Markov source of order $r$} is a Markov source
     for which each symbol apparition depends on the previous 
     $r$ symbols.
 \end{df}
 
 \begin{rmk}
     \label{rmk:markov2}
-    We will study Markov sources of order 1 - where each
+    We will study Markov sources of order 1, where each
     symbol simply depends on the previous one. This is 
     general enough, as Markov sources of superior order
-    can be simulated by expanding the alphabet and 
-    using a Markov source of order 1.
+    can be simulated with a Markov source of order 1 
+    while expanding the alphabet.
 \end{rmk}
 
-\subsubsection{ Entropy }
+\subsubsection{Entropy}
 
-    In this study, we consider only two information sources:
-    the \emph{memoryless} and the \emph{Markov} source.
+    In this study, we will only consider two information sources:
+    the \emph{\bfseries memoryless} and the \emph{\bfseries Markov} source.
+    There are other types of probabilistic information sources 
+    described in~\cite{jacquet_analytic_2015} which I found interesting,
+    but had no occasion to analyze.
     For the Markov source, we consider that there exists a 
-    \emph{stationary distribution}.
+    \emph{\bfseries stationary distribution} $\pi = (\pi_1,\dots,\pi_V)$.
 
     \begin{df}
         \label{def:entropy}
-        The \emph{entropy} of an information is the average
+        The \emph{\bfseries entropy} of an information is the average
         rate at which information is produced by a probabilistic
         source of information.
     \end{df}
@@ -160,7 +176,7 @@ encoded in the following digital search tree:
         \label{prop:memorylessentropy}
         The entropy of a \emph{memoryless source} on 
         alphabet $\mathcal{A} = \{ a_1,\dots,a_V \}$ is:
-        \centers{$ \Sum{i=1}{} p_i \log p_i$}
+        \centers{$ h = -\Sum{i=1}{} p_i \log p_i$}
     \end{prop}
 
     \begin{prop}
@@ -168,22 +184,10 @@ encoded in the following digital search tree:
         The entropy of a \emph{Markov source} with probability
         $(p_{i j})_{(i, j) \in { \{1,\dots,V\} }^2} $ and a 
         stationary distribution $(\pi_1, \dots, \pi_V)$ is:
-        \centers{$ h = \Sum{i=1}{} \pi_i \Sum{j=1}{} p_{i j} \log p_{i j} $}
+        \centers{$ h = -\Sum{i=1}{} \pi_i \Sum{j=1}{} p_{i j} \log p_{i j} $}
     \end{prop}
 
     
-    The entropy gives a lower bound on the compression 
-    ratio of lossless algorithms. Furthermore, in our
-    case, for a memoryless or Markov source, the compression
-    tends asymptotically to the entropy of the source:
-    
-
-    \begin{prop}
-        \label{prop:lowerbound}
-        \centers{$\underset{n\rightarrow\pinf}{\limt}\f{C_n}{n} = h$}
-    \end{prop}
-
-
 \subsubsection{ Probabilistic analysis }
 
 Under this context, we can define and conduct a thorough
@@ -193,7 +197,7 @@ regarding the effectiveness of compression.
 \begin{nota}
     \label{nota:universe}
     Let $n$ be an integer - the size of the considered words.
-    Defining $\Omega_n$ the set of words of size $n$ on alphabet
+    Defining $\Omega_n$ the \emph{\bfseries set of words of size $n$} on alphabet
     $\mathcal{A}$. Each word being an event, a natural probability
     space is given by considering the output of size $n$ of a Markov
     source.
@@ -207,12 +211,12 @@ regarding the effectiveness of compression.
 
 \begin{nota}
     \label{nota:output}
-    $W_n$ denotes words of size $n$ output by a given Markov source.
+    The random variable $W_n$ denotes words of size $n$ output by a given Markov source.
 \end{nota}
 
 \begin{nota}
     \label{nota:numberphrases}
-    The \emph{number of phrases} used to compress words of size $n$ ($W_n$) with
+    The number of phrases used to compress words of size $n$ ($W_n$) with
     LZ78 is given by $M_n(W_n)$ or simply $M_n$.
 \end{nota}
 
@@ -225,27 +229,39 @@ regarding the effectiveness of compression.
 
 \begin{df}
     \label{df:codelength}
-    The \emph{codelength} is the \emph{number of bits} required 
-    to encode the LZ78-compressed version of a word, denoted by $C(W_n)$ or $C_n$.
+    The \emph{\bfseries codelength} is the \emph{\bfseries number of bits} required 
+    to encode the LZ78-compressed version of a word, denoted by $|C(W_n)|$ or 
+    simply $C_n$.
 \end{df}
 
 \begin{df}
     \label{df:compratio}
-    The \emph{compression ratio} for words of size $n$ is the ratio between the 
-    codelength and initial size of a word, $\f{C(W_n)}{|W_n|} = \f{C_n}{n}$.
+    The \emph{\bfseries compression ratio} for words of size $n$ is the ratio between the 
+    codelength and initial size of a word
+        \centers{$\rho_n = \f{C_n}{n}$}
 \end{df}
 
-\begin{rmk}
-    \label{rmk:asymptotic}
-    We focus now, as stated in the title of this report, on the asymptotical behavior - 
-    for $n \rightarrow \pinf$ - of the compression ratio. Certainly this gives us 
+\begin{prop}
+    The compression code $C(w)$ is a description of the DST $\mathcal{T}(w)$,
+    node by node in teh order of creation. Each node bein identified by a node 
+    to its parent node in the tree and the symbol that labels the edge linking it to the
+    parent node. The pointer to the $k$th node requires at most $\ceil{\log_2(k)}$ bits,
+    and the next symbol costs $\ceil{\log_2 |\mathcal{A}|}$ bits. Therefore, the 
+    compressed code length is 
+    \centers{$|C(w)| = \Sum{k=1}{M_n(w)} \pa{\ceil{\log_2(k)} + \ceil{\log_2 |\mathcal{A}|}}$}
+\end{prop}
+
+
+
+
+    \noindent
+    We focus now, as stated in the title of this report, on the asymptotical behavior,
+    for $n \rightarrow \pinf$, of the compression ratio. Certainly this gives us 
     information about real-world compression, as files on our computer often attain
     large numbers when measured in bits. However, this assumption can be nuanced.
     For example, the speed of convergence towards this asymptotic behavior can make 
     a non-negligible difference in real-world application, as we will see later on
     when we talk about the difference between LZ'77 and LZ'78 and Optimal Parsing.
-\end{rmk}
-
 
 
 \subsection{ Theorems and Goals }
@@ -259,7 +275,39 @@ regarding the effectiveness of compression.
     My first job was to simulate the process and output visualizations
     that would disprove or make these results seem more likely.
 
-    \begin{th}
-        \label{th:clt}
-        For memoryless source
-    \end{th}
+    
+
+    \begin{prop}
+        \label{prop:lowerbound}
+        The entropy gives a lower bound on the compression 
+    ratio of lossless algorithms. Furthermore, in our
+    case, for a memoryless or Markov source, the compression
+    tends asymptotically to the entropy of the source:
+        \centers{$\underset{n\rightarrow\pinf}{\limt}\f{E[C_n]}{n} = h$}
+    \end{prop}
+
+    \begin{theo}
+        The random variable $M_n$ over the LZ'78 compression of a sequence 
+        generated by a memoryless source asymptotically obeys a
+        \emph{\bfseries central limit law} in the
+        sense that its distribution is \emph{\bfseries asymptotically normal}.
+        That is, for all $x = \grando(1)$,
+        
+          \centers{$ \underset{n\rightarrow\pinf}{\limt}
+          \proba{\f{M_n-E[M_n]}{\sqrt{\Var[M_n]}} \leq x}
+              = \f{1}{\sqrt{2\pi}} \Int{\minf}{x} 
+                                      \ex{-\tf{t^2}{2}}\dt$}
+    \end{theo}
+
+    \begin{rmk}
+        \label{rmk:clt}
+        This is the result that we will refer to as CLT 
+        for LZ'78 on Markov sources. It has remained an open
+        for around twenty years, as it was proved for 
+        memoryless sources in~\cite{jacquet_average_2001}.
+    \end{rmk}
+
+    % \begin{th}
+    %     \label{th:clt}
+    %     For memoryless source
+    % \end{th}

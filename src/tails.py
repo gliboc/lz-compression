@@ -196,9 +196,14 @@ def double_plot(fignumber, sims, ns, n_exp, var1, var2, ylabel1, ylabel2):
 
     figs, axs = plt.subplots(1, 2, num=fignumber)
 
-    sns.regplot(ns, plot1, ax=axs[0])
+    #sns.regplot(ns, plot1, ax=axs[0])
+    #axs[0].set_ylabel(ylabel1)
+    #sns.regplot(ns, plot2, ax=axs[1])
+    #axs[1].set_ylabel(ylabel2)
+
+    sns.scatterplot(ns, plot1, ax=axs[0])
     axs[0].set_ylabel(ylabel1)
-    sns.regplot(ns, plot2, ax=axs[1])
+    sns.scatterplot(ns, plot2, ax=axs[1], color='orange')
     axs[1].set_ylabel(ylabel2)
 
     for ax in axs:
@@ -242,6 +247,9 @@ def simple_plot_fit(fignumber, sims, ns, n_exp, var, ylabel):
     except:
         fit = False
 
+    print("Curve fitting was deactivated, go to %yay to enable it again")
+    fit = False
+
     plt.figure(num=fignumber)
     ax = plt.subplot()
     sns.scatterplot(ns, plot, ax=ax)
@@ -280,7 +288,7 @@ if __name__ == "__main__":
 
     ns = list(ns)
     print(ns)
-    
+
 
     print_summary(sims[0][1])
 

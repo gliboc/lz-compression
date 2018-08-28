@@ -1,0 +1,52 @@
+\section{ Optimal parsing}
+
+Among my other research work at Purdue, I was asked to review the draft
+of a paper~\ref{langiu_speed_2018} by Italian researchers which have collaborated 
+with my supervisor in the past. Their current field of study is Optimal Parsing in the case of 
+LZ'77 and LZ'78 - which can be resumed as a dynamic partionning of a data 
+sequence into blocks in order to improve the efficiency of the LZ algorithms.
+They explore the question which arised from practical use~\ref{mahoney_large_nodate}:
+why is LZ'77 in practice more efficient than LZ'78, even though in theory LZ'78 is 
+asymptotically better than LZ'77 as its compression ratio converges towards
+the entropy lower bound faster than LZ'77 ? This was an interesting work
+as it gave me the occasion to understand and apply the Flexible Parsing 
+algorithm, and make some minor contributions to its analysis and presentation.
+I wrote a report which I sent them over the course of June and I will now present
+excerpts from it, among with some of the context around their work.
+
+% \subsection{ LZ77 and LZ78 comparison }
+
+% \subsubsection{ Practical uses of LZ77 }
+
+% Although it is based on the same approach of identifying 
+% previously seen phrases - but storing them in a fixed size 
+% dictionary instead of an evergrowing parse tree like in LZ78 -
+% the LZ77 algorithm is the most used in practical implementations
+% of universal compression algorithms.
+
+% Let us dive in on a few of the most recent ones :
+
+% \begin{itemize}
+%     \item DivANS
+%     \item zStandard
+%     \item 
+% \end{itemize}
+
+
+\renewcommand{\subsection}{\subsubsection}
+\renewcommand{\section}{\oldsubsection}
+
+\input{./sources/definitions}
+
+\input{./sources/corrections}
+
+\subsection{Some probabilistic computations}
+\input{./sources/computations}
+
+\subsection{Proof suggestions}
+\input{./sources/critics}
+
+\section{Proof of an upperbound for the paper}
+\input{./sources/upperbound}
+\renewcommand{\subsection}{\oldsubsection}
+\renewcommand{\section}{\oldsection}

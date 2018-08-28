@@ -7,11 +7,17 @@ def show_single_sims(filename):
     """Loads one simulation datafile, and outputs information about it.
     """
 
-    exps, _ = np.load(filename)
+    try:
+        exps, _ = np.load(filename)
+    except:
+        exps = np.load(filename)
 
-    input("Data file {} contains {} experiments with chain {}".format(filename, len(exps), exps[0]["M"]))
-    print("These are their lengths:")
-    print(*["(n_exp, n_word) = ({}, {})".format(exp["n_exp"], exp["n_word"]) for exp in exps], sep="\t\n")
+    try:
+        input("Data file {} contains {} experiments with chain {}".format(filename, len(exps), exps[0]["M"]))
+        print("These are their lengths:")
+        print(exps.keys())
+    except:
+        print("Wrong experiment type")
 
 
 def show_all_sims(dirname):
@@ -44,7 +50,7 @@ def union(sims1, sims2):
     for ((exps1, _), (exps2, _)) in zip(sims1, sims2):
         exps = exps1 + exps2
         exps[0]["n_exp"] = len(exps)
-        
+
         sims.append(get_summary(exps))
 
     return sims
@@ -85,7 +91,10 @@ def recompute(filename):
     measured for a set of experiments, which are
     saved in the 'summary' structure."""
 
-    sims = np.load(filename)
+    try:
+        sims, _ = np.load(filename)
+    except:
+        sims = np.load(filename)
 
     new_sims = []
     for (exps, _) in sims:

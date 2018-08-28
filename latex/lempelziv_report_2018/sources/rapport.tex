@@ -13,7 +13,7 @@
 
 The first step of my internship was to simulate the probabibilistic
 model of our data representation (\emph{i.e.} Markov sources) and 
-implement the Lempel-Ziv 78 algorithm in order to visualize its 
+implement the Lempel-Ziv'78 algorithm in order to visualize its 
 behavior on the model. In particular, to see if our formulation of the
 Central Limit Theorem would hold for Markov sources, and begin to 
 identify the asymptotics of the mean and variance of the number 
@@ -24,49 +24,52 @@ of phrases in particular.
 The process for doing this simulation is pretty straightforward, 
 as follows:
 	
-\begin{itemize}
-
+\begin{itemize}[nosep]
 	\item Generating a random Markov chain of size 2 of matrix
- \centers{ $\begin{matrice}
-			p_{0 0} & p_{0 1} \\
-			p_{1 0} & p_{1 1} \\
-		  \end{matrice}$}	 
- \item
- Generating $n_{\text{exp}} \sim 10^3$ words of length $n $ (or $n_{\text{word}}$), with $n \sim 10^6 \text{ or } 10^7$
+			\centers{ $\begin{matrice}
+						p_{0 0} & p_{0 1} \\
+						p_{1 0} & p_{1 1} \\
+					  \end{matrice}$}	
+
+	\item Generating $n_{\text{exp}}$ words of length 
+	$n $ (or $n_{\text{word}}$), preferably with $n \sim 10^6 \text{ or } 10^7$
+	by simulating a Markov source.
+	
+	\item Compressing these words with LZ'78 to estimate the random variable of
+	the number of phrases $M_n$. A simple histogram of its values
+	can be seen in Figure~\ref{fig:rawhisto}.
+	
+	\item From this sampling of  $M_n$ and other parameters such as the entropy
+	of the Markov chain, computing
  
- \item Applying LZ78 on each of these words to estimate, for each $n$,
- the number of phrases $M_n$. A simple histogram of these values
- can be seen in figure 1.
- 
- \item From this sampling of the random variable $M_n$ and other parameters such as the entropy of the Markov chain, computing
- 
- 	\begin{itemize}
- 		\item the empirical mean ($\mu$) and the empirical variance ($\sigma^2$)
- 		\item different theoretical expressions for the variance
- 	\end{itemize}
+		\begin{itemize}[nosep]
+			\item the empirical mean ($\mu$) and the empirical variance ($\sigma^2$)
+			\item different theoretical expressions for the variance
+		\end{itemize}
  	
- \item Using these expressions to standardize $M_n$ in different ways, plotting
+	\item Using these expressions to normalize $M_n$ in different ways, plotting
+	
+		\begin{itemize}[nosep]
+			\item the probability distribution of normalized $M_n$ 
+				
+			\item the cumulative distribution function of normalized $M_n$
+		\end{itemize}
  
- 	\begin{itemize}
- 		\item the probability distribution of $M_n$ (standardized)
- 			  
- 		\item the cumulative distribution function of $M_n$ (standardized)
- 	\end{itemize}
- 
- \item Finally, comparing the different theoretical expressions for the variance 
- by plotting their differences for a large range of values of $n$, and
- a constant number of experiments $n_{\text{exp}}$.
+	\item Finally, comparing the different theoretical expressions for the variance 
+	by plotting their differences for a large range of values of $n$, and
+	a constant number of experiments $n_{\text{exp}}$.
 \end{itemize}
 
 \subsection{ Implementation }
 
-	I took  great care to implement this process, in \emph{Python}, 
+	I took great care to implement this process, in \emph{Python}, 
 	in a way that would be easy to use and easy to modify during my 
 	internship as well as for future research - for example, I 
 	could not find a Python library that would implement arbitrary Markov 
 	sources, and had to implement my own.
 	The whole code is available on a \emph{Github} repository:
 	{\color{gray} \url{https://github.com/gliboc/lz-compression}}.
+	A description of the code architecture can be found in Appendix~\ref{app:code1}.
 
 	\subsubsection{ Raw results }
 	
@@ -79,7 +82,7 @@ the different values taken by $M_n$ for $n=10^6$.
 
  \begin{figure}[H]
 	\centering
-	   \includegraphics[width = 4.5cm,
+	   \includegraphics[width = 4.2cm,
 						   trim = 27cm 0 0 2cm,
 							   clip=true]{./figs/M_n_raw_10e6_500.png}	
 		\caption{Each tick on the x-axis is a data point.\\
@@ -102,7 +105,7 @@ the different values taken by $M_n$ for $n=10^6$.
 
   \begin{figure}[H]
 		\centering
-		\includegraphics[width = 5.5cm,
+		\includegraphics[width = 4.5cm,
 		       				    trim = 26.7cm 0 0 2cm,
 								clip=true]{./figs/empirical_normalization_10e6_500.png}
 		\centering
@@ -116,7 +119,7 @@ the different values taken by $M_n$ for $n=10^6$.
  	
 	  \begin{figure}[H]
 		\centering
-        \includegraphics[width = 5.5cm,
+        \includegraphics[width = 4.6cm,
         				    trim = 27cm 0 0 2cm,
 								clip=true]{./figs/cdf_1e6_500.png}
 		\caption{CDF of standardized $M_n$ vs. normal law\\
