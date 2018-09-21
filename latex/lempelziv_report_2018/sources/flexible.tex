@@ -1,22 +1,23 @@
-\section{ Optimal parsing}
+\section{Optimal parsing}
 
 Among my other research work at Purdue, I was asked to review the draft
-of a paper~\ref{langiu_speed_2018} by Italian researchers which have collaborated 
+of a paper~\cite{langiu_speed_2018} by Italian researchers which have collaborated 
 with my supervisor in the past. Their current field of study is Optimal Parsing in the case of 
 LZ'77 and LZ'78 - which can be resumed as a dynamic partionning of a data 
 sequence into blocks in order to improve the efficiency of the LZ algorithms.
-They explore the question which arised from practical use~\ref{mahoney_large_nodate}:
+They explore the question which arised from practical use~\cite{mahoney_large_nodate}:
 why is LZ'77 in practice more efficient than LZ'78, even though in theory LZ'78 is 
 asymptotically better than LZ'77 as its compression ratio converges towards
-the entropy lower bound faster than LZ'77 ? This was an interesting work
-as it gave me the occasion to understand and apply the Flexible Parsing 
-algorithm, and make some minor contributions to its analysis and presentation.
-I wrote a report which I sent them over the course of June and I will now present
+the entropy lower bound faster than LZ'77 ?
+This was an interesting work
+as it gave me the occasion to learn, understand and apply the Flexible Parsing 
+algorithm, and make some contributions to its analysis.
+I wrote a report which we sent to them over the course of June, and I will now present
 excerpts from it, among with some of the context around their work.
 
-% \subsection{ LZ77 and LZ78 comparison }
+% \subsection{LZ77 and LZ78 comparison }
 
-% \subsubsection{ Practical uses of LZ77 }
+% \subsubsection{Practical uses of LZ77 }
 
 % Although it is based on the same approach of identifying 
 % previously seen phrases - but storing them in a fixed size 
@@ -36,17 +37,64 @@ excerpts from it, among with some of the context around their work.
 \renewcommand{\subsection}{\subsubsection}
 \renewcommand{\section}{\oldsubsection}
 
-\input{./sources/definitions}
+\hypertarget{definitions}{\section{Definitions}}
 
-\input{./sources/corrections}
+\noindent
+Definitions and notations I wrote in order
+to write the proof of~\cite{langiu_speed_2018}'s first theorem - which
+is an upperbound used to prove a quantity goes to 
+0 exponentially as $n$ goes to $\pinf$ - can be found in Appendix~\ref{app:definitions}. 
+I wrote those as part of my report on the paper, in order to make clearer the use 
+of random variables through it. This report, which can be found entirely
+in the Appendix~\ref{app:flexible}, is not easy to understand without the context and 
+notations of the draft. This is why in the following section I just describe my contributions
+while linking to the corresponding parts of the report, not trying to explain the subject 
+entirely.
 
-\subsection{Some probabilistic computations}
-\input{./sources/computations}
 
-\subsection{Proof suggestions}
-\input{./sources/critics}
+\section{Remarks}
+First, the summary of remarks and suggestions we came up with
+my supervisor on their paper can be found in Appendix~\ref{app:corrections}.
+
+\hypertarget{computations}{\section{Computations}}
+To prove that the definitions I introduced were useful to reason 
+and write proofs on the subject, I rewrote some computations which
+were, in their actual form in the draft, not formally accurate though
+understandable. See Appendix~\ref{app:computations}.
+
+
+\section{Proof suggestions}
+\noindent
+\hypertarget{critics}{}
+
+While working with my supervisor on this paper, we felt that 
+an approach to solving their problem was to use conditionning
+in their proof. In a nutshell, their argumentary around 
+algorithm was correct \emph{on average} - which means almost 
+surely in the sense of probabilities 
+- and conditionning could
+prove a good method to quantify the uncertainty around their
+analysis in a formal proof. The suggestions I wrote 
+in order to begin to formalize and explore this track of proof 
+are in Appendix~\ref{app:critics}.
+
 
 \section{Proof of an upperbound for the paper}
-\input{./sources/upperbound}
+\hypertarget{upperbound}{}
+
+Finally, while working at the white board with Wojciech, he suggested 
+I try a simpler proof for establishing one of the upperbounds in the 
+paper goes to 0 as $n$ goes to $\pinf$. This method was, happily, 
+a success - and I hope it helps their analysis going forward.
+The full technical proof can be found in Appendix~\ref{app:upperbound}.
+
+\section{Conclusion}
+
+I found that my work on this paper draft was a good exercise in reading
+and technical writing. It also broadened my views over data compression, 
+even though it was not directly related to my main research tasks, which were
+centered on LZ'78. I am looking forward to continuing this analysis 
+with the italian research team.
+
 \renewcommand{\subsection}{\oldsubsection}
 \renewcommand{\section}{\oldsection}

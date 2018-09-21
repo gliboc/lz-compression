@@ -1,9 +1,4 @@
-\hypertarget{computations}{\section{Computations}}
-To prove that the definitions I introduced were useful to reason 
-and write proof around the subject, I rewrote some computations which
-were, in their actual form in the draft, not formally accurate though
-understandable.
-
+\label{app:computations}
 With these definitions, 
 we can do the formal computations at the beginning 
 of the proof of \emph{Theorem 1}.
@@ -11,9 +6,9 @@ of the proof of \emph{Theorem 1}.
 By conditionning on $W$ and $J$, we obtain
 
 \begin{calculs}
-        & \proba{ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
-        \left\{ { B_{J, W}^k - k } \right\} > {b_n}^{\delta} }
-            &=& \Sum{w \in \Omega_n}{} \Sum{j \in \mathbb{N}^{\star}}{} \,
+        &\hspace{2cm} \proba{ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
+        \left\{ { B_{J, W}^k - k } \right\} > {b_n}^{\delta} } \\
+            &&=& \Sum{w \in \Omega_n}{} \Sum{j \in \mathbb{N}^{\star}}{} \,
                 \proba{ \underset{ 0 \leq k \leq g_W(J) }{ \max } 
         \left\{ { B_{J, W}^k - k } \right\} > {b_n}^{\delta}, W=w, J=j } \\[5mm]
             

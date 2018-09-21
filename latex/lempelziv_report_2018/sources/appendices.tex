@@ -1,9 +1,26 @@
 \begin{appendices}
 
+\section{Lempel-Ziv'78 pseudocode}
+\input{./sources/lempelziv.tex}
+
+\newpage
+\section{Code overview}
+\label{app:code1}
+\input{./sources/code1.tex}
+
+\newpage
 \section{Asymptotics on the mean $E[M_n]$}
 \input{./sources/mean_analysis.tex}
 
+\newpage
 \section{Much longer words}
+
+These graphs are on the edge of the performance of my simulations.
+Studying asymptotics numerically meant that, for too high an $n$,
+I sometimes could not generate enough samples to consider a graph
+accurate, even the general trend would still give me information.
+
+
 \label{app:much_longer}
 \begin{figure}[H]
     \centering
@@ -162,6 +179,24 @@ as with the first method of computation.
 % \label{app:comp_lam2}
 % \lstinputlisting[firstline=156,lastline=206]{../src/eigenvalues.py}
 
+\newpage
+\section{Flexible parsing}
+\label{app:flexible}
+
+\subsection{Definitions}
+\input{./sources/definitions}
+
+\subsection{Remarks}
+\input{./sources/corrections}
+
+\subsection{Probabilistic computation}
+\input{./sources/computations}
+
+\subsection{Proof suggestions}
+\input{./sources/critics}
+
+\subsection{Upperbound proof}
+\input{./sources/upperbound}
 
 
 \end{appendices}

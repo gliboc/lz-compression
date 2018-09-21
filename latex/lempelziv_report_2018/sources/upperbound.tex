@@ -1,12 +1,7 @@
-\hypertarget{upperbound}{}
-
-Finally, while working at the white board with Wojciech, he suggested 
-I try a simpler proof for establishing one of the upperbounds in the 
-paper goes to 0 as $n$ goes to $\pinf$. This method was, happily, 
-a success - and I hope it helps their analysis going forward.
- 
- This is a proof that the upperbound 
-in $\numero{26}$ goes to 0. Assuming
+\label{app:upperbound}
+This is a proof that the upperbound 
+in $\numero{26}$ goes to 0. Assuming there exists an $\alpha<1$
+and $\tf{1}{2} < \delta < 1$ such that
 
 \centersright{ $ \SUM{k=0}{\pinf} 
             \proba{ D_n^{LZ} (W) > k + b_n^{\,\delta} }
@@ -42,7 +37,7 @@ Define :
             { \R }
             { x }
             { \alpha^{ x^{ \delta - \tf12 } } }
-      \qquad \text{ and } \qquad
+      \quad \text{ and } \quad
       \fonction
         {g}
         { \Rplusstar }
@@ -92,12 +87,3 @@ and taking the log, since $\delta > \tf12$ and $\log \alpha < 0$ we see that
 Therefore $x^{\delta} \alpha^{x^{\delta-\tf12}} \underset{x\rightarrow\pinf}{\rightarrow} 0$,
 and given that $f(0) = g(0) = 0$, L'Hospital's rule applies, proving that 
 $\f{f(x)}{g(x)} \underset{x\rightarrow\pinf}{\longrightarrow} 0$.
-
-
-
-
-
-
-            
-
-

@@ -9,7 +9,7 @@
 \input{./sources/titlepage}
 
 % \raggedbottom
-\titre{Asymptotics on Lempel-Ziv 78 compression}
+\titre{Asymptotics on Lempel-Ziv'78 compression}
 \abstract{Diving into universal data compression through the analysis of the
 Lempel-Ziv'78 algorithm and other related subjects - with the help of probabilistic models, 
 computer simulation,
@@ -22,9 +22,52 @@ complex analysis, and information theory.}
 % Veuillez ne pas modifier ce titre SVP.
 \tableofcontents
 
+\section*{Introduction}
+
+I did my internship at Purdue University, working
+at the Center for Science of Information, a lab 
+dedicated to information theory research, in the 
+state of Indiana but close to Chicago city.
+
+My internship consisted in several research tasks, 
+two of which involved a long-term purpose: 
+going further into the analysis of the Lempel-Ziv'78 
+compression scheme. I built numerical simulations
+out of the probabilistic models used to describe 
+this scheme, and used we used them to gain some
+insights on the asymptotic behavior of some 
+random variables which are key to measuring the 
+efficiency of the LZ'78 compression.
+This project, especially the third part with 
+the tail symbols, was related to recent work by my supervisor
+and his friend researcher Philippe Jacquet
+towards solving a conjecture that has remained 
+open for twenty years. Finally, I got to work 
+on the draft of a paper by an international team -  
+though mostly italian researchers - which is exploring
+the efficiency of certain parsing strategies in 
+data compression - particularly LZ'77 and LZ'78.
+
+This first part of this report is to be seen as 
+an introduction to the context of this research.
+The second presents the fixed-length probabilistic model,
+and how the simulations we have conducted indicate 
+that a central limit law applies within it, while identifying
+and computing an expression for the variance of a key random variable.
+The third part switches to another similar model, the 
+Markov independent model, in the context of which 
+we conducted simulations and started doing the formal asymptotic
+analysis of a covariance related to the analysis of LZ'78.
+The fourth part summarizes our collaboration on the draft
+regarding the analysis of an algorithm which improves 
+over regular LZ'78: the Flexible Parsing algorithm.
+
+
+
 \input{./sources/introduction}
 
-\section{ Numerical simulation of LZ78 for Markovian sources}
+% \section{Numerical simulation of LZ78 for Markovian sources}
+\section{Central limit theorem}
 \renewcommand{\subsection}{\subsubsection}
 \renewcommand{\section}{\oldsubsection}
 \input{./sources/rapport}
@@ -33,7 +76,7 @@ complex analysis, and information theory.}
 \renewcommand{\subsection}{\oldsubsection}
 \renewcommand{\section}{\oldsection}
 
-\section{ Tail symbols analysis}
+\section{Tail symbols analysis}
 \renewcommand{\subsection}{\subsubsection}
 \renewcommand{\section}{\oldsubsection}
 % \section{Tail symbols definition}
@@ -44,11 +87,10 @@ complex analysis, and information theory.}
 
 \input{./sources/flexible}
 
-
+\newpage
 \section{Research at Purdue}
 \input{./sources/purdue}
 
-\nocite{*}
 \bibliographystyle{plain}
 \bibliography{bibzot}
 

@@ -1,24 +1,19 @@
-\section{Introduction }
-
-
-
-\subsection{Introduction to the problem }
-
+\section{Introduction to analytic information theory}
 
 \emph{Data compression}, \emph{source coding}, or 
-\emph{bit-rate reduction} involve encoding 
-information using fewer bits than the original
+\emph{bit-rate reduction} involves encoding 
+information using fewer bits than its original
 representation.
-In order to study it formally we use a formal 
-definition of a data compression scheme. 
+In order to study it we formally define what is 
+a data compression scheme. 
 First, we describe an algorithm which operates on words - 
-in our case, Lempel-Ziv 78.
-Then, we introduce a probabilitic model representing
+in our case, Lempel-Ziv'78.
+Then, we introduce a probabilistic model representing
 the data to be compressed, which allows us to quantify
 the efficiency of the algorithm.
 
 
-\subsubsection{Compression algorithm : Lempel-Ziv 78 }
+\subsection{Compression scheme: Lempel-Ziv'78 }
 
 \begin{definition}
     A \emph{\bfseries compression scheme} is a pair of functions on
@@ -41,13 +36,13 @@ the efficiency of the algorithm.
 \noindent
 In general, Lempel-Ziv algorithms are dictionary-based scheme
 which exploit previously seen patterns and redundancy to 
-save off coding space. 
+save coding space. 
 The Lempel-Ziv'78 (LZ'78) partitions a sequence into 
-phrases or blocks of variable size such that a new phrase
+\emph{phrases} or \emph{blocks} of variable size such that a new phrase
 is the shortest substring not seen in the past as a phrase. 
 Every such phrase is encoded by the index of its prefix 
 appended by a symbol; thus the LZ'78 code contains the 
-pairs \verb|(pointer, symbol)|.
+pairs \verb|(pointer, symbol)|. 
 For example, the string 
 \centers{$w = 11001010001000100$}
 \noindent of length 17 is parsed
@@ -55,7 +50,7 @@ as
 \centers{()(1)(10)(0)(101)(00)(01)(000)(100)}
 \noindent
 which can be be 
-encoded in the following associated digital search tree (DST) $\mathcal{T}(w)$:
+encoded in the following associated \emph{digital search tree} (DST) $\mathcal{T}(w)$:
 
 \centers{
 \begin{tikzpicture}[
@@ -85,26 +80,32 @@ encoded in the following associated digital search tree (DST) $\mathcal{T}(w)$:
 
 \begin{rmk}
     \label{rmk:dst}
-    It should feel natural that, given a digital search tree $\mathcal{T}(w)$
+    Given a digital search tree $\mathcal{T}(w)$
     (DST) and the order of arrival of its nodes, we can 
     reconstruct the original sequence $w$.
 \end{rmk}
 
+\begin{rmk}
+    See Appendix~\ref{app:lempelziv} 
+    for a pseudocode of the encoding part of LZ'78.
+\end{rmk}
 
-\subsubsection{Probabilistic models }
+
+\subsection{Probabilistic models }
 
 \begin{df}
     \label{def:source}
     Let $\mathcal{A}$ be an alphabet.
     An \emph{\bfseries information source} is a one-sided infinite sequence of random
-    variables $(X_k)_{k=1}^{\pinf}$ with each $X_k$ 
-    having values in $\mathcal{A}$.
+    variables $(X_k)_{k=1}^{\pinf}$ with each $X_k$ being one
+    symbol random variable with values in $\mathcal{A}$.
 \end{df}
 
 \begin{rmk}
     \label{rmk:sequence}
-    Each realization of an information source is called a 
-    \emph{\bfseries sequence} or \emph{\bfseries word}.
+    Each finite section of the realization of an information source is called a 
+    \emph{\bfseries sequence} or \emph{\bfseries word}. For example: $X_m \dots X_{m+n-1}$
+    realizes into words of size $n$.
 \end{rmk}
 
 \begin{rmk}
@@ -117,7 +118,7 @@ encoded in the following associated digital search tree (DST) $\mathcal{T}(w)$:
 \begin{df}
     \label{def:memoryless}
     A \emph{\bfseries memoryless source} is an \emph{information source}
-    for which the $X_k$ are mutually independent, following
+    for which the $X_k$ are independent, following
     the uniform law on $\mathcal{A} = \{ a_1, \dots, a_V \}$ :
     \centers{$
         \proba{  X_k = a_k  } = p_k 
@@ -129,7 +130,7 @@ encoded in the following associated digital search tree (DST) $\mathcal{T}(w)$:
     \label{rmk:memoryless}
     This is the simplest information source and it has been 
     studied successfully in the past, but it is not a realistic 
-    model. We replace it with the following Markov model whenever 
+    model. We replace it with the following Markov source model whenever 
     possible.
 \end{rmk}
 
@@ -155,15 +156,18 @@ encoded in the following associated digital search tree (DST) $\mathcal{T}(w)$:
     while expanding the alphabet.
 \end{rmk}
 
-\subsubsection{Entropy}
+\subsection{Entropy}
 
+    For a consistent set of notions surrounding information theory,
+    I consulted chapter 6 of~\cite{szpankowski_average_nodate}.
     In this study, we will only consider two information sources:
     the \emph{\bfseries memoryless} and the \emph{\bfseries Markov} source.
     There are other types of probabilistic information sources 
     described in~\cite{jacquet_analytic_2015} which I found interesting,
-    but had no occasion to analyze.
+    but had no occasion to use them in practice.
     For the Markov source, we consider that there exists a 
     \emph{\bfseries stationary distribution} $\pi = (\pi_1,\dots,\pi_V)$.
+    
 
     \begin{df}
         \label{def:entropy}
@@ -175,7 +179,7 @@ encoded in the following associated digital search tree (DST) $\mathcal{T}(w)$:
     \begin{prop}
         \label{prop:memorylessentropy}
         The entropy of a \emph{memoryless source} on 
-        alphabet $\mathcal{A} = \{ a_1,\dots,a_V \}$ is:
+        alphabet $\mathcal{A} = \{ a_1,\dots,a_V \}$ is
         \centers{$ h = -\Sum{i=1}{} p_i \log p_i$}
     \end{prop}
 
@@ -183,12 +187,12 @@ encoded in the following associated digital search tree (DST) $\mathcal{T}(w)$:
         \label{prop:markoventropy}
         The entropy of a \emph{Markov source} with probability
         $(p_{i j})_{(i, j) \in { \{1,\dots,V\} }^2} $ and a 
-        stationary distribution $(\pi_1, \dots, \pi_V)$ is:
+        stationary distribution $(\pi_1, \dots, \pi_V)$ is
         \centers{$ h = -\Sum{i=1}{} \pi_i \Sum{j=1}{} p_{i j} \log p_{i j} $}
     \end{prop}
 
     
-\subsubsection{ Probabilistic analysis }
+\subsection{Probabilistic analysis }
 
 Under this context, we can define and conduct a thorough
 analysis of several random variables with different meanings
@@ -217,33 +221,33 @@ regarding the effectiveness of compression.
 \begin{nota}
     \label{nota:numberphrases}
     The number of phrases used to compress words of size $n$ ($W_n$) with
-    LZ78 is given by $M_n(W_n)$ or simply $M_n$.
+    LZ'78 is given by $M_n(W_n)$ or simply $M_n$.
 \end{nota}
 
 \begin{rmk}
     \label{rmk:numberphrases}
     This is one of the most important variables to consider because,
     as it will appear shortly, it is closely tied to the \emph{compression 
-    ratio} of LZ78.
+    ratio} of LZ'78.
 \end{rmk}
 
 \begin{df}
     \label{df:codelength}
     The \emph{\bfseries codelength} is the \emph{\bfseries number of bits} required 
-    to encode the LZ78-compressed version of a word, denoted by $|C(W_n)|$ or 
+    to encode the LZ'78-compressed version of a word, denoted by $|C(W_n)|$ or 
     simply $C_n$.
 \end{df}
 
 \begin{df}
     \label{df:compratio}
     The \emph{\bfseries compression ratio} for words of size $n$ is the ratio between the 
-    codelength and initial size of a word
+    codelength and the size of a word
         \centers{$\rho_n = \f{C_n}{n}$}
 \end{df}
 
 \begin{prop}
     The compression code $C(w)$ is a description of the DST $\mathcal{T}(w)$,
-    node by node in teh order of creation. Each node bein identified by a node 
+    node by node in the order of creation. Each node being identified by a node 
     to its parent node in the tree and the symbol that labels the edge linking it to the
     parent node. The pointer to the $k$th node requires at most $\ceil{\log_2(k)}$ bits,
     and the next symbol costs $\ceil{\log_2 |\mathcal{A}|}$ bits. Therefore, the 
@@ -264,24 +268,25 @@ regarding the effectiveness of compression.
     when we talk about the difference between LZ'77 and LZ'78 and Optimal Parsing.
 
 
-\subsection{ Theorems and Goals }
+\subsection{Theorems and Goals }
 
     There is a number of interrogations and results that surround
     the LZ'78 compression scheme, and that have been doing so for 
-    some time now. These were proven for the simplistic memoryless
-    source model which will allow us to formulate these as 
-    theorems for memoryless sources. But the more interesting case
+    some time now. These were proven for the simpler memoryless
+    source model in~\cite{louchard_average_1995} 
+    and~\cite{jacquet_limiting_2014}, and
+    will allow us to formulate these as 
+    theorems for memoryless sources. But the more difficult case
     of Markov sources has all these theorems become conjectures.
-    My first job was to simulate the process and output visualizations
-    that would disprove or make these results seem more likely.
+    My first job was to simulate the compression scheme and output visualizations
+    that would disprove or make these results seem likely.
 
     
 
     \begin{prop}
         \label{prop:lowerbound}
         The entropy gives a lower bound on the compression 
-    ratio of lossless algorithms. Furthermore, in our
-    case, for a memoryless or Markov source, the compression
+    ratio of lossless algorithms. For a memoryless or Markov source, the average compression ratio
     tends asymptotically to the entropy of the source:
         \centers{$\underset{n\rightarrow\pinf}{\limt}\f{E[C_n]}{n} = h$}
     \end{prop}

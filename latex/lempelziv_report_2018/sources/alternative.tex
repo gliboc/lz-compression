@@ -4,22 +4,22 @@
 
 In walking towards the end-goal of proving the Central Limit
 Theorem for $M_n$ and Markov sources, a major step is finding
-an expression that fits $V_n$ well enough. The candidate we
+an expression that fits $V_n$ well enough. The expression we
 saw previously which came from~\cite{leckey_limit_2015} was 
-only defined for Markov sources of order 1 and was not proved
-to be a fitting candidate. Therefore, I was tasked to investigate
+only defined for Markov sources of order 1 and was not proved yet
+to be formally correct. Therefore, I was tasked to investigate
 another expression, which appeared in the analysis of 
 P. Jacquet and my supervisor's old paper~\cite{jacquet_average_2001}.
 What I achieved here is to find several expressions of 
 this variance candidate and run them against my simulations - eventually
-finding out what seems to be the right candidate for the variance.
+finding out what seems to be the right fit for the variance.
 
-First, some definitions in order to introduce this candidate, and 
+First, some definitions in order to introduce this formula, and 
 compute the exact expressions needed for simulation:
 
 \begin{df}
     We define the matrix $P(s)$ from the probability matrix $P$ of a 
-    Markov source as:
+    Markov source as
     \centers{$\forall s\in\mathbb{C} 
              \qquad P(s) = ({p_{i j}}^{-s})_{(i,j)\in{\{1,\dots,V\}}^2} $}
     \label{def:ps}
@@ -47,7 +47,7 @@ In~\cite{jacquet_average_2001},
 \noindent The vector $\pi(s)$, which coincides with the stationary
 distribution $\pi$ for $s=-1$, is defined as the left-eigenvector of 
 $\lambda(s)$ whose product with the right-eigenvector of $\lambda(s)$
-makes $\lambda(s)$, which is written:
+makes $\lambda(s)$, which is written as
    
         \centers{ $ \left\{
             \begin{array}{rl} \pi(s) P(s)  &= \lambda(s) \pi(s) \\
@@ -60,8 +60,8 @@ makes $\lambda(s)$, which is written:
 However, I failed at computing $\pi(s)$ using these expressions - they did not seem to allow me to 
 directly compute $\dot{\pi}(s)$ as it seemed I needed one more to get rid of all the 
 unknowns. So I took another approach and directly computed $\lambda(s)$ as the greatest 
-eigenvalue of $P(s)$. Let $\chi$ be the characteristic polynomial of $P(s)$,
-and $\Delta(s)$ its discrimant:
+eigenvalue of $P(s)$. Let $\chi$ be the \emph{\bfseries characteristic polynomial} of $P(s)$,
+and $\Delta(s)$ its \emph{\bfseries discrimant}:
 
 \centers{$ \chi = (X - {p_{0 0}}^{-s}) 
                   (X - {p_{1 1}}^{-s}) 
@@ -143,16 +143,15 @@ Finally,
 \end{calculs}
 
 The simulations using this coefficient for the variance are quite good. It also seems that 
-this formula for the variance is equivalent to the one used in the unpublished paper 
-\emph{Probabilistic Analysis of Lempel-Ziv Parsing for Markov Sources} by Leckey, 
-Wormald and Neininger, but our two ways of deriving it differs. Numerical instability
+this formula for the variance is equivalent to the one used in the unpublished~\cite{langiu_speed_2018}, 
+but our two ways of deriving it differ. Numerical instability
 might account for the tiny differences found for high $n$ values ($10^7$), although
 this hasn't been verified. 
 
 \centers{
       \begin{figure}
         \centering
-        \includegraphics[width = 7.5cm,
+        \includegraphics[width = 8cm,
         				    trim = 0 0 16.5cm 1.0cm,
                                 clip=true]{./figs/eig_fig1.png}	
         \caption{Behavior of theoretical and standard deviations\\
@@ -163,7 +162,7 @@ this hasn't been verified.
 \centers{
       \begin{figure}
         \centering
-        \includegraphics[width = 7.5cm,
+        \includegraphics[width = 7.2cm,
         				    trim = 18.5cm 0 0 1.0cm,
                                 clip=true]{./figs/eig_fig1.png}
         \captionsetup{justification=centering}
@@ -173,7 +172,8 @@ this hasn't been verified.
 	}
 
 \pagebreak
-Now, for some distributions of very long words that were normalized using 
+Now, Figures \ref{fig:vn1} and \ref{fig:vn2} show the distribution of $M_n$ 
+for long words (high $n$) - which were normalized using 
 our theoretical standard deviations, and empirical means. The blue plot is 
 a gaussian fit for the simulation results, which also appear as a blue histogram.
 The two sets of figures are identical but obtained using different expressions.
@@ -184,7 +184,8 @@ The two sets of figures are identical but obtained using different expressions.
         \includegraphics[width = \linewidth,
         				    trim = 0 0.5cm 0 1cm,
                                 clip=true]{./figs/eig_fig3.png}	
-                                \caption{Distribution of $M_n$ normalized with empirical mean and ${V_n}^{(1)}$ variance}
+        \caption{Distribution of $M_n$ normalized with empirical mean and ${V_n}^{(1)}$ variance}
+        \label{fig:vn1}
      \end{figure}
 }
 
@@ -195,6 +196,7 @@ The two sets of figures are identical but obtained using different expressions.
         				    trim = 0 0.5cm 0 1cm,
                                 clip=true]{./figs/eig_fig2.png}	
         \caption{Distribution of $M_n$ normalized with empirical mean and ${V_n}^{(2)}$ variance}
+        \label{fig:vn2}
       \end{figure}
 } 
 
@@ -235,7 +237,7 @@ indicate that we are close to the exact solution.
 
 The code for these experiments, with detailed procedures for reproducibility,
 is hosted on GitHub in one of my \href{github.com/gliboc/lz-compression}{public repositories}.
-Finally, another (probably bad) way of computing $\lambda(s)$ is in appendix \ref{app:comp_lam1}
+Finally, another longer but harmless way of computing $\lambda(s)$ is in appendix \ref{app:comp_lam1}
 for curiosity.
 
 

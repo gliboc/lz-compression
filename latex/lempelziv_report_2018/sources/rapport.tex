@@ -9,7 +9,7 @@
 
 \medskip
 
-\section{Conditions of the experiment}
+\section{Fixed-length model}
 
 The first step of my internship was to simulate the probabibilistic
 model of our data representation (\emph{i.e.} Markov sources) and 
@@ -33,7 +33,6 @@ as follows:
 
 	\item Generating $n_{\text{exp}}$ words of length 
 	$n $ (or $n_{\text{word}}$), preferably with $n \sim 10^6 \text{ or } 10^7$
-	by simulating a Markov source.
 	
 	\item Compressing these words with LZ'78 to estimate the random variable of
 	the number of phrases $M_n$. A simple histogram of its values
@@ -60,7 +59,13 @@ as follows:
 	a constant number of experiments $n_{\text{exp}}$.
 \end{itemize}
 
-\subsection{ Implementation }
+\begin{rmk}
+	This model, generating a word of size $n$ and parsing it 
+	entirely with LZ'78, is called the {\bfseries Lempel-Ziv model} 
+	or {\bfseries fixed-length model} - see~\cite{jacquet_average_2001}.
+\end{rmk}
+
+\subsection{Implementation }
 
 	I took great care to implement this process, in \emph{Python}, 
 	in a way that would be easy to use and easy to modify during my 
@@ -71,7 +76,7 @@ as follows:
 	{\color{gray} \url{https://github.com/gliboc/lz-compression}}.
 	A description of the code architecture can be found in Appendix~\ref{app:code1}.
 
-	\subsubsection{ Raw results }
+	\subsubsection{Raw results }
 	
 After implementation, I could start visualizing the probability
 distribution of $M_n$ for different values of $n$. A probability 
@@ -99,9 +104,10 @@ the different values taken by $M_n$ for $n=10^6$.
 	\subsection{Empirical normalization}
 
 
-	Using the empirical mean ($\mu$) and standard deviation ($\sigma$) of the dataset to normalize $M_n$,
-	this is a plot of the normalized distribution, compared to the normal distribution 
-	in red :
+	Using the empirical mean ($\mu$) and standard deviation 
+	($\sigma$) of the dataset to normalize $M_n$,
+	Figure~\ref{fig:normalized} is a plot of the normalized distribution, 
+	compared to the normal distribution in red:
 
   \begin{figure}[H]
 		\centering
@@ -111,11 +117,13 @@ the different values taken by $M_n$ for $n=10^6$.
 		\centering
 		\captionsetup{justification=centering,margin=2cm}
 		\caption{Standardized $M_n$ distribution \textit{v.s.} normal distribution\\
-					$n_{\text{word}} = 500$, $n_{\text{exp}} = 10^6$}
+			$n_{\text{exp}} = 500, n_{\text{word}} = 10^6$}
+		\label{fig:normalized}
 	\end{figure} 
 
 	\noindent
-	 and its cumulative distribution function in green, compared to the normal one in red:
+	 and its cumulative distribution function (Figure~\ref{fig:cdf}) 
+	 in green, compared to the normal one in red:
  	
 	  \begin{figure}[H]
 		\centering
@@ -123,13 +131,17 @@ the different values taken by $M_n$ for $n=10^6$.
         				    trim = 27cm 0 0 2cm,
 								clip=true]{./figs/cdf_1e6_500.png}
 		\caption{CDF of standardized $M_n$ vs. normal law\\
-				$n_{\text{word}} = 500$, $n_{\text{exp}} = 10^6$}
+				$n_{\text{exp}} = 500, n_{\text{word}} = 10^6$}
+		\label{fig:cdf}
 	  \end{figure} 
 	
 	
 	These simulations and figures strongly indicate that the general distribution
-	of $M_n$ respects the central limit theorem. We now experiment with
-	candidates for the variance of $M_n$ : $V_n$
+	of $M_n$ asymptotically respects the central limit theorem. We now experiment with
+	candidates for the variance of $M_n$ : $V_n = \Var[M_n]$. Indeed, since we already knew 
+	the expression of $E[M_n]$, $V_n$ is probably the missing chain in 
+	proving the CLT as well as large deviation results on $M_n$, which 
+	are also quite interesting.
 
 	% In comments, because not really interesting
 
@@ -140,9 +152,9 @@ the different values taken by $M_n$ for $n=10^6$.
 	\subsection{A first expression}
 
 	First, I was asked to review the draft of a paper (see \cite{leckey_probabilistic_2018}),
-	in particular to review their own candidate for the variance of $M_n$. 
+	in particular to review their own expression for the variance of $M_n$. 
 	For a Markov source of order 1, with probabilities 
-	$p_{0 0}, p_{0 1}, p_{1 0}$ and $p_{1 1}$:
+	$p_{0 0},\, p_{0 1},\, p_{1 0}$ and $p_{1 1}$:
 
 		\encadre{ ${V_n}^{(1)} = \f{H^3 \sigma^2 n}{\log_2^2 (n)}$ }
 		
@@ -164,9 +176,9 @@ the different values taken by $M_n$ for $n=10^6$.
 	% \end{calculs}
 	and I could also see, from simulations, that this variance fitted the 
 	asymptotical behavior of the empirical variance. To be exact, 
-	their difference seemeds to be a sublinear function of $n$ growing
+	their difference seemeds to be a sublinear function of $n$, growing
 	to $\pinf$ but which would be negligible compared to the first 
-	order of the variance. See Figure~\ref{std_nein} for comparison.
+	order term of the variance. See Figure~\ref{std_nein} for comparison.
 	
 	
 	  \begin{figure}
