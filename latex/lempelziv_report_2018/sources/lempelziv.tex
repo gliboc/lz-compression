@@ -1,0 +1,27 @@
+From~\cite{jacquet_analytic_2015}, with $\mathcal{T}.\$$ being 
+the last symbol in the tree.
+
+\label{app:lempelziv}
+
+\SetKw{KwProcedure}{procedure}
+\SetKw{KwReturn}{return}
+\begin{algorithm}[H]
+ \KwProcedure \textsc{Encoding}(w)\;
+ $\mathcal{T} \leftarrow$ Tree(0)\;
+ $k \leftarrow 1$\;
+ \While{$w\neq\text{nil}$}{
+  $x\leftarrow \textmd{Read}(w)$\;
+  $\mathcal{T}' \leftarrow \mathcal{T}$\;
+  \While{$\mathcal{T}'.x \neq \text{nil} \& w \neq \text{nil}$}{
+    $\mathcal{T}' \leftarrow \mathcal{T}'.x$\;
+    $x\leftarrow\textmd{Read}(w)$\;
+   }{
+    \If{$\mathcal{T}'.x = \text{nil}$}
+    {$\mathcal{T}'.x \leftarrow Tree(k)$}
+    \Else{$\mathcal{T}'.\$ \leftarrow Tree(k)$
+  }
+  $k\leftarrow k+1$
+ }}
+ \KwReturn $\mathcal{T}$
+ \caption{Building the LZ'78 parsing tree}
+\end{algorithm}
